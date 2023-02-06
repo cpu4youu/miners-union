@@ -27,3 +27,23 @@
     font-family: "Courier";
     src: local("Courier"), url("../fonts/CourierPrime-Regular.ttf") format("truetype");
 }
+
+@font-face {
+    font-family: "Oxanium Light";
+    src: local("Oxanium Light"), url("../fonts/Oxanium-Light.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Oxanium Medium";
+    src: local("Oxanium Medium"), url("../fonts/Oxanium-Medium.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Oxanium Regular";
+    src: local("Oxanium Regular"), url("../fonts/Oxanium-Regular.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Oxanium Bold";
+    src: local("Oxanium Bold"), url("../fonts/Oxanium-Bold.ttf") format("truetype");
+}
