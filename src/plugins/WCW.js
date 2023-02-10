@@ -49,7 +49,24 @@ export default class WCWWallet {
     return {}
   }
 
-  transact(...args) {
-    return this.wax.api.transact(...args)
+  async transact(packed) {
+    console.log(packed)
+    const trans = await this.wax.api.transact(
+      packed, {
+      blocksBehind: 3,
+      expireSeconds: 1200,
+    })
+    return trans
+  }
+
+  async fetchTable(packed){
+    try{
+      console.log(packed)
+      const response = this.wax.rpc.get_table_rows(packed);
+       return response
+    } catch (e) {
+      console.log(e)
+      return {}
+    }
   }
 }

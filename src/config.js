@@ -1,4 +1,4 @@
-const networks = {
+export const networks = {
     wax: {
         name: 'wax',
         desc: 'WAX Mainnet',
@@ -33,3 +33,5 @@ const networks = {
         },
     }
 }
+
+export const smartcontract= "uniontester1"

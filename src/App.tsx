@@ -4,14 +4,24 @@ import "./App.css";
 import { GetStarted, Signup, ViewBase, Voting, VotingDetail, Missions } from "./views";
 
 export const WalletContext = React.createContext({
-  wallet : {},
+  wallet : {
+    chainId:  null, //WCW is only for wax so we hardcode that
+    name: null,
+    authorization: {
+    actor: null
+  }},
   setWallet : (wallet: any) => {},
   loggedIn : false,
   setLoggedIn : (loggedIn: boolean) => {}
 });
 
 function App() {
-  const [wallet, setWallet] = React.useState({});
+  const [wallet, setWallet] = React.useState({
+    chainId:  null, //WCW is only for wax so we hardcode that
+    name: null,
+    authorization: {
+      actor: null
+    }});
   const [loggedIn, setLoggedIn] = React.useState(false)
   return (
     <>

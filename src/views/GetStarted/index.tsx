@@ -3,7 +3,8 @@ import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { WalletContext } from "../../App";
 import background from "../../assets//imgs/background.jpg";
-import { checkLogin, Login } from "../../plugins/chain";
+import { checkLogin, Login, fetchTable } from "../../plugins/chain";
+import { smartcontract } from "../../config";
 
 
 const backgroundStyle = {
@@ -29,10 +30,30 @@ function GetStarted() {
   const {wallet, setWallet, loggedIn, setLoggedIn} = useContext(WalletContext)
   let navigate = useNavigate();
 
-  const handleClickMenu = (link: string) => {
+  const handleClickMenu = async (link: string) => {
     console.log(loggedIn)
     if(loggedIn){
-      navigate(link);
+      try {
+        const x = await fetchTable({
+          json: true, 
+          code: smartcontract,
+          scope: smartcontract,
+          table: "members",
+          limit: 1,
+          lower_bound: wallet.name,
+          upper_bound: wallet.name,
+        })
+        console.log(x)
+        const rows = x.rows
+        if(rows.length){
+          navigate("/voting")
+        } else {
+          navigate(link);
+        }
+      } catch(e){
+        console.log(e)
+      }
+      
     } else {
       alert("Please log into your wcw first")
     }

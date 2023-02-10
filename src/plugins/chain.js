@@ -28,9 +28,16 @@ async function checkLogin() {
     }
 }
    
+async function fetchTable(packed){
+    const x = await wallet.fetchTable(packed)
+    return x
+}
 
-
-export {Login ,checkLogin}
+export async function transaction(packed){
+  const x = await wallet.transact(packed)
+  return x
+}
+export {Login ,checkLogin, fetchTable}
 
 /* 
 
