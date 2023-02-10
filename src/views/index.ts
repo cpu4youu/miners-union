@@ -4,3 +4,4 @@ export { default as ViewBase } from "./ViewBase";
 export { default as Voting } from "./Voting";
 export { default as VotingDetail } from "./VotingDetail";
 export { default as Missions } from "./Missions";
+export { default as MissionDetails } from "./MissionDetails";

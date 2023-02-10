@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import "./App.css";
-import { GetStarted, Signup, ViewBase, Voting, VotingDetail, Missions } from "./views";
+import { GetStarted, Signup, ViewBase, Voting, VotingDetail, Missions, MissionDetails } from "./views";
 
 function App() {
   return (
@@ -12,6 +12,7 @@ function App() {
         <Route path="/voting" element={<ViewBase><Voting /></ViewBase>  } />
         <Route path="/votingdetail" element={<ViewBase><VotingDetail /></ViewBase>  } />
         <Route path="/missions" element={<ViewBase><Missions /></ViewBase>  } />
+        <Route path="/missiondetails" element={<ViewBase><MissionDetails /></ViewBase>  } />
       </Routes>
     </>
   );

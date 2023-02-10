@@ -3,12 +3,15 @@ import {
   Box,
   Button,
   Typography,
-  FormControl,
   FormHelperText,
-  MenuItem,
+  FormControl,
+  OutlinedInput,
+  InputAdornment,
 } from "@mui/material";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import arrowDownIcon from "../../../assets/icons/arrowDown.svg";
+
+import CandidateSelect from "./CandidateSelect";
+
+const listCandidate = ["Naron", "Eyeke", "Kavian"];
 
 interface IVotePanelProps {
   desktop: boolean;
@@ -16,10 +19,29 @@ interface IVotePanelProps {
 
 function VotePanel(props: IVotePanelProps) {
   const { desktop } = props;
-  const [candidataNameOne, setCandidateOne] = useState("None");
-  const [candidataNameTwo, setCandidateTwo] = useState("None");
-  const [candidataNameThree, setCandidateThree] = useState("None");
-  const [candidataNameFour, setCandidateFour] = useState("None");
+  const [selectedCandidateOne, setSelectedCandidateOne] = useState("None");
+  const [selectedCandidateTwo, setSelectedCandidateTwo] = useState("None");
+  const [selectedCandidateThree, setSelectedCandidateThree] = useState("None");
+  const [voteAmount, setVoteAmount] = useState<number>(0);
+
+  const handleVoteAmountChange = (e: any) => {
+    const floatRegExp = new RegExp("([0-9]+([.][0-9]*)?|[.][0-9]+)$");
+    const dotRegExp = new RegExp("^([0-9]+[.][0]*)$");
+    if (e.target.value === "" || floatRegExp.test(e.target.value)) {
+      let filteredValue = e.target.value;
+      if (dotRegExp.test(e.target.value)) {
+        setVoteAmount(filteredValue);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        filteredValue = Math.floor(filteredValue * 1000) / 1000;
+        setVoteAmount(filteredValue);
+      }
+    }
+  };
+
+  const handleMaxValue = () => {
+    setVoteAmount(100000);
+  };
 
   return (
     <>
@@ -37,9 +59,7 @@ function VotePanel(props: IVotePanelProps) {
         flexWrap="wrap"
         mb="20px"
       >
-        <Box
-          mr="20px"
-        >
+        <Box mr={desktop? "20px" : "0"}>
           <FormHelperText
             sx={{
               color: "#EBB309",
@@ -49,43 +69,14 @@ function VotePanel(props: IVotePanelProps) {
           >
             Candidate 1
           </FormHelperText>
-          <Select
-            value={candidataNameOne}
-            onChange={(event) => setCandidateOne(event.target.value)}
-            // displayEmpty
-            inputProps={{ "aria-label": "Without label" }}
-            IconComponent={() => (
-              <Box component="img" src={arrowDownIcon} sx={{ mr: 2 }} alt="" />
-            )}
-            sx={{
-              width: desktop ? "220px" : "140px",
-              border: "1px solid white",
-              borderRadius: "20px",
-              color: "white",
-              height: "45px",
-              backgroundColor: "rgba(121, 121, 121, 0.3)",
-            }}
-            MenuProps={{
-              PaperProps: {
-                sx: {
-                  bgcolor: "rgba(25, 25, 25, 0.8)",
-                  color: "white",
-                  "& .MuiMenuItem-root": {
-                    padding: 2,
-                  },
-                },
-              },
-            }}
-          >
-            <MenuItem value="None">None</MenuItem>
-            <MenuItem value="Naron">Naron</MenuItem>
-            <MenuItem value="Eyeke">Eyeke</MenuItem>
-            <MenuItem value="Kavian">Kavian</MenuItem>
-          </Select>
+          <CandidateSelect
+            listCandidate={listCandidate}
+            selectedCandidate={selectedCandidateOne}
+            setSelectedCandidate={setSelectedCandidateOne}
+            desktop={desktop}
+          />
         </Box>
-        <Box
-          mr="20px"
-        >
+        <Box mr={desktop? "20px" : "0"}>
           <FormHelperText
             sx={{
               color: "#EBB309",
@@ -95,43 +86,14 @@ function VotePanel(props: IVotePanelProps) {
           >
             Candidate 2
           </FormHelperText>
-          <Select
-            value={candidataNameTwo}
-            onChange={(event) => setCandidateTwo(event.target.value)}
-            // displayEmpty
-            inputProps={{ "aria-label": "Without label" }}
-            IconComponent={() => (
-              <Box component="img" src={arrowDownIcon} sx={{ mr: 2 }} alt="" />
-            )}
-            sx={{
-              width: desktop ? "220px" : "140px",
-              border: "1px solid white",
-              borderRadius: "20px",
-              color: "white",
-              height: "45px",
-              backgroundColor: "rgba(121, 121, 121, 0.3)",
-            }}
-            MenuProps={{
-              PaperProps: {
-                sx: {
-                  bgcolor: "rgba(25, 25, 25, 0.8)",
-                  color: "white",
-                  "& .MuiMenuItem-root": {
-                    padding: 2,
-                  },
-                },
-              },
-            }}
-          >
-            <MenuItem value="None">None</MenuItem>
-            <MenuItem value="Naron">Naron</MenuItem>
-            <MenuItem value="Eyeke">Eyeke</MenuItem>
-            <MenuItem value="Kavian">Kavian</MenuItem>
-          </Select>
+          <CandidateSelect
+            listCandidate={listCandidate}
+            selectedCandidate={selectedCandidateTwo}
+            setSelectedCandidate={setSelectedCandidateTwo}
+            desktop={desktop}
+          />
         </Box>
-        <Box
-          mr="20px"
-        >
+        <Box mr={desktop? "20px" : "0"}>
           <FormHelperText
             sx={{
               color: "#EBB309",
@@ -141,43 +103,14 @@ function VotePanel(props: IVotePanelProps) {
           >
             Candidate 3
           </FormHelperText>
-          <Select
-            value={candidataNameThree}
-            onChange={(event) => setCandidateThree(event.target.value)}
-            // displayEmpty
-            inputProps={{ "aria-label": "Without label" }}
-            IconComponent={() => (
-              <Box component="img" src={arrowDownIcon} sx={{ mr: 2 }} alt="" />
-            )}
-            sx={{
-              width: desktop ? "220px" : "140px",
-              border: "1px solid white",
-              borderRadius: "20px",
-              color: "white",
-              height: "45px",
-              backgroundColor: "rgba(121, 121, 121, 0.3)",
-            }}
-            MenuProps={{
-              PaperProps: {
-                sx: {
-                  bgcolor: "rgba(25, 25, 25, 0.8)",
-                  color: "white",
-                  "& .MuiMenuItem-root": {
-                    padding: 2,
-                  },
-                },
-              },
-            }}
-          >
-            <MenuItem value="None">None</MenuItem>
-            <MenuItem value="Naron">Naron</MenuItem>
-            <MenuItem value="Eyeke">Eyeke</MenuItem>
-            <MenuItem value="Kavian">Kavian</MenuItem>
-          </Select>
+          <CandidateSelect
+            listCandidate={listCandidate}
+            selectedCandidate={selectedCandidateThree}
+            setSelectedCandidate={setSelectedCandidateThree}
+            desktop={desktop}
+          />
         </Box>
-        <Box
-          mr="20px"
-        >
+        <Box mr={desktop? "20px" : "0"}>
           <FormHelperText
             sx={{
               color: "#EBB309",
@@ -185,41 +118,44 @@ function VotePanel(props: IVotePanelProps) {
               marginLeft: "16px",
             }}
           >
-            Candidate 4
+            Vote for Candidates
           </FormHelperText>
-          <Select
-            value={candidataNameFour}
-            onChange={(event) => setCandidateFour(event.target.value)}
-            // displayEmpty
-            inputProps={{ "aria-label": "Without label" }}
-            IconComponent={() => (
-              <Box component="img" src={arrowDownIcon} sx={{ mr: 2 }} alt="" />
-            )}
-            sx={{
-              width: desktop ? "220px" : "140px",
-              border: "1px solid white",
-              borderRadius: "20px",
-              color: "white",
-              height: "45px",
-              backgroundColor: "rgba(121, 121, 121, 0.3)",
-            }}
-            MenuProps={{
-              PaperProps: {
-                sx: {
-                  bgcolor: "rgba(25, 25, 25, 0.8)",
-                  color: "white",
-                  "& .MuiMenuItem-root": {
-                    padding: 2,
-                  },
-                },
-              },
-            }}
-          >
-            <MenuItem value="None">None</MenuItem>
-            <MenuItem value="Naron">Naron</MenuItem>
-            <MenuItem value="Eyeke">Eyeke</MenuItem>
-            <MenuItem value="Kavian">Kavian</MenuItem>
-          </Select>
+          <FormControl sx={{ flexGrow: "1" }} variant="outlined">
+            <OutlinedInput
+              id="outlined-adornment-weight"
+              value={voteAmount}
+              onChange={handleVoteAmountChange}
+              aria-describedby="outlined-weight-helper-text"
+              endAdornment={
+                <InputAdornment position="end">
+                  <Button
+                    sx={{
+                      color: "white",
+                      border: "1px solid rgba(255, 255, 255, 0.12)",
+                      borderRadius: "12px",
+                      padding: "2px 4px",
+                      minWidth: "44px",
+                      fontSize: "10px",
+                    }}
+                    onClick={handleMaxValue}
+                  >
+                    Max
+                  </Button>
+                </InputAdornment>
+              }
+              sx={{
+                borderRadius: "20px",
+                color: "white",
+                width: desktop ? "220px" : "160px",
+                height: "45px",
+                pr: 1,
+                background: "rgba(121, 121, 121, 0.3)",
+                border: "1px solid #FFFFFF",
+                "& .MuiOutlinedInput-input": { padding: "8px 16px" },
+                "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+              }}
+            />
+          </FormControl>         
         </Box>
       </Box>
       <Button
@@ -232,20 +168,20 @@ function VotePanel(props: IVotePanelProps) {
           height: "44px",
           textTransform: "none",
           color: "black",
-          lineHeight: '0',
+          lineHeight: "0",
           fontSize: "20px",
           fontFamily: "Oxanium Medium",
           alignItems: "center",
-          '&: hover': {opacity: '0.9', background: "#FFB800"},
+          "&: hover": { opacity: "0.9", background: "#FFB800" },
         }}
       >
         Vote
       </Button>
-      <Typography        
+      <Typography
         color="#F9F9F9"
         mt="16px"
         textAlign="center"
-        style={{fontFamily: 'Oxanium'}}
+        style={{ fontFamily: "Oxanium Light" }}
       >
         33,000 votes per candidate
       </Typography>

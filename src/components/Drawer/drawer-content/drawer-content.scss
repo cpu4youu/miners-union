@@ -112,6 +112,12 @@
             }            
           }
         }
+        .active {
+          background-color: #ffffff;
+          p {
+            color: black;
+          }
+        }
         .logout-menu-item {
           border-top: 1px solid rgba(193, 193, 193, 0.49);
           border-bottom: 1px solid rgba(193, 193, 193, 0.49);
