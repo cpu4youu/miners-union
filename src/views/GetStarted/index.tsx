@@ -1,6 +1,10 @@
 import { Box, Button, Typography } from "@mui/material";
+import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { WalletContext } from "../../App";
 import background from "../../assets//imgs/background.jpg";
+import { checkLogin, Login } from "../../plugins/chain";
+
 
 const backgroundStyle = {
   height: "100vh",
@@ -22,10 +26,41 @@ const authButton = {
 };
 
 function GetStarted() {
+  const {wallet, setWallet, loggedIn, setLoggedIn} = useContext(WalletContext)
   let navigate = useNavigate();
+
   const handleClickMenu = (link: string) => {
-    navigate(link);
+    console.log(loggedIn)
+    if(loggedIn){
+      navigate(link);
+    } else {
+      alert("Please log into your wcw first")
+    }
+   
   };
+  const handleLogin = async () => {
+    const respond = await Login()
+    if(respond){
+      setWallet(respond);
+      setLoggedIn(true)
+      return
+    }
+    setLoggedIn(false)
+  }
+
+  useEffect(() => {
+    async function x() {
+      const respond =  await checkLogin()
+      if(respond){
+        setLoggedIn(true)
+        setWallet(respond)
+      }
+      setLoggedIn(false)
+    }
+    x()
+    console.log(wallet)
+  }, [])
+
   return (
     <Box style={backgroundStyle}>
       <Box>
@@ -58,9 +93,25 @@ function GetStarted() {
             justifyContent: "space-between",
             mt: 5,
           }}
+        >{loggedIn 
+          ? <Button
+          style={authButton}
+          onClick={() => {handleLogin()}}
+          sx={{
+            width: { xs: "140px", sm: "180px", md: "220px" },
+            py: { xs: "7px", sm: "6px" },
+            fontSize: { xs: "16px", sm: "20px" },
+            backgroundColor: "#FFB800",
+            "&: hover": { backgroundColor: "#FFB800", opacity: 0.8 },
+          }}
         >
-          <Button
+          {//@ts-ignore
+          wallet.name}
+        </Button>
+        :
+        <Button
             style={authButton}
+            onClick={() => {handleLogin()}}
             sx={{
               width: { xs: "140px", sm: "180px", md: "220px" },
               py: { xs: "7px", sm: "6px" },
@@ -70,7 +121,8 @@ function GetStarted() {
             }}
           >
             Login
-          </Button>
+          </Button>}
+          
           <Button
             style={authButton}
             sx={{
