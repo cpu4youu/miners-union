@@ -44,20 +44,30 @@ function Signup() {
   const [cost, setCost] = useState("0.0000 TLM")
   
   const handleClickMenu = async (link: string) => {
-   /*  if(wallet.name != null){
-      
-      } catch(e){
-
-      } */
-      
-    
-      //navigate(link);
+    try {
+      const x = await fetchTable({
+        json: true, 
+        code: smartcontract,
+        scope: smartcontract,
+        table: "members",
+        limit: 1,
+        lower_bound: wallet.name,
+        upper_bound: wallet.name,
+      })
+      const rows = x.rows
+      if(rows.length){
+        navigate("/voting");
+      }
+    } catch(e){
+      alert(e)
     }
+  }
 
   const handleRequest = async () => {
     try {
       if(wallet.name == null){
         await Login()
+        return
       }
       const x = await transaction({
         actions: [{
@@ -75,9 +85,12 @@ function Signup() {
           },
         }]
       })
-      setPending(true)
+      if(x){
+        setPending(true)
+      }
+      setPending(false)
     } catch(e){
-      console.log(e)
+      setPending(false)
     }
   }
   useEffect(() => {
@@ -98,8 +111,8 @@ function Signup() {
           lower_bound: wallet.name,
           upper_bound: wallet.name,
         })
-        const rows = x.rows
-        if(rows.length){
+        const rows1 = x.rows
+        if(rows1.length){
           setPending(true)
         } else {
           setPending(false)
@@ -115,8 +128,23 @@ function Signup() {
             upper_bound: "voting",
           })
         setCost(y.rows[0].signup_cost)
+
+        const z = await fetchTable({
+          json: true, 
+          code: smartcontract,
+          scope: smartcontract,
+          table: "members",
+          limit: 1,
+          lower_bound: wallet.name,
+          upper_bound: wallet.name,
+        })
+        const rows2 = z.rows
+        if(rows2.length){
+          navigate("/voting");
+        }
+
       } catch(e) {
-        console.log(e)
+        alert(e)
       }
     }
     x()

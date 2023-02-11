@@ -29,7 +29,7 @@ function CandidateSpotlight() {
           onChange={handleChange}
           aria-label="basic tabs example"
         >
-          <Tab
+         {/*  <Tab
             label="Naron"
             style={{
               color: "white",
@@ -38,7 +38,7 @@ function CandidateSpotlight() {
               fontFamily: "Oxanium Medium",
               textTransform: "none",
             }}
-          />
+          /> */}
           <Tab
             label="Eyeke"
             style={{
@@ -49,7 +49,7 @@ function CandidateSpotlight() {
               textTransform: "none",
             }}
           />
-          <Tab
+         {/*  <Tab
             label="Kavian"
             style={{
               color: "white",
@@ -58,7 +58,7 @@ function CandidateSpotlight() {
               fontFamily: "Oxanium Medium",
               textTransform: "none",
             }}
-          />
+          /> */}
         </Tabs>
       </Box>
       <TabPanel
@@ -67,7 +67,7 @@ function CandidateSpotlight() {
         profileIcon={CandidateOneIcon}
         mobile={mobile}
       />
-      <TabPanel
+     {/*  <TabPanel
         value={value}
         index={1}
         profileIcon={CandidateOneIcon}
@@ -78,7 +78,7 @@ function CandidateSpotlight() {
         index={2}
         profileIcon={CandidateOneIcon}
         mobile={mobile}
-      />
+      /> */}
     </Box>
   );
 }

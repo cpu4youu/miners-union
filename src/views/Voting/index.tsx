@@ -8,7 +8,7 @@ import {
 import classnames from "classnames";
 import { makeStyles } from "@mui/styles";
 
-import MagorView from "./components/MagorView";
+import EyekeView from "./components/EyekeView";
 import CandidateSpotlight from "./components/CandidateSpotlight";
 import VotePanel from "./components/VotePanel";
 import CandidatePanel from "./components/CandidatePanel";
@@ -45,7 +45,7 @@ function Voting() {
           justifyContent="space-between"
           flexDirection={desktop ? "row" : "column"}
         >
-          <MagorView />
+          <EyekeView />
           <CandidateSpotlight />
         </Box>
       </Box>

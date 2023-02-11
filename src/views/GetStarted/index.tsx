@@ -1,10 +1,11 @@
 import { Box, Button, Typography } from "@mui/material";
-import { useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { WalletContext } from "../../App";
 import background from "../../assets//imgs/background.jpg";
 import { checkLogin, Login, fetchTable } from "../../plugins/chain";
 import { smartcontract } from "../../config";
+
 
 
 const backgroundStyle = {
@@ -26,14 +27,40 @@ const authButton = {
   color: "white",
 };
 
+
+
 function GetStarted() {
   const {wallet, setWallet, loggedIn, setLoggedIn} = useContext(WalletContext)
+  const [log, setLog] = useState(false)
   let navigate = useNavigate();
 
+  function getInitialState() {
+    const wallet = localStorage.getItem('wallet')
+    return wallet ? JSON.parse(wallet) : []
+  }
+
+  useEffect(() => {
+    localStorage.setItem('wallet', JSON.stringify(wallet))
+  }, [log])
+
   const handleClickMenu = async (link: string) => {
-    console.log(loggedIn)
-    if(loggedIn){
+    if(log){
       try {
+        const z = await fetchTable({ 
+          json: true, 
+          code: smartcontract,
+          scope: smartcontract,
+          table: "blocklist",
+          limit: 1,
+          lower_bound: wallet.name,
+          upper_bound: wallet.name,
+        })
+        const block = z.rows 
+        console.log(block)
+        if(block.length > 0){
+          alert("Joinrequest denied: Please contact us on Telegram.")
+          return
+        }
         const x = await fetchTable({
           json: true, 
           code: smartcontract,
@@ -43,7 +70,6 @@ function GetStarted() {
           lower_bound: wallet.name,
           upper_bound: wallet.name,
         })
-        console.log(x)
         const rows = x.rows
         if(rows.length){
           navigate("/voting")
@@ -51,7 +77,7 @@ function GetStarted() {
           navigate(link);
         }
       } catch(e){
-        console.log(e)
+        alert(e)
       }
       
     } else {
@@ -59,11 +85,15 @@ function GetStarted() {
     }
    
   };
+  
   const handleLogin = async () => {
+   
     const respond = await Login()
+
     if(respond){
       setWallet(respond);
       setLoggedIn(true)
+      setLog(true)
       return
     }
     setLoggedIn(false)
@@ -73,14 +103,15 @@ function GetStarted() {
     async function x() {
       const respond =  await checkLogin()
       if(respond){
-        setLoggedIn(true)
         setWallet(respond)
+        setLoggedIn(true)
+        setLog(true)
+        
       }
       setLoggedIn(false)
     }
     x()
-    console.log(wallet)
-  }, [])
+  }, [log])
 
   return (
     <Box style={backgroundStyle}>
@@ -114,7 +145,7 @@ function GetStarted() {
             justifyContent: "space-between",
             mt: 5,
           }}
-        >{loggedIn 
+        >{log
           ? <Button
           style={authButton}
           onClick={() => {handleLogin()}}

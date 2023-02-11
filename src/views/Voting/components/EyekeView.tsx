@@ -2,7 +2,7 @@ import { Box, Button, Typography, useMediaQuery, useTheme } from "@mui/material"
 
 import MagorCombinedIcon from "../../../assets/imgs/magorcombined.png";
 
-function MagorView() {
+function EyekeView() {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
   const mobile = useMediaQuery(theme.breakpoints.down(705));
@@ -13,7 +13,7 @@ function MagorView() {
         color="white"
         style={{fontFamily: "Oxanium Medium", fontSize: mobile? "32px" : "42px"}}
       >
-        Magor
+        Eyeke
       </Typography>
       <Box
         display="flex"
@@ -49,4 +49,4 @@ function MagorView() {
 
 }
 
-export default MagorView; 
+export default EyekeView; 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -9,6 +9,8 @@ import {
 } from "@mui/material";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import arrowDownIcon from "../../../assets/icons/arrowDown.svg";
+import { fetchTable } from "../../../plugins/chain";
+import { smartcontract } from "../../../config";
 
 interface IVotePanelProps {
   desktop: boolean;
@@ -20,7 +22,57 @@ function VotePanel(props: IVotePanelProps) {
   const [candidataNameTwo, setCandidateTwo] = useState("None");
   const [candidataNameThree, setCandidateThree] = useState("None");
   const [candidataNameFour, setCandidateFour] = useState("None");
+  const [getCandi, setGetCandi] = useState(true)
+  const [getOptions, setOptions] = useState(<></>)
+  const [candidates, setCandidates] = useState([""])
 
+  const getCandidate = async () => {
+    try {
+      let more = false
+      let next = ""
+      const candi: string[] = []
+      do {
+        const x = await fetchTable({
+          json: true, 
+          code: "dao.worlds",
+          scope: "eyeke",
+          table: "candidates",
+          limit: 10,     
+          lower_bound: next
+      })
+      next = x.next_key
+      more = x.more 
+      x.rows.forEach((value: any, key: any) => {
+        const name: string = value.candidate_name
+        if(value.is_active == 1){
+          candi.push(name)
+        }
+      })
+      } while(more) 
+      
+    return candi
+    }catch(e){
+      alert(e)
+    }
+  };
+
+  useEffect(() =>{
+    async function x(){
+      let candi = []
+      const y = await getCandidate()
+      if(y){
+        candi = y
+        setCandidates(candi)
+      }
+      
+    }
+    x()
+  },[])
+
+  useEffect(()=>{
+    //@ts-ignore
+    setOptions(getMenuItems(candidates))
+  },[candidates])
   return (
     <>
       <Typography
@@ -77,10 +129,7 @@ function VotePanel(props: IVotePanelProps) {
               },
             }}
           >
-            <MenuItem value="None">None</MenuItem>
-            <MenuItem value="Naron">Naron</MenuItem>
-            <MenuItem value="Eyeke">Eyeke</MenuItem>
-            <MenuItem value="Kavian">Kavian</MenuItem>
+            {getOptions}
           </Select>
         </Box>
         <Box
@@ -123,10 +172,7 @@ function VotePanel(props: IVotePanelProps) {
               },
             }}
           >
-            <MenuItem value="None">None</MenuItem>
-            <MenuItem value="Naron">Naron</MenuItem>
-            <MenuItem value="Eyeke">Eyeke</MenuItem>
-            <MenuItem value="Kavian">Kavian</MenuItem>
+            {getOptions}
           </Select>
         </Box>
         <Box
@@ -169,10 +215,7 @@ function VotePanel(props: IVotePanelProps) {
               },
             }}
           >
-            <MenuItem value="None">None</MenuItem>
-            <MenuItem value="Naron">Naron</MenuItem>
-            <MenuItem value="Eyeke">Eyeke</MenuItem>
-            <MenuItem value="Kavian">Kavian</MenuItem>
+            {getOptions}
           </Select>
         </Box>
         <Box
@@ -215,10 +258,7 @@ function VotePanel(props: IVotePanelProps) {
               },
             }}
           >
-            <MenuItem value="None">None</MenuItem>
-            <MenuItem value="Naron">Naron</MenuItem>
-            <MenuItem value="Eyeke">Eyeke</MenuItem>
-            <MenuItem value="Kavian">Kavian</MenuItem>
+            {getOptions}
           </Select>
         </Box>
       </Box>
@@ -253,4 +293,14 @@ function VotePanel(props: IVotePanelProps) {
   );
 }
 
+function getMenuItems(name: string[]){
+  return name.map((x) => <MenuItem value= {x}>{x}</MenuItem>)
+}
+
+
 export default VotePanel;
+function asnyc() {
+  throw new Error("Function not implemented.");
+}
+
+

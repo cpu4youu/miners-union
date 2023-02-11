@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import "./App.css";
 import { GetStarted, Signup, ViewBase, Voting, VotingDetail, Missions } from "./views";
+import { checkLogin } from "./plugins/chain";
 
 export const WalletContext = React.createContext({
   wallet : {
@@ -12,8 +13,11 @@ export const WalletContext = React.createContext({
   }},
   setWallet : (wallet: any) => {},
   loggedIn : false,
-  setLoggedIn : (loggedIn: boolean) => {}
+  setLoggedIn : (loggedIn: boolean) => {},
+  claimed: false,
+  setClaimed : (claimed: boolean) => {},
 });
+
 
 function App() {
   const [wallet, setWallet] = React.useState({
@@ -23,9 +27,52 @@ function App() {
       actor: null
     }});
   const [loggedIn, setLoggedIn] = React.useState(false)
+  const [claimed, setClaimed] = React.useState(false)
+
+  function getInitialStateWallet() {
+    const wallet = localStorage.getItem('wallet')
+    return wallet ? JSON.parse(wallet) : []
+  }
+  function getInitialStateLoggedIn() {
+    const loggedIn = localStorage.getItem('loggedIn')
+    return loggedIn ? JSON.parse(loggedIn) : []
+  }
+  useEffect(() => {
+    if(wallet.name != null){
+      localStorage.setItem('wallet', JSON.stringify(wallet))
+    }
+  }, [wallet]);
+
+  useEffect(()=>{
+    if(loggedIn){
+      localStorage.setItem('loggedIn', JSON.stringify(loggedIn))
+    }
+  }, [loggedIn])
+
+  useEffect(() => {
+    const x = getInitialStateWallet()
+    const y = getInitialStateLoggedIn()
+    console.log(y)
+    if(x != wallet){
+      setWallet(x)
+    }
+    if(y){
+      setLoggedIn(y)
+      checkLogin()
+    }
+  },[])
+  
+
   return (
     <>
-      <WalletContext.Provider value={{wallet: wallet, setWallet: setWallet, loggedIn: loggedIn , setLoggedIn: setLoggedIn}}>
+      <WalletContext.Provider value={
+        {wallet: wallet, 
+        setWallet: setWallet, 
+        loggedIn: loggedIn , 
+        setLoggedIn: setLoggedIn,
+        claimed: claimed,
+        setClaimed: setClaimed,
+        }}>
         <Routes>
           <Route path="/" element={<GetStarted />} />
           <Route path="/signup" element={<Signup />} />
@@ -40,3 +87,7 @@ function App() {
 }
 
 export default App;
+function alertUser(this: Window, ev: BeforeUnloadEvent) {
+  throw new Error("Function not implemented.");
+}
+

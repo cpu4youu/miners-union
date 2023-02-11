@@ -51,12 +51,18 @@ export default class WCWWallet {
 
   async transact(packed) {
     console.log(packed)
-    const trans = await this.wax.api.transact(
-      packed, {
-      blocksBehind: 3,
-      expireSeconds: 1200,
-    })
-    return trans
+    try{
+      const trans = await this.wax.api.transact(
+        packed, {
+        blocksBehind: 3,
+        expireSeconds: 1200,
+      })
+      return trans
+    } catch(e){
+      
+      alert(e)
+    }
+    
   }
 
   async fetchTable(packed){
