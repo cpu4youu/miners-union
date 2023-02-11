@@ -3,6 +3,8 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import "./App.css";
 import { GetStarted, Signup, ViewBase, Voting, VotingDetail, Missions } from "./views";
 import { checkLogin } from "./plugins/chain";
+import MissionDetails from "./views/MissionDetails";
+import Information from "./views/Information";
 
 export const WalletContext = React.createContext({
   wallet : {
@@ -79,6 +81,8 @@ function App() {
           <Route path="/voting" element={<ViewBase><Voting /></ViewBase>  } />
           <Route path="/votingdetail" element={<ViewBase><VotingDetail /></ViewBase>  } />
           <Route path="/missions" element={<ViewBase><Missions /></ViewBase>  } />
+          <Route path="/missiondetails" element={<ViewBase><MissionDetails /></ViewBase>  } />
+          <Route path="/information" element={<ViewBase><Information /></ViewBase>  } />
         </Routes>
     </WalletContext.Provider>  
       
