@@ -152,9 +152,10 @@ function Missions() {
             </TableHead>
             <TableBody>
               {rows.map((row) => (
-                <TableRow key={row.from}
-                sx={{cursor: "pointer"}}
-                onClick={() => handleClickMenu("/missiondetails")}
+                <TableRow
+                  key={row.from}
+                  sx={{ cursor: "pointer" }}
+                  onClick={() => handleClickMenu("/missiondetails")}
                 >
                   <TableCell
                     component="th"

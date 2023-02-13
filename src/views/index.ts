@@ -7,3 +7,6 @@ export { default as Missions } from "./Missions";
 export { default as MissionDetails } from "./MissionDetails";
 export { default as Information } from "./Information";
 export { default as Contributions } from "./Contributions";
+export { default as Proposals } from "./Proposals";
+export { default as ProposalDetails } from "./ProposalDetails";
+export { default as CreateProposal } from "./CreateProposal";
