@@ -112,7 +112,6 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
       upper_bound: wallet.name,
     })
     const rows = x.rows
-    console.log(rows)
     if(rows.length){
       setTLMPower(rows[0].tlm_power)
       setVotePower(rows[0].vote_power)
