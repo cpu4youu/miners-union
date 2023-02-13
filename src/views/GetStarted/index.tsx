@@ -134,7 +134,7 @@ function GetStarted() {
       } 
     }
     x()
-  },[wallet, sign])
+  },[wallet, log])
 
   return (
     <Box style={backgroundStyle}>
