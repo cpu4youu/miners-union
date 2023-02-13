@@ -2,10 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
-  Button,  
+  Button,
   FormControl,
-  OutlinedInput,  
+  OutlinedInput,
   FormHelperText,
+  Modal,
+  IconButton,
   Typography,
   useMediaQuery,
   useTheme,
@@ -13,9 +15,27 @@ import {
 } from "@mui/material";
 
 import SendIcon from "@mui/icons-material/Send";
+import CloseIcon from "@mui/icons-material/Close";
 import BackButtonIcon from "../../assets/icons/backbutton.png";
 
 import { makeStyles } from "@mui/styles";
+
+const modalStyle = {
+  position: "absolute" as "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: "300px",
+  bgcolor: "background.paper",
+  background: "#1C1C1C",
+  borderRadius: "20px",
+  border: "1px solid #4D4D4D",
+  outline: "transparent solid 2px",
+  outlineOffset: "2px",
+  boxShadow:
+    "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px,rgba(0, 0, 0, 0.2) 0px 5px 10px,rgba(0, 0, 0, 0.4) 0px 15px 40px",
+  p: 2,
+};
 
 const useStyles = makeStyles({
   contentWrapper: {
@@ -35,6 +55,8 @@ function CreateProposal() {
   const [memo, setMemo] = useState("");
   const [tlmAmount, setTlmAmount] = useState("");
   const [description, setDescription] = useState("");
+  const [openModal, setOpenModal] = useState(false);
+
   let navigate = useNavigate();
   const handleClickMenu = (link: string) => {
     navigate(link);
@@ -63,6 +85,14 @@ function CreateProposal() {
     setDescription(e.target.value);
   };
 
+  const handleModalOpen = () => {
+    setOpenModal(true);
+  };
+
+  const handleModalClose = () => {
+    setOpenModal(false);
+  };
+
   return (
     <>
       <Button onClick={() => handleClickMenu("/proposals")}>
@@ -70,10 +100,17 @@ function CreateProposal() {
           src={BackButtonIcon}
           alt=""
           width="30px"
-          style={{ marginLeft: desktop ? "48px" : "12px", marginTop: desktop? "36px" : "12px" }}
+          style={{
+            marginLeft: desktop ? "48px" : "12px",
+            marginTop: desktop ? "36px" : "12px",
+          }}
         />
       </Button>
-      <Box display="flex" justifyContent={!mobile ? "center" : ""} pt={desktop? "36px" : "12px"}>
+      <Box
+        display="flex"
+        justifyContent={!mobile ? "center" : ""}
+        pt={desktop ? "36px" : "12px"}
+      >
         <Box
           className={
             desktop ? classes.contentWrapper : classes.contentTabletWrapper
@@ -261,6 +298,7 @@ function CreateProposal() {
                   boxShadow: "inset 0px 0px 36px 1px rgba(54, 0, 206, 0.61)",
                   "&: hover": { opacity: "0.9", background: "#009DF5" },
                 }}
+                onClick={() => handleModalOpen()}
               >
                 Create Proposal
               </Button>
@@ -296,14 +334,14 @@ function CreateProposal() {
               Description
             </FormHelperText>
             <FormControl
-              sx={{ flexGrow: "1", width: "100%", mb: desktop? "0" : "32px" }}
+              sx={{ flexGrow: "1", width: "100%", mb: desktop ? "0" : "32px" }}
               variant="outlined"
             >
               <OutlinedInput
                 id="outlined-adornment-weight"
                 value={description}
                 multiline
-                minRows={desktop ? 20 : 10}                
+                minRows={desktop ? 20 : 10}
                 onChange={handleDescriptionChange}
                 aria-describedby="outlined-weight-helper-text"
                 sx={{
@@ -320,6 +358,70 @@ function CreateProposal() {
           </Box>
         </Box>
       </Box>
+      <Modal
+        open={openModal}
+        onClose={handleModalClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box color="white" sx={modalStyle}>
+          <Box display="flex" justifyContent="flex-end">
+            <IconButton sx={{ padding: "0" }} onClick={handleModalClose}>
+              <CloseIcon sx={{ color: "white" }} />
+            </IconButton>
+          </Box>
+          <Typography
+            variant="body1"
+            fontSize="16px"
+            mt="24px"
+            textAlign="center"
+            fontFamily="Oxanium Light"
+          >
+            Creating this Proposal costs 100 TLM.
+          </Typography>
+          <Typography
+            variant="body1"
+            fontSize="16px"
+            textAlign="center"
+            fontFamily="Oxanium Light"
+          >
+            Please make sure everything is correct before submitting.
+          </Typography>
+          <Typography
+            variant="body1"
+            fontSize="16px"
+            textAlign="center"
+            fontFamily="Oxanium Light"
+            mt="24px"
+            mb="36px"
+          >
+            Once submitted a proposal cannot be changed.
+          </Typography>
+          <Button
+            sx={{
+              display: "flex",
+              marginTop: 1,
+              background: "#009DF5",
+              borderRadius: "24px",
+              border: "2px solid #009DF5",
+              textAlign: "center",
+              height: "44px",
+              textTransform: "none",
+              color: "white",
+              m: "12px auto",
+              width: desktop ? "220px" : "100%",
+              lineHeight: "0",
+              fontSize: "20px",
+              fontFamily: "Oxanium Medium",
+              alignItems: "center",
+              boxShadow: "inset 0px 0px 36px 1px rgba(54, 0, 206, 0.61)",
+              "&: hover": { opacity: "0.9", background: "#009DF5" },
+            }}
+          >
+            Create Proposal
+          </Button>
+        </Box>
+      </Modal>
     </>
   );
 }
