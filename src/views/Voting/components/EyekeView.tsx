@@ -1,5 +1,4 @@
 import { Box, Button, Typography, useMediaQuery, useTheme } from "@mui/material";
-import { WalletContext } from "../../../App";
 import { useContext, useEffect, useState } from 'react'
 
 import MagorCombinedIcon from "../../../assets/imgs/magorcombined.png";
@@ -8,7 +7,7 @@ import { fetchTable } from "../../../plugins/chain";
 
 
 function EyekeView() {
-  const {wallet, setWallet, loggedIn, setLoggedIn,claimed} = useContext(WalletContext)
+
   const [unionPower, setUnionPower] = useState("0 EYE")
   const [support, setSupport] = useState("0 TLM")
   const theme = useTheme();
@@ -25,7 +24,6 @@ function EyekeView() {
       upper_bound: "eyeke",
     })
     const rows = x.rows
-    console.log(rows)
     if(rows.length){
       setUnionPower(rows[0].token)
       setSupport(rows[0].voting_tlm)
