@@ -1,6 +1,7 @@
 import React from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import "./App.css";
+
 import {
   GetStarted,
   Signup,
@@ -14,6 +15,7 @@ import {
   Proposals,
   ProposalDetails,
   CreateProposal,
+  JoinRequests,
 } from "./views";
 
 function App() {
@@ -91,6 +93,14 @@ function App() {
           element={
             <ViewBase>
               <CreateProposal />
+            </ViewBase>
+          }
+        />
+        <Route
+          path="/joinrequests"
+          element={
+            <ViewBase>
+              <JoinRequests />
             </ViewBase>
           }
         />
