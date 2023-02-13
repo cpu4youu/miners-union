@@ -2,11 +2,10 @@ import * as waxjs from '@waxio/waxjs/dist'
 import { JsonRpc } from 'eosjs'
 
 
-
 export default class WCWWallet {
   name = 'wcw'
   wax = null
-
+  
   constructor() {
     const wax = new waxjs.WaxJS({ rpcEndpoint: 'https://wax.greymass.com', tryAutoLogin: false })
     wax.rpc = new JsonRpc("https://wax.greymass.com", {

@@ -95,12 +95,13 @@ function MenuBoard({ icon, menuTitle, menuText, width, color }: IMenuBoard) {
 function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
   const {wallet, setWallet, loggedIn, setLoggedIn,claimed} = useContext(WalletContext)
   const [votePower, setVotePower] = useState(0)
+  const [tlmPower, setTLMPower] = useState(0)
   const classes = useStyles();
   let navigate = useNavigate();
-  if(!loggedIn){
-    navigate('/')
+  if(wallet.name === null){
+    navigate("/")
   }
-  async function updateVotePower(){
+  async function updateData(){
     const x = await fetchTable({
       json: true, 
       code: smartcontract,
@@ -111,14 +112,24 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
       upper_bound: wallet.name,
     })
     const rows = x.rows
+    console.log(rows)
     if(rows.length){
+      setTLMPower(rows[0].tlm_power)
       setVotePower(rows[0].vote_power)
     } 
   }
+
   useEffect(()=> {
-    console.log("Update")
-    updateVotePower()
+    if(wallet.name){
+      updateData()
+    }
   },[claimed])
+
+  useEffect(()=> {
+    if(wallet.name){
+      updateData()
+    }
+  },[wallet.name])
 
   return (
     <AppBar position="fixed" className={classes.appBar} elevation={0}>
@@ -161,7 +172,7 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
             />
             <MenuBoard
               icon={MenuRocketIcon}
-              menuTitle="5,600"
+              menuTitle={tlmPower.toString()}
               menuText="Spacecraft"
               width="24px"
               color="#009DF5"
