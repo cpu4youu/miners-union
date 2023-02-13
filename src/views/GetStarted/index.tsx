@@ -89,7 +89,8 @@ function GetStarted() {
   const handleLogin = async () => {
    
     const respond = await Login()
-
+    console.log("Test")
+    console.log(respond)
     if(respond){
       setWallet(respond);
       setLoggedIn(true)
@@ -102,6 +103,8 @@ function GetStarted() {
   useEffect(() => {
     async function x() {
       const respond =  await checkLogin()
+      console.log("Test")
+      console.log(respond)
       if(respond){
         setWallet(respond)
         setLoggedIn(true)
