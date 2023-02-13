@@ -16,8 +16,6 @@ import {
   CreateProposal,
 } from "./views";
 import { checkLogin } from "./plugins/chain";
-import MissionDetails from "./views/MissionDetails";
-import Information from "./views/Information";
 
 export const WalletContext = React.createContext({
   wallet : {
