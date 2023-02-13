@@ -84,8 +84,7 @@ function GetStarted() {
     } else {
       alert("Please log into your wcw first")
     }
-   
-      }
+   }
       
   };
   
@@ -119,6 +118,26 @@ function GetStarted() {
     x()
   }, [log])
 
+  useEffect(() => {
+    async function x(){
+      if(log && wallet.name){
+        const x = await fetchTable({
+          json: true, 
+          code: smartcontract,
+          scope: smartcontract,
+          table: "members",
+          limit: 1,
+          lower_bound: wallet.name,
+          upper_bound: wallet.name,
+        })
+        const rows = x.rows
+        if(rows.length){
+          navigate("/voting")
+        }
+      } 
+    }
+  },[])
+  
   return (
     <Box style={backgroundStyle}>
       <Box>
