@@ -5,6 +5,7 @@ import { WalletContext } from "../../App";
 import background from "../../assets//imgs/background.jpg";
 import { checkLogin, Login, fetchTable } from "../../plugins/chain";
 import { smartcontract } from "../../config";
+import { sign } from "crypto";
 
 
 
@@ -91,8 +92,6 @@ function GetStarted() {
   const handleLogin = async () => {
    
     const respond = await Login()
-    console.log("Test")
-    console.log(respond)
     if(JSON.stringify(respond) !=="{}"){
       setWallet(respond);
       setLoggedIn(true)
@@ -105,8 +104,6 @@ function GetStarted() {
   useEffect(() => {
     async function x() {
       const respond =  await checkLogin()
-      console.log("Test")
-      console.log(JSON.stringify(respond) ==="{}")
       if(JSON.stringify(respond) !=="{}"){
         setWallet(respond)
         setLoggedIn(true)
@@ -136,8 +133,9 @@ function GetStarted() {
         }
       } 
     }
-  },[])
-  
+    x()
+  },[wallet, sign])
+
   return (
     <Box style={backgroundStyle}>
       <Box>
