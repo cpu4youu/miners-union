@@ -118,22 +118,6 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
     } 
   }
 
-  async function checkAccount(){
-    const x = await fetchTable({
-      json: true, 
-      code: smartcontract,
-      scope: smartcontract,
-      table: "members",
-      limit: 1,
-      lower_bound: wallet.name,
-      upper_bound: wallet.name,
-    })
-    if(x.rows[0]){
-      return
-    }
-    navigate("/")
-  }
-
   useEffect(()=> {
     if(wallet.name){
       updateData()
@@ -145,10 +129,6 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
       updateData()
     }
   },[wallet.name])
-
-  useEffect(() => {
-    checkAccount()
-  },[])
 
   return (
     <AppBar position="fixed" className={classes.appBar} elevation={0}>
