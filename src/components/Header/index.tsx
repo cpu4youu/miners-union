@@ -12,6 +12,12 @@ import LeftIndentIcon from "../../assets/icons/leftindent.svg";
 import RightIndentIcon from "../../assets/icons/rightindent.svg";
 import MenuLightningIcon from "../../assets/icons/menulightning.png";
 import MenuRocketIcon from "../../assets/icons/menurocket.png";
+import { useContext, useEffect, useState } from "react";
+import { WalletContext } from "../../App";
+import { checkLogin, fetchTable } from "../../plugins/chain";
+import { useNavigate } from "react-router-dom";
+import { smartcontract } from "../../config";
+
 
 const useStyles = makeStyles({
   appBar: {
@@ -87,7 +93,43 @@ function MenuBoard({ icon, menuTitle, menuText, width, color }: IMenuBoard) {
 }
 
 function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
+  const {wallet, setWallet, loggedIn, setLoggedIn,claimed} = useContext(WalletContext)
+  const [votePower, setVotePower] = useState(0)
+  const [tlmPower, setTLMPower] = useState(0)
   const classes = useStyles();
+  let navigate = useNavigate();
+  if(wallet.name === null){
+    navigate("/")
+  }
+  async function updateData(){
+    const x = await fetchTable({
+      json: true, 
+      code: smartcontract,
+      scope: smartcontract,
+      table: "members",
+      limit: 1,
+      lower_bound: wallet.name,
+      upper_bound: wallet.name,
+    })
+    const rows = x.rows
+    if(rows.length){
+      setTLMPower(rows[0].tlm_power)
+      setVotePower(rows[0].vote_power)
+    } 
+  }
+
+  useEffect(()=> {
+    if(wallet.name){
+      updateData()
+    }
+  },[claimed])
+
+  useEffect(()=> {
+    if(wallet.name){
+      updateData()
+    }
+  },[wallet.name])
+
   return (
     <AppBar position="fixed" className={classes.appBar} elevation={0}>
       <Toolbar disableGutters className={classes.dappTopbar}>
@@ -111,7 +153,7 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
             className={classes.addressText}
             sx={{ fontFamily: "Montserrat Light", fontSize: "20px" }}
           >
-            4u.mu.wam
+            {wallet.name}
           </Typography>
           <Box
             sx={{
@@ -122,14 +164,14 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
           >
             <MenuBoard
               icon={MenuLightningIcon}
-              menuTitle="2,400"
+              menuTitle={votePower.toString()}
               menuText="Voting Power"
               width="20px"
               color="#F1AE02"
             />
             <MenuBoard
               icon={MenuRocketIcon}
-              menuTitle="5,600"
+              menuTitle={tlmPower.toString()}
               menuText="Spacecraft"
               width="24px"
               color="#009DF5"

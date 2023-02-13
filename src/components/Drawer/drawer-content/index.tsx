@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Link, Button, Box } from "@mui/material";
 import classnames from "classnames";
@@ -19,6 +19,10 @@ import HoverableLinkButton from "./HoverableLinkButton";
 
 import DrawerLogoutIcon from "../../../assets/icons/drawerlogout.png";
 import DrawerTelegramIcon from "../../../assets/icons/drawertelegram.png";
+
+import { smartcontract } from "../../../config";
+import { transaction } from "../../../plugins/chain";
+import { WalletContext } from "../../../App";
 
 const LinkButtonData = [
   {
@@ -60,7 +64,31 @@ interface INavContent {
 
 function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
   const [isActive] = useState();
+  const {wallet, setWallet, loggedIn, setLoggedIn, claimed, setClaimed} = useContext(WalletContext)
 
+  const HandleClaim = async () => {
+    if(wallet != null){
+      const x = await transaction({
+        actions: [{
+          account: smartcontract,
+          name: "claimpower",
+          authorization: [{
+            actor: wallet.name,
+            permission: 'active',
+          }],
+          data: {
+            wallet: wallet.name,
+            claim_user_cpu : true
+          },
+        }]
+      })
+      if(x){  
+        setClaimed(true);
+        alert("Succesfully claimed Voting Power")
+      }
+    }
+  }
+  
   return (
     <div
       className="dapp-sidebar"
@@ -73,6 +101,7 @@ function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
         <div className="dapp-nav">
           <Button
             className={classnames("button-dapp-btn", { active: isActive })}
+            onClick={() => HandleClaim()}
           >
             <div
               className={classnames(

@@ -8,10 +8,13 @@ import {
 import classnames from "classnames";
 import { makeStyles } from "@mui/styles";
 
-import MagorView from "./components/MagorView";
+import EyekeView from "./components/EyekeView";
 import CandidateSpotlight from "./components/CandidateSpotlight";
 import VotePanel from "./components/VotePanel";
 import CandidatePanel from "./components/CandidatePanel";
+import { WalletContext } from "../../App";
+import { useContext} from "react";
+
 
 const useStyles = makeStyles({
   contentWrapper: {
@@ -23,6 +26,7 @@ const useStyles = makeStyles({
 });
 
 function Voting() {
+  const {wallet, setWallet, loggedIn, setLoggedIn} = useContext(WalletContext)
   const classes = useStyles();
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
@@ -41,7 +45,7 @@ function Voting() {
           justifyContent="space-between"
           flexDirection={desktop ? "row" : "column"}
         >
-          <MagorView />
+          <EyekeView />
           <CandidateSpotlight />
         </Box>
       </Box>
