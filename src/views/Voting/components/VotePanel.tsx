@@ -8,12 +8,12 @@ import {
   OutlinedInput,
   InputAdornment,
 } from "@mui/material";
-
-import CandidateSelect from "./CandidateSelect";
 import { fetchTable, transaction } from "../../../plugins/chain";
 import { smartcontract } from "../../../config";
 import { WalletContext } from "../../../App";
+import CandidateSelect from "./CandidateSelect";
 
+const listCandidate = ["Naron", "Eyeke", "Kavian"];
 
 interface IVotePanelProps {
   desktop: boolean;
@@ -49,7 +49,6 @@ function VotePanel(props: IVotePanelProps) {
     setVoteAmount(100000);
   };
 
-  
   const getCandidate = async () => {
     try {
       let more = false

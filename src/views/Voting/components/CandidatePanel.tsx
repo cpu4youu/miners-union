@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 
 import CandidateOneIcon from "../../../assets/imgs/candidateone.png";
 import CandidateTwoIcon from "../../../assets/imgs/candidatetwo.png";
-import CandidateThreeIcon from "../../../assets/imgs/candidatetwo.png";
+import CandidateThreeIcon from "../../../assets/imgs/candidatethree.png";
 
 import { smartcontract } from "../../../config";
 import { fetchTable } from "../../../plugins/chain";

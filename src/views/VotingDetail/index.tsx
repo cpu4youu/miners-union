@@ -11,13 +11,13 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useLocation, useNavigate } from "react-router-dom";
-
-import CandidateBig from "../../assets/imgs/candidatebig.png";
-import BackButtonIcon from "../../assets/icons/backbutton.png";
-import MargoProfileIcon from "../../assets/imgs/margoprofile.png";
 import { smartcontract } from "../../config";
 import { fetchTable, transaction } from "../../plugins/chain";
 import { WalletContext } from "../../App";
+import CandidateBig from "../../assets/imgs/candidatebig.png";
+import BackButtonIcon from "../../assets/icons/backbutton.png";
+import MargoProfileIcon from "../../assets/imgs/margoprofile.png";
+import DescriptiveLine from "../../assets/icons/descriptiveline.png";
 
 const useStyles = makeStyles({
   contentWrapper: {
@@ -38,7 +38,7 @@ function VotingDetail() {
   const classes = useStyles();
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
-  let navigate = useNavigate();  
+  let navigate = useNavigate();
   const [voteAmount, setVoteAmount] = useState<number>(0);
   const handleClickMenu = (link: string) => {
     navigate(link);
@@ -122,19 +122,17 @@ function VotingDetail() {
   return (
     <>
       <Box p={desktop ? "24px 36px" : "16px 0"}>
-        <Button
-          onClick={() => handleClickMenu("/voting")}
-        >
-        <img
-          src={BackButtonIcon}
-          alt=""
-          width="30px"
-          style={{ marginLeft: "16px" }}
-        />
+        <Button onClick={() => handleClickMenu("/voting")}>
+          <img
+            src={BackButtonIcon}
+            alt=""
+            width="30px"
+            style={{ marginLeft: "16px" }}
+          />
         </Button>
         <Box
           display="flex"
-          justifyContent={desktop ? "center" : "space-between"}          
+          justifyContent={desktop ? "center" : "space-between"}
           pb="20px"
           borderBottom="1px solid rgba(255, 255, 255, 0.14)"
         >
@@ -144,9 +142,7 @@ function VotingDetail() {
             justifyContent="space-between"
             flexDirection={desktop ? "row" : "column"}
           >
-            <Box
-              pl={desktop ? "" : "24px"}
-            >
+            <Box pl={desktop ? "" : "24px"}>
               <Typography
                 fontSize={desktop ? "40px" : "32px"}
                 py="16px"
@@ -172,6 +168,16 @@ function VotingDetail() {
                     left: desktop ? "-24px" : "-16px",
                   }}
                 />
+                <img
+                  src={DescriptiveLine}
+                  alt=""
+                  width={desktop ? "320px" : "270px"}
+                  style={{
+                    position: "absolute",
+                    top: desktop ? "64px" : "40px",
+                    left: desktop ? "100px" : "20px",
+                  }}
+                />
                 <Typography
                   fontSize={desktop ? "18px" : "14px"}
                   color="white"
@@ -179,7 +185,7 @@ function VotingDetail() {
                     position: "absolute",
                     width: desktop ? "240px" : "180px",
                     top: desktop ? "40px" : "20px",
-                    left: desktop ? "200px" : "100px",
+                    left: desktop ? "190px" : "100px",
                     fontFamily: "Oxanium Light",
                   }}
                 >
@@ -274,19 +280,17 @@ function VotingDetail() {
             </Box>
           </Box>
         </Box>
-        <Box    
+        <Box
           display="flex"
-          justifyContent={desktop? "center" : "flex-start"} 
-          pb="20px"          
+          justifyContent={desktop ? "center" : "flex-start"}
+          pb="20px"
         >
-          <Box
-            className={desktop ? classes.contentWrapper : ""}            
-          >
+          <Box className={desktop ? classes.contentWrapper : ""}>
             <Typography
               color="white"
               fontSize="24px"
               py="24px"
-              style={{fontFamily: "Oxanium Light"}}
+              style={{ fontFamily: "Oxanium Light" }}
             >
               Description
             </Typography>
@@ -294,12 +298,12 @@ function VotingDetail() {
               color="white"
               fontSize="20px"
               pb="24px"
-              style={{fontFamily: "Oxanium Light"}}
+              style={{ fontFamily: "Oxanium Light" }}
             >
               {description}
               </Typography>
-          </Box>
 
+          </Box>
         </Box>
       </Box>
     </>

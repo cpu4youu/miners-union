@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.935b5acb.css",
-    "main.js": "/static/js/main.de824e4c.js",
+    "main.css": "/static/css/main.123a3ed0.css",
+    "main.js": "/static/js/main.0d585e5c.js",
     "static/js/787.cb9fdea6.chunk.js": "/static/js/787.cb9fdea6.chunk.js",
     "static/media/background.jpg": "/static/media/background.1f735cec8d33dbc68dfe.jpg",
     "static/media/Montserrat-Regular.ttf": "/static/media/Montserrat-Regular.3cd786652b8a2e9d41f2.ttf",
@@ -12,6 +12,7 @@
     "static/media/magorcombined.png": "/static/media/magorcombined.9550fe3e022ad262fa17.png",
     "static/media/CourierPrime-Regular.ttf": "/static/media/CourierPrime-Regular.68d89efc577d345bf1f4.ttf",
     "static/media/candidatebig.png": "/static/media/candidatebig.09cda83a3bb1c9d906a3.png",
+    "static/media/candidatethree.png": "/static/media/candidatethree.211943b8173e63f540ee.png",
     "static/media/Oxanium-Light.ttf": "/static/media/Oxanium-Light.5a9ee94dc731d17a6d2f.ttf",
     "static/media/Oxanium-Medium.ttf": "/static/media/Oxanium-Medium.5fbc0c6d3f3943599634.ttf",
     "static/media/Oxanium-Regular.ttf": "/static/media/Oxanium-Regular.c07e73bb78ad10eb3cdd.ttf",
@@ -23,12 +24,13 @@
     "static/media/rightindent.svg": "/static/media/rightindent.1ff2bc5f76a60613c22c62fdddb98a10.svg",
     "index.html": "/index.html",
     "static/media/arrowDown.svg": "/static/media/arrowDown.46abc7dcc8738c68f78705610ffd9b60.svg",
-    "main.935b5acb.css.map": "/static/css/main.935b5acb.css.map",
-    "main.de824e4c.js.map": "/static/js/main.de824e4c.js.map",
+    "static/media/arrowUp.svg": "/static/media/arrowUp.8761df882c172a219d02b3f6be3e0868.svg",
+    "main.123a3ed0.css.map": "/static/css/main.123a3ed0.css.map",
+    "main.0d585e5c.js.map": "/static/js/main.0d585e5c.js.map",
     "787.cb9fdea6.chunk.js.map": "/static/js/787.cb9fdea6.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.935b5acb.css",
-    "static/js/main.de824e4c.js"
+    "static/css/main.123a3ed0.css",
+    "static/js/main.0d585e5c.js"
   ]
 }

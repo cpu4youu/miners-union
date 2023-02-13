@@ -1,7 +1,20 @@
 import React, { useEffect } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import "./App.css";
-import { GetStarted, Signup, ViewBase, Voting, VotingDetail, Missions } from "./views";
+import {
+  GetStarted,
+  Signup,
+  ViewBase,
+  Voting,
+  VotingDetail,
+  Missions,
+  MissionDetails,
+  Information,
+  Contributions,
+  Proposals,
+  ProposalDetails,
+  CreateProposal,
+} from "./views";
 import { checkLogin } from "./plugins/chain";
 import MissionDetails from "./views/MissionDetails";
 import Information from "./views/Information";
@@ -67,7 +80,8 @@ function App() {
 
   return (
     <>
-      <WalletContext.Provider value={
+
+    <WalletContext.Provider value={
         {wallet: wallet, 
         setWallet: setWallet, 
         loggedIn: loggedIn , 
@@ -75,17 +89,83 @@ function App() {
         claimed: claimed,
         setClaimed: setClaimed,
         }}>
-        <Routes>
-          <Route path="/" element={<GetStarted />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/voting" element={<ViewBase><Voting /></ViewBase>  } />
-          <Route path="/votingdetail" element={<ViewBase><VotingDetail /></ViewBase>  } />
-          <Route path="/missions" element={<ViewBase><Missions /></ViewBase>  } />
-          <Route path="/missiondetails" element={<ViewBase><MissionDetails /></ViewBase>  } />
-          <Route path="/information" element={<ViewBase><Information /></ViewBase>  } />
-        </Routes>
+      <Routes>
+        <Route path="/" element={<GetStarted />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route
+          path="/voting"
+          element={
+            <ViewBase>
+              <Voting />
+            </ViewBase>
+          }
+        />
+        <Route
+          path="/votingdetail"
+          element={
+            <ViewBase>
+              <VotingDetail />
+            </ViewBase>
+          }
+        />
+        <Route
+          path="/missions"
+          element={
+            <ViewBase>
+              <Missions />
+            </ViewBase>
+          }
+        />
+        <Route
+          path="/missiondetails"
+          element={
+            <ViewBase>
+              <MissionDetails />
+            </ViewBase>
+          }
+        />
+        <Route
+          path="/information"
+          element={
+            <ViewBase>
+              <Information />
+            </ViewBase>
+          }
+        />
+        <Route
+          path="/contributions"
+          element={
+            <ViewBase>
+              <Contributions />
+            </ViewBase>
+          }
+        />
+        <Route
+          path="/proposals"
+          element={
+            <ViewBase>
+              <Proposals />
+            </ViewBase>
+          }
+        />
+        <Route
+          path="/proposaldetails"
+          element={
+            <ViewBase>
+              <ProposalDetails />
+            </ViewBase>
+          }
+        />
+        <Route
+          path="/createproposal"
+          element={
+            <ViewBase>
+              <CreateProposal />
+            </ViewBase>
+          }
+        />
+      </Routes>
     </WalletContext.Provider>  
-      
     </>
   );
 }

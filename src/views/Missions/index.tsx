@@ -13,6 +13,7 @@ import {
   useTheme,
   Paper,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import classnames from "classnames";
 
 import { makeStyles } from "@mui/styles";
@@ -70,6 +71,10 @@ function Missions() {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
   const mobile = useMediaQuery(theme.breakpoints.down(705));
+  let navigate = useNavigate();
+  const handleClickMenu = (link: string) => {
+    navigate(link);
+  };
   return (
     <Box display="flex" justifyContent="center" py="48px">
       <Box
@@ -147,7 +152,11 @@ function Missions() {
             </TableHead>
             <TableBody>
               {rows.map((row) => (
-                <TableRow key={row.from}>
+                <TableRow
+                  key={row.from}
+                  sx={{ cursor: "pointer" }}
+                  onClick={() => handleClickMenu("/missiondetails")}
+                >
                   <TableCell
                     component="th"
                     scope="row"
