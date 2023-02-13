@@ -102,6 +102,8 @@ function GetStarted() {
   useEffect(() => {
     async function x() {
       const respond =  await checkLogin()
+      console.log("test")
+      console.log(respond)
       if(respond){
         setWallet(respond)
         setLoggedIn(true)
