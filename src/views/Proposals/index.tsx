@@ -100,7 +100,7 @@ function Proposals() {
           <Box
             display="flex"
             justifyContent="space-between"
-            flexDirection={mobile? "column" : "row"}
+            flexDirection={mobile ? "column" : "row"}
             mb={desktop ? "48px" : "24px"}
           >
             <Typography
@@ -108,7 +108,7 @@ function Proposals() {
               fontSize={desktop ? "40px" : "28px"}
               fontWeight={desktop ? "700" : "500"}
               lineHeight="1.1"
-              pb={mobile? "12px" : "0"}
+              pb={mobile ? "12px" : "0"}
               color="white"
             >
               View Proposals
@@ -117,7 +117,7 @@ function Proposals() {
               py="2px"
               display="flex"
               alignItems="flex-end"
-              width={desktop? "212px" : "152px"}
+              width={desktop ? "212px" : "152px"}
               sx={{
                 textDecoration: "none",
                 borderBottom: "1px solid rgba(255, 255, 255, 0.61)",
