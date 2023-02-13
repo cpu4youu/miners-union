@@ -94,7 +94,7 @@ function GetStarted() {
     const respond = await Login()
     console.log("Test")
     console.log(respond)
-    if(JSON.stringify(respond) ==="{}"){
+    if(JSON.stringify(respond) !=="{}"){
       setWallet(respond);
       setLoggedIn(true)
       setLog(true)
@@ -108,7 +108,7 @@ function GetStarted() {
       const respond =  await checkLogin()
       console.log("Test")
       console.log(JSON.stringify(respond) ==="{}")
-      if(JSON.stringify(respond) ==="{}"){
+      if(JSON.stringify(respond) !=="{}"){
         setWallet(respond)
         setLoggedIn(true)
         setLog(true)
