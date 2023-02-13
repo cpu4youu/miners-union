@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.123a3ed0.css",
-    "main.js": "/static/js/main.04f2f88b.js",
+    "main.js": "/static/js/main.079a0f6c.js",
     "static/js/787.cb9fdea6.chunk.js": "/static/js/787.cb9fdea6.chunk.js",
     "static/media/background.jpg": "/static/media/background.1f735cec8d33dbc68dfe.jpg",
     "static/media/Montserrat-Regular.ttf": "/static/media/Montserrat-Regular.3cd786652b8a2e9d41f2.ttf",
@@ -18,17 +18,17 @@
     "static/media/velesprofile.png": "/static/media/velesprofile.0b31bdc568f4628e71a0.png",
     "static/media/naronprofile.png": "/static/media/naronprofile.b5707a831dde83a43603.png",
     "static/media/margoprofile.png": "/static/media/margoprofile.f12bc759fbb36e64397e.png",
-    "static/media/leftindent.svg": "/static/media/leftindent.1c5240a2ed1ef8d5b3671cbfb0042c05.svg",
-    "static/media/rightindent.svg": "/static/media/rightindent.1ff2bc5f76a60613c22c62fdddb98a10.svg",
+    "static/media/leftindent.svg": "/static/media/leftindent.b1b365e118a04059cadc8fc867c1aee5.svg",
+    "static/media/rightindent.svg": "/static/media/rightindent.10bfa5f7873b9275335c02a426f12ac7.svg",
     "index.html": "/index.html",
-    "static/media/arrowDown.svg": "/static/media/arrowDown.46abc7dcc8738c68f78705610ffd9b60.svg",
-    "static/media/arrowUp.svg": "/static/media/arrowUp.8761df882c172a219d02b3f6be3e0868.svg",
+    "static/media/arrowDown.svg": "/static/media/arrowDown.164f45d5e22968920c65a1d04c83c8f3.svg",
+    "static/media/arrowUp.svg": "/static/media/arrowUp.7dd166014daa413e84fa489ba6180dcf.svg",
     "main.123a3ed0.css.map": "/static/css/main.123a3ed0.css.map",
-    "main.04f2f88b.js.map": "/static/js/main.04f2f88b.js.map",
+    "main.079a0f6c.js.map": "/static/js/main.079a0f6c.js.map",
     "787.cb9fdea6.chunk.js.map": "/static/js/787.cb9fdea6.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.123a3ed0.css",
-    "static/js/main.04f2f88b.js"
+    "static/js/main.079a0f6c.js"
   ]
 }
