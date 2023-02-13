@@ -45,7 +45,8 @@ function GetStarted() {
 
   const handleClickMenu = async (link: string) => {
     if(log){
-      try {
+      if(wallet.name){
+        try {
         const z = await fetchTable({ 
           json: true, 
           code: smartcontract,
@@ -84,6 +85,8 @@ function GetStarted() {
       alert("Please log into your wcw first")
     }
    
+      }
+      
   };
   
   const handleLogin = async () => {
@@ -91,7 +94,7 @@ function GetStarted() {
     const respond = await Login()
     console.log("Test")
     console.log(respond)
-    if(respond){
+    if(JSON.stringify(respond) ==="{}"){
       setWallet(respond);
       setLoggedIn(true)
       setLog(true)
@@ -104,8 +107,8 @@ function GetStarted() {
     async function x() {
       const respond =  await checkLogin()
       console.log("Test")
-      console.log(respond)
-      if(respond){
+      console.log(JSON.stringify(respond) ==="{}")
+      if(JSON.stringify(respond) ==="{}"){
         setWallet(respond)
         setLoggedIn(true)
         setLog(true)
