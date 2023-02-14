@@ -162,6 +162,14 @@ function App() {
             </ViewBase>
           }
         />
+        <Route
+          path="/*"
+          element={
+            <ViewBase>
+              <GetStarted />
+            </ViewBase>
+          }
+        />
       </Routes>
     </WalletContext.Provider>  
     </>
