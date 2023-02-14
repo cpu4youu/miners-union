@@ -1,7 +1,7 @@
 import { Box, Button, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useContext, useEffect, useState } from 'react'
 
-import MagorCombinedIcon from "../../../assets/imgs/magorcombined.png";
+import eyekeprofile from "../../../assets/imgs/eyekeprofile.png";
 import { smartcontract } from "../../../config";
 import { fetchTable } from "../../../plugins/chain";
 
@@ -46,7 +46,7 @@ function EyekeView() {
         display="flex"
         justifyContent="flex-start"
       >
-        <img src={MagorCombinedIcon} alt="" width={mobile? "130px" : "160px"} />
+        <img src={eyekeprofile} alt="" width={mobile? "130px" : "160px"} />
         <Box
           display="flex"
           flexDirection="column"

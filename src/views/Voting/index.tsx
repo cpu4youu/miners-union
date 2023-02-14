@@ -1,7 +1,5 @@
 import {
   Box,
-  Button,
-  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -12,8 +10,6 @@ import EyekeView from "./components/EyekeView";
 import CandidateSpotlight from "./components/CandidateSpotlight";
 import VotePanel from "./components/VotePanel";
 import CandidatePanel from "./components/CandidatePanel";
-import { WalletContext } from "../../App";
-import { useContext} from "react";
 
 
 const useStyles = makeStyles({
@@ -26,7 +22,6 @@ const useStyles = makeStyles({
 });
 
 function Voting() {
-  const {wallet, setWallet, loggedIn, setLoggedIn} = useContext(WalletContext)
   const classes = useStyles();
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));

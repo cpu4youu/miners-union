@@ -49,7 +49,7 @@ export default class WCWWallet {
   }
 
   async transact(packed) {
-    console.log(packed)
+    //console.log(packed)
     try{
       const trans = await this.wax.api.transact(
         packed, {
@@ -66,7 +66,7 @@ export default class WCWWallet {
 
   async fetchTable(packed){
     try{
-      console.log(packed)
+      //console.log(packed)
       const response = this.wax.rpc.get_table_rows(packed);
        return response
     } catch (e) {

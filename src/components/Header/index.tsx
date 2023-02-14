@@ -2,7 +2,6 @@ import {
   AppBar,
   Box,
   Toolbar,
-  Link,
   IconButton,
   Typography,
 } from "@mui/material";
@@ -14,7 +13,7 @@ import MenuLightningIcon from "../../assets/icons/menulightning.png";
 import MenuRocketIcon from "../../assets/icons/menurocket.png";
 import { useContext, useEffect, useState } from "react";
 import { WalletContext } from "../../App";
-import { checkLogin, fetchTable } from "../../plugins/chain";
+import { fetchTable } from "../../plugins/chain";
 import { useNavigate } from "react-router-dom";
 import { smartcontract } from "../../config";
 
@@ -92,8 +91,13 @@ function MenuBoard({ icon, menuTitle, menuText, width, color }: IMenuBoard) {
   );
 }
 
+function getInitialStateWallet() {
+  const wallet = localStorage.getItem('wallet')
+  return wallet ? JSON.parse(wallet) : []
+}
+
 function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
-  const {wallet, setWallet, loggedIn, setLoggedIn,claimed} = useContext(WalletContext)
+  const {wallet, claimed, setWallet} = useContext(WalletContext)
   const [votePower, setVotePower] = useState(0)
   const [tlmPower, setTLMPower] = useState(0)
   const classes = useStyles();
@@ -102,14 +106,21 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
     navigate("/")
   }
   async function updateData(){
+    var name
+    if(wallet.name){
+      name = wallet.name
+    } else {
+      const n = getInitialStateWallet()
+      name = n.name
+    }
     const x = await fetchTable({
       json: true, 
       code: smartcontract,
       scope: smartcontract,
       table: "members",
       limit: 1,
-      lower_bound: wallet.name,
-      upper_bound: wallet.name,
+      lower_bound: name,
+      upper_bound: name,
     })
     const rows = x.rows
     if(rows.length){
@@ -129,6 +140,13 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
       updateData()
     }
   },[wallet.name])
+
+  useEffect(() => {
+    const interval = setInterval(() =>{
+      updateData()
+    }, 5000);
+    return () => (clearInterval(interval))
+  }, [])
 
   return (
     <AppBar position="fixed" className={classes.appBar} elevation={0}>
