@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -8,7 +8,9 @@ import {
   OutlinedInput,
   InputAdornment,
 } from "@mui/material";
-
+import { fetchTable, transaction } from "../../../plugins/chain";
+import { smartcontract } from "../../../config";
+import { WalletContext } from "../../../App";
 import CandidateSelect from "./CandidateSelect";
 
 const listCandidate = ["Naron", "Eyeke", "Kavian"];
@@ -19,10 +21,14 @@ interface IVotePanelProps {
 
 function VotePanel(props: IVotePanelProps) {
   const { desktop } = props;
+  const {wallet, setWallet, loggedIn, setLoggedIn} = useContext(WalletContext)
   const [selectedCandidateOne, setSelectedCandidateOne] = useState("None");
   const [selectedCandidateTwo, setSelectedCandidateTwo] = useState("None");
   const [selectedCandidateThree, setSelectedCandidateThree] = useState("None");
   const [voteAmount, setVoteAmount] = useState<number>(0);
+  const [listCandidate, setCandidates] = useState(["None"])
+  const [candidateAmount, setCandidateAmount] = useState<number>(0)
+  const [voteperCandidate, setVotesperCandidate] = useState<number>(0)
 
   const handleVoteAmountChange = (e: any) => {
     const floatRegExp = new RegExp("([0-9]+([.][0-9]*)?|[.][0-9]+)$");
@@ -42,6 +48,92 @@ function VotePanel(props: IVotePanelProps) {
   const handleMaxValue = () => {
     setVoteAmount(100000);
   };
+
+  const getCandidate = async () => {
+    try {
+      let more = false
+      let next = ""
+      const candi: string[] = []
+      do {
+        const x = await fetchTable({
+          json: true, 
+          code: "dao.worlds",
+          scope: "eyeke",
+          table: "candidates",
+          limit: 10,     
+          lower_bound: next
+      })
+      next = x.next_key
+      more = x.more 
+      x.rows.forEach((value: any, key: any) => {
+        const name: string = value.candidate_name
+        if(value.is_active == 1){
+          candi.push(name)
+        }
+      })
+      } while(more) 
+      
+    return candi
+    }catch(e){
+      alert(e)
+    }
+  };
+
+  const doVote = async () => {
+    const names = []
+    if(selectedCandidateOne != "None") names.push(selectedCandidateOne)
+    if(selectedCandidateTwo != "None") names.push(selectedCandidateTwo)
+    if(selectedCandidateThree != "None") names.push(selectedCandidateThree)
+    if(names.length > 0){
+      const x = await transaction({
+        actions: [{
+          account: smartcontract,
+          name: 'castvote',
+          authorization: [{
+            actor: wallet.name,
+            permission: 'active',
+          }],
+          data: {
+            wallet: wallet.name,
+            new_candidates: names,
+            planet: "eyeke",
+            votes: voteAmount,
+          },
+        }]
+      })
+      if(x){
+        alert(`You succesfully voted`)
+      }
+    }
+  }
+  useEffect(() =>{
+    async function x(){
+      let candi = []
+      const y = await getCandidate()
+      if(y){
+        candi = y
+        setCandidates(candi)
+      }
+    }
+    x()
+  },[])
+
+  useEffect(() =>{
+    let x = 0
+    if(selectedCandidateOne != "None") x += 1;
+    if(selectedCandidateTwo != "None") x += 1;
+    if(selectedCandidateThree != "None")x +=1 ;
+    setCandidateAmount(x)
+  },[selectedCandidateOne,selectedCandidateTwo, selectedCandidateThree, voteAmount])
+
+  useEffect(() =>{
+    const perCandi = voteAmount / candidateAmount
+    if(isNaN(perCandi)){
+      setVotesperCandidate(0)
+    } else {
+      setVotesperCandidate(Number(perCandi.toFixed(2)))
+    }
+  },[candidateAmount, voteAmount])
 
   return (
     <>
@@ -159,6 +251,7 @@ function VotePanel(props: IVotePanelProps) {
         </Box>
       </Box>
       <Button
+        onClick={() => doVote()}
         sx={{
           display: "flex",
           background: "#FFB800",
@@ -183,10 +276,11 @@ function VotePanel(props: IVotePanelProps) {
         textAlign="center"
         style={{ fontFamily: "Oxanium Light" }}
       >
-        33,000 votes per candidate
+         {`${voteperCandidate} votes per candidate`}
       </Typography>
     </>
   );
 }
+
 
 export default VotePanel;

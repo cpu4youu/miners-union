@@ -1,6 +1,10 @@
 import { Box, Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import background from "../../assets/imgs/background.jpg";
+import { useContext, useEffect, useState } from "react";
+import { WalletContext } from "../../App";
+import { fetchTable, transaction, Login } from "../../plugins/chain";
+import { smartcontract } from "../../config";
 
 const backgroundStyle = {
   minHeight: "100vh",
@@ -35,9 +39,118 @@ const Terms = [
 
 function Signup() {
   let navigate = useNavigate();
-  const handleClickMenu = (link: string) => {
-    navigate(link);
-  };
+  const {wallet, setWallet, loggedIn, setLoggedIn} = useContext(WalletContext)
+  const [pending, setPending] = useState(false)
+  const [cost, setCost] = useState("0.0000 TLM")
+  
+  const handleClickMenu = async (link: string) => {
+    try {
+      const x = await fetchTable({
+        json: true, 
+        code: smartcontract,
+        scope: smartcontract,
+        table: "members",
+        limit: 1,
+        lower_bound: wallet.name,
+        upper_bound: wallet.name,
+      })
+      const rows = x.rows
+      if(rows.length){
+        navigate("/voting");
+      }
+    } catch(e){
+      alert(e)
+    }
+  }
+
+  const handleRequest = async () => {
+    try {
+      if(wallet.name == null){
+        await Login()
+        return
+      }
+      const x = await transaction({
+        actions: [{
+          account: 'alien.worlds',
+          name: 'transfer',
+          authorization: [{
+            actor: wallet.name,
+            permission: 'active',
+          }],
+          data: {
+            from: wallet.name,
+            to: smartcontract,
+            quantity: cost,
+            memo: 'signup',
+          },
+        }]
+      })
+      if(x){
+        setPending(true)
+      }
+      setPending(false)
+    } catch(e){
+      setPending(false)
+    }
+  }
+  useEffect(() => {
+    if(wallet.name == null){
+      navigate("/")
+    }
+  })
+
+  useEffect(() => {
+    async function x() {
+      try {
+        const x = await fetchTable({
+          json: true, 
+          code: smartcontract,
+          scope: smartcontract,
+          table: "joinrequests",
+          limit: 1,
+          lower_bound: wallet.name,
+          upper_bound: wallet.name,
+        })
+        const rows1 = x.rows
+        if(rows1.length){
+          setPending(true)
+        } else {
+          setPending(false)
+        }
+
+        const y = await fetchTable({
+            json: true, 
+            code: smartcontract,
+            scope: smartcontract,
+            table: "config",
+            limit: 1,
+            lower_bound: "voting",
+            upper_bound: "voting",
+          })
+        setCost(y.rows[0].signup_cost)
+
+        const z = await fetchTable({
+          json: true, 
+          code: smartcontract,
+          scope: smartcontract,
+          table: "members",
+          limit: 1,
+          lower_bound: wallet.name,
+          upper_bound: wallet.name,
+        })
+        const rows2 = z.rows
+        if(rows2.length){
+          navigate("/voting");
+        }
+
+      } catch(e) {
+        alert(e)
+      }
+    }
+    x()
+
+  })
+  
   return (
     <Box style={backgroundStyle}>
       <Box
@@ -90,7 +203,8 @@ function Signup() {
               </Typography>
             ))}
           </Box>
-          <Button
+          {pending ?
+            <Button
             sx={{
               width: "100%",
               mt: { xs: 3, sm: 4, md: 5, xl: 6 },
@@ -102,10 +216,29 @@ function Signup() {
               fontSize: { xs: "16px", sm: "20px" },
               color: "white",
             }}
-            onClick={() => handleClickMenu("/voting")}
+            onClick={() => {}}
           >
-            SEND JOIN REQUEST (50 TLM)
+            YOUR REQUEST IS PENDING!
+          </Button> 
+          :
+            <Button
+            sx={{
+              width: "100%",
+              mt: { xs: 3, sm: 4, md: 5, xl: 6 },
+              backgroundColor: "#009DF5",
+              "&: hover": { backgroundColor: "#009DF5", opacity: 0.8 },
+              py: "6px",
+              borderRadius: "24px",
+              fontFamily: "Montserrat Medium",
+              fontSize: { xs: "16px", sm: "20px" },
+              color: "white",
+            }}
+            onClick={() => handleRequest()}
+          >
+            {`SEND JOIN REQUEST (${cost})`}
           </Button>
+          }
+          
         </Box>
       </Box>
     </Box>

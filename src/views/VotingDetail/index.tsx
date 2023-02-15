@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import {
   Box,
   Button,
@@ -10,8 +10,10 @@ import {
   useTheme,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { useNavigate } from "react-router-dom";
-
+import { useLocation, useNavigate } from "react-router-dom";
+import { smartcontract } from "../../config";
+import { fetchTable, transaction } from "../../plugins/chain";
+import { WalletContext } from "../../App";
 import CandidateBig from "../../assets/imgs/candidatebig.png";
 import BackButtonIcon from "../../assets/icons/backbutton.png";
 import MargoProfileIcon from "../../assets/imgs/margoprofile.png";
@@ -24,6 +26,15 @@ const useStyles = makeStyles({
 });
 
 function VotingDetail() {
+  const {wallet, setWallet, loggedIn, setLoggedIn} = useContext(WalletContext)
+  const [name, setName] = useState("-")
+  const [img, setImg] = useState("-")
+  const [description, setDescription] = useState("-")
+  const [slogan , setSlogan] = useState("-")
+  const [votes, setVotes] = useState(0)
+
+  const location = useLocation();
+  const wallet_name = location.state.wallet
   const classes = useStyles();
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
@@ -32,6 +43,59 @@ function VotingDetail() {
   const handleClickMenu = (link: string) => {
     navigate(link);
   };
+
+  const handleVote = async () => {
+    const x = await transaction({
+      actions: [{
+        account: smartcontract,
+        name: 'castvote',
+        authorization: [{
+          actor: wallet.name,
+          permission: 'active',
+        }],
+        data: {
+          wallet: wallet.name,
+          new_candidates: [wallet_name],
+          planet: "eyeke",
+          votes: voteAmount,
+        },
+      }]
+    })
+    if(x){
+      alert(`You succesfully voted`)
+    }
+  }
+
+  async function getDate(){
+    const x = await fetchTable({
+      json: true, 
+      code: smartcontract,
+      scope: smartcontract,
+      table: "candprofiles",
+      limit: 1,     
+      lower_bound: wallet_name ,
+      upper_bound: wallet_name 
+    })
+    if(x.rows[0]){
+      setName(x.rows[0].candidate)
+      setImg(x.rows[0].profile_image)
+      setDescription(x.rows[0].description)
+      setSlogan(x.rows[0].slogan)
+    }
+
+    const y = await fetchTable({
+      json: true, 
+      code: smartcontract,
+      scope: smartcontract,
+      table: "ucandidates",
+      limit: 1,     
+      lower_bound: wallet_name ,
+      upper_bound: wallet_name 
+    })
+    if(y.rows[0]){
+      setVotes(y.rows[0].votes)
+    }
+  }
 
   const handleVoteAmountChange = (e: any) => {
     const floatRegExp = new RegExp("([0-9]+([.][0-9]*)?|[.][0-9]+)$");
@@ -52,6 +116,9 @@ function VotingDetail() {
     setVoteAmount(100000);
   };
 
+  useEffect(()=> {
+    getDate()
+  },[])
   return (
     <>
       <Box p={desktop ? "24px 36px" : "16px 0"}>
@@ -83,11 +150,11 @@ function VotingDetail() {
                 color="white"
                 style={{ fontFamily: "Oxanium Medium" }}
               >
-                Timothy
+                {name}
               </Typography>
               <Box position="relative">
                 <img
-                  src={CandidateBig}
+                  src={img}
                   width={desktop ? "120px" : "72px"}
                   alt=""
                 />
@@ -122,7 +189,7 @@ function VotingDetail() {
                     fontFamily: "Oxanium Light",
                   }}
                 >
-                  Power to the Miners Union!
+                 {slogan}
                 </Typography>
               </Box>
             </Box>
@@ -143,7 +210,7 @@ function VotingDetail() {
                 pb="20px"
                 style={{ fontFamily: "Oxanium Light" }}
               >
-                345,984
+                {votes.toString()}
               </Typography>
               <Typography
                 fontSize="12px"
@@ -152,7 +219,7 @@ function VotingDetail() {
                 pb="4px"
                 style={{ fontFamily: "Oxanium Light" }}
               >
-                Vote for Timothy
+                Vote for {name}
               </Typography>
               <FormControl sx={{ flexGrow: "1" }} variant="outlined">
                 <OutlinedInput
@@ -190,6 +257,7 @@ function VotingDetail() {
                 />
               </FormControl>
               <Button
+                onClick={()=> {handleVote()}}
                 sx={{
                   display: "flex",
                   background: "#FFB800",
@@ -232,17 +300,9 @@ function VotingDetail() {
               pb="24px"
               style={{ fontFamily: "Oxanium Light" }}
             >
-              Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-              nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam
-              erat, sed diam voluptua. At vero eos et accusam et justo duo
-              dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
-              sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit
-              amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
-              invidunt ut labore et dolore magna aliquyam erat, sed diam
-              voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
-              Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum
-              dolor sit amet.
-            </Typography>
+              {description}
+              </Typography>
+
           </Box>
         </Box>
       </Box>

@@ -1,11 +1,38 @@
 import { Box, Button, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { useContext, useEffect, useState } from 'react'
 
 import MagorCombinedIcon from "../../../assets/imgs/magorcombined.png";
+import { smartcontract } from "../../../config";
+import { fetchTable } from "../../../plugins/chain";
 
-function MagorView() {
+
+function EyekeView() {
+
+  const [unionPower, setUnionPower] = useState("0 EYE")
+  const [support, setSupport] = useState("0 TLM")
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
   const mobile = useMediaQuery(theme.breakpoints.down(705));
+  async function getData(){
+    const x = await fetchTable({
+      json: true, 
+      code: smartcontract,
+      scope: smartcontract,
+      table: "planets",
+      limit: 1,
+      lower_bound: "eyeke",
+      upper_bound: "eyeke",
+    })
+    const rows = x.rows
+    if(rows.length){
+      setUnionPower(rows[0].token)
+      setSupport(rows[0].voting_tlm)
+    } 
+  }
+
+  useEffect(() =>{
+    getData()
+  },[])
   return (
     <Box>
       <Typography
@@ -13,7 +40,7 @@ function MagorView() {
         color="white"
         style={{fontFamily: "Oxanium Medium", fontSize: mobile? "32px" : "42px"}}
       >
-        Magor
+        Eyeke
       </Typography>
       <Box
         display="flex"
@@ -30,7 +57,7 @@ function MagorView() {
             fontSize="14px"
             style={{fontFamily: "Oxanium Light"}}
           >
-            Union Vote Power: 1,500,000
+            Union Vote Power: {unionPower}
           </Typography>
           <Typography
             color="white"
@@ -38,7 +65,7 @@ function MagorView() {
             paddingTop={mobile? "2px" : "8px"}
             style={{fontFamily: "Oxanium Light"}}
           >
-            Received Support: 600k TLM
+            Received Support: {support}
           </Typography>
         </Box>
       </Box>
@@ -49,4 +76,4 @@ function MagorView() {
 
 }
 
-export default MagorView; 
+export default EyekeView; 

@@ -1,6 +1,13 @@
 import { Box, Button, Typography } from "@mui/material";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { WalletContext } from "../../App";
 import background from "../../assets//imgs/background.jpg";
+import { checkLogin, Login, fetchTable } from "../../plugins/chain";
+import { smartcontract } from "../../config";
+import { sign } from "crypto";
+
+
 
 const backgroundStyle = {
   height: "100vh",
@@ -21,11 +28,114 @@ const authButton = {
   color: "white",
 };
 
+
+
 function GetStarted() {
+  const {wallet, setWallet, loggedIn, setLoggedIn} = useContext(WalletContext)
+  const [log, setLog] = useState(false)
   let navigate = useNavigate();
-  const handleClickMenu = (link: string) => {
-    navigate(link);
+
+  function getInitialState() {
+    const wallet = localStorage.getItem('wallet')
+    return wallet ? JSON.parse(wallet) : []
+  }
+
+  useEffect(() => {
+    localStorage.setItem('wallet', JSON.stringify(wallet))
+  }, [log])
+
+  const handleClickMenu = async (link: string) => {
+    if(log){
+      if(wallet.name){
+        try {
+        const z = await fetchTable({ 
+          json: true, 
+          code: smartcontract,
+          scope: smartcontract,
+          table: "blocklist",
+          limit: 1,
+          lower_bound: wallet.name,
+          upper_bound: wallet.name,
+        })
+        const block = z.rows 
+        console.log(block)
+        if(block.length > 0){
+          alert("Joinrequest denied: Please contact us on Telegram.")
+          return
+        }
+        const x = await fetchTable({
+          json: true, 
+          code: smartcontract,
+          scope: smartcontract,
+          table: "members",
+          limit: 1,
+          lower_bound: wallet.name,
+          upper_bound: wallet.name,
+        })
+        const rows = x.rows
+        if(rows.length){
+          navigate("/voting")
+        } else {
+          navigate(link);
+        }
+      } catch(e){
+        alert(e)
+      }
+      
+    } else {
+      alert("Please log into your wcw first")
+    }
+   }
+      
   };
+  
+  const handleLogin = async () => {
+   
+    const respond = await Login()
+    if(JSON.stringify(respond) !=="{}"){
+      setWallet(respond);
+      setLoggedIn(true)
+      setLog(true)
+      return
+    }
+    setLoggedIn(false)
+  }
+
+  useEffect(() => {
+    async function x() {
+      const respond =  await checkLogin()
+      if(JSON.stringify(respond) !=="{}"){
+        setWallet(respond)
+        setLoggedIn(true)
+        setLog(true)
+        
+      }
+      setLoggedIn(false)
+    }
+    x()
+  }, [log])
+
+  useEffect(() => {
+    async function x(){
+      if(log && wallet.name){
+        const x = await fetchTable({
+          json: true, 
+          code: smartcontract,
+          scope: smartcontract,
+          table: "members",
+          limit: 1,
+          lower_bound: wallet.name,
+          upper_bound: wallet.name,
+        })
+        const rows = x.rows
+        if(rows.length){
+          navigate("/voting")
+        }
+      } 
+    }
+    x()
+  },[wallet, log])
+
   return (
     <Box style={backgroundStyle}>
       <Box>
@@ -58,9 +168,25 @@ function GetStarted() {
             justifyContent: "space-between",
             mt: 5,
           }}
+        >{log
+          ? <Button
+          style={authButton}
+          onClick={() => {handleLogin()}}
+          sx={{
+            width: { xs: "140px", sm: "180px", md: "220px" },
+            py: { xs: "7px", sm: "6px" },
+            fontSize: { xs: "16px", sm: "20px" },
+            backgroundColor: "#FFB800",
+            "&: hover": { backgroundColor: "#FFB800", opacity: 0.8 },
+          }}
         >
-          <Button
+          {//@ts-ignore
+          wallet.name}
+        </Button>
+        :
+        <Button
             style={authButton}
+            onClick={() => {handleLogin()}}
             sx={{
               width: { xs: "140px", sm: "180px", md: "220px" },
               py: { xs: "7px", sm: "6px" },
@@ -70,7 +196,8 @@ function GetStarted() {
             }}
           >
             Login
-          </Button>
+          </Button>}
+          
           <Button
             style={authButton}
             sx={{
