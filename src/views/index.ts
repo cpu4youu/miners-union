@@ -10,3 +10,4 @@ export { default as Contributions } from "./Contributions";
 export { default as Proposals } from "./Proposals";
 export { default as ProposalDetails } from "./ProposalDetails";
 export { default as CreateProposal } from "./CreateProposal";
+export { default as JoinRequests } from "./JoinRequests";

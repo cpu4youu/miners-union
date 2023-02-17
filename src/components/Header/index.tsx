@@ -3,10 +3,14 @@ import {
   Box,
   Toolbar,
   IconButton,
+  useMediaQuery,
+  useTheme,
   Typography,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
+import MenuBoard from "./components/MenuBoard";
+import InfoPopper from "./components/InfoPopper";
 import LeftIndentIcon from "../../assets/icons/leftindent.svg";
 import RightIndentIcon from "../../assets/icons/rightindent.svg";
 import MenuLightningIcon from "../../assets/icons/menulightning.png";
@@ -16,7 +20,6 @@ import { WalletContext } from "../../App";
 import { fetchTable } from "../../plugins/chain";
 import { useNavigate } from "react-router-dom";
 import { smartcontract } from "../../config";
-
 
 const useStyles = makeStyles({
   appBar: {
@@ -100,11 +103,13 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
   const {wallet, claimed, setWallet} = useContext(WalletContext)
   const [votePower, setVotePower] = useState(0)
   const [tlmPower, setTLMPower] = useState(0)
+
   const classes = useStyles();
   let navigate = useNavigate();
-  if(wallet.name === null){
-    navigate("/")
+  if (wallet.name === null) {
+    navigate("/");
   }
+
   async function updateData(){
     var name
     if(wallet.name){
@@ -113,12 +118,15 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
       const n = getInitialStateWallet()
       name = n.name
     }
+
     const x = await fetchTable({
-      json: true, 
+      json: true,
       code: smartcontract,
       scope: smartcontract,
       table: "members",
       limit: 1,
+      
+
       lower_bound: name,
       upper_bound: name,
     })
@@ -127,19 +135,20 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
       setTLMPower(rows[0].tlm_power)
       setVotePower(rows[0].vote_power)
     } 
+
   }
 
-  useEffect(()=> {
-    if(wallet.name){
-      updateData()
+  useEffect(() => {
+    if (wallet.name) {
+      updateData();
     }
-  },[claimed])
+  }, [claimed]);
 
-  useEffect(()=> {
-    if(wallet.name){
-      updateData()
+  useEffect(() => {
+    if (wallet.name) {
+      updateData();
     }
-  },[wallet.name])
+  }, [wallet.name]);
 
   useEffect(() => {
     const interval = setInterval(() =>{
@@ -195,16 +204,25 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
               color="#009DF5"
             />
           </Box>
-          <Typography
-            className={classes.titleText}
-            sx={{
-              display: { xs: "none", sm: "block" },
-              fontFamily: "Montserrat Bold",
-              fontSize: "24px",
-            }}
-          >
-            MINERS UNION
-          </Typography>
+          {!mobile && (
+            <Typography
+              className={classes.titleText}
+              sx={{
+                fontFamily: "Montserrat Bold",
+                fontSize: "24px",
+              }}
+            >
+              MINERS UNION
+            </Typography>
+          )}
+          {mobile && (
+            <InfoPopper
+              MenuLightningIcon={MenuLightningIcon}
+              MenuRocketIcon={MenuRocketIcon}
+              votePower={votePower}
+              tlmPower={tlmPower}
+            />
+          )}
         </Box>
       </Toolbar>
     </AppBar>
