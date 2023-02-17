@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
-import MenuBoard from "./components/MenuBoard";
 import InfoPopper from "./components/InfoPopper";
 import LeftIndentIcon from "../../assets/icons/leftindent.svg";
 import RightIndentIcon from "../../assets/icons/rightindent.svg";
@@ -103,6 +102,8 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
   const {wallet, claimed, setWallet} = useContext(WalletContext)
   const [votePower, setVotePower] = useState(0)
   const [tlmPower, setTLMPower] = useState(0)
+  const theme = useTheme();
+  const mobile = useMediaQuery(theme.breakpoints.down(705));
 
   const classes = useStyles();
   let navigate = useNavigate();
