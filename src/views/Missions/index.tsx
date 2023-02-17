@@ -29,13 +29,22 @@ import { fetchTable } from "../../plugins/chain";
 //import { useCountdown } from "../../plugins/useCountdown";
 
 interface Mission{
-  key: number
+  key: number,
   creator: string,
   endtime: string,
   starttime: string
   reward: string,
   unclaimed: string,
   power: number,
+}
+
+interface Data{
+  key: number,
+  icon: string,
+  from: string,
+  rewards: string,
+  spaceships: number,
+  timeremaining: string,
 }
 
 const useStyles = makeStyles({
@@ -58,10 +67,10 @@ function createData(
   return { key, icon, from, rewards, spaceships, timeremaining };
 }
 
-var rows: any[] = [];
 
 function Missions() {
   const [data, setData] = useState<Mission[]>()
+  const [rows, setRow] = useState<Data[]>([])
   const classes = useStyles();
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
@@ -123,7 +132,7 @@ function Missions() {
 
 
   useEffect(() => {
-    const missions: { icon: string; from: string; rewards: string; spaceships: number; timeremaining: string; }[] = []
+    const missions: Data[] = []
 
     if(data){
       data.map((value) => {
@@ -149,7 +158,7 @@ function Missions() {
           remaining     
           ))
       })
-      rows = missions
+      setRow(missions)
     }
 
   }, [data])
