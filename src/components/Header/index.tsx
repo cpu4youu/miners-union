@@ -4,10 +4,14 @@ import {
   Toolbar,
   Link,
   IconButton,
+  useMediaQuery,
+  useTheme,
   Typography,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
+import MenuBoard from "./components/MenuBoard";
+import InfoPopper from "./components/InfoPopper";
 import LeftIndentIcon from "../../assets/icons/leftindent.svg";
 import RightIndentIcon from "../../assets/icons/rightindent.svg";
 import MenuLightningIcon from "../../assets/icons/menulightning.png";
@@ -17,7 +21,6 @@ import { WalletContext } from "../../App";
 import { checkLogin, fetchTable } from "../../plugins/chain";
 import { useNavigate } from "react-router-dom";
 import { smartcontract } from "../../config";
-
 
 const useStyles = makeStyles({
   appBar: {
@@ -60,75 +63,46 @@ interface IHeader {
   handleDrawerToggle: () => void;
 }
 
-interface IMenuBoard {
-  icon: string;
-  menuTitle: string;
-  menuText: string;
-  width: string;
-  color: string;
-}
-
-function MenuBoard({ icon, menuTitle, menuText, width, color }: IMenuBoard) {
-  return (
-    <Box sx={{ display: "flex", alignItems: "center" }}>
-      <Box>
-        <img alt="" width={width} src={icon} />
-      </Box>
-      <Box sx={{ display: "flex", flexDirection: "column", px: 1 }}>
-        <Typography sx={{ fontFamily: "Montserrat Bold", fontSize: "20px" }}>
-          {menuTitle}
-        </Typography>
-        <Typography
-          sx={{
-            fontFamily: "Montserrat Bold",
-            fontSize: "12px",
-            color: `${color}`,
-          }}
-        >
-          {menuText}
-        </Typography>
-      </Box>
-    </Box>
-  );
-}
-
 function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
-  const {wallet, setWallet, loggedIn, setLoggedIn,claimed} = useContext(WalletContext)
-  const [votePower, setVotePower] = useState(0)
-  const [tlmPower, setTLMPower] = useState(0)
+  const theme = useTheme();
+  const mobile = useMediaQuery(theme.breakpoints.down(705));
+  const { wallet, setWallet, loggedIn, setLoggedIn, claimed } =
+    useContext(WalletContext);
+  const [votePower, setVotePower] = useState(0);
+  const [tlmPower, setTLMPower] = useState(0);
   const classes = useStyles();
   let navigate = useNavigate();
-  if(wallet.name === null){
-    navigate("/")
+  if (wallet.name === null) {
+    navigate("/");
   }
-  async function updateData(){
+  async function updateData() {
     const x = await fetchTable({
-      json: true, 
+      json: true,
       code: smartcontract,
       scope: smartcontract,
       table: "members",
       limit: 1,
       lower_bound: wallet.name,
       upper_bound: wallet.name,
-    })
-    const rows = x.rows
-    if(rows.length){
-      setTLMPower(rows[0].tlm_power)
-      setVotePower(rows[0].vote_power)
-    } 
+    });
+    const rows = x.rows;
+    if (rows.length) {
+      setTLMPower(rows[0].tlm_power);
+      setVotePower(rows[0].vote_power);
+    }
   }
 
-  useEffect(()=> {
-    if(wallet.name){
-      updateData()
+  useEffect(() => {
+    if (wallet.name) {
+      updateData();
     }
-  },[claimed])
+  }, [claimed]);
 
-  useEffect(()=> {
-    if(wallet.name){
-      updateData()
+  useEffect(() => {
+    if (wallet.name) {
+      updateData();
     }
-  },[wallet.name])
+  }, [wallet.name]);
 
   return (
     <AppBar position="fixed" className={classes.appBar} elevation={0}>
@@ -177,16 +151,25 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
               color="#009DF5"
             />
           </Box>
-          <Typography
-            className={classes.titleText}
-            sx={{
-              display: { xs: "none", sm: "block" },
-              fontFamily: "Montserrat Bold",
-              fontSize: "24px",
-            }}
-          >
-            MINERS UNION
-          </Typography>
+          {!mobile && (
+            <Typography
+              className={classes.titleText}
+              sx={{
+                fontFamily: "Montserrat Bold",
+                fontSize: "24px",
+              }}
+            >
+              MINERS UNION
+            </Typography>
+          )}
+          {mobile && (
+            <InfoPopper
+              MenuLightningIcon={MenuLightningIcon}
+              MenuRocketIcon={MenuRocketIcon}
+              votePower={votePower}
+              tlmPower={tlmPower}
+            />
+          )}
         </Box>
       </Toolbar>
     </AppBar>
