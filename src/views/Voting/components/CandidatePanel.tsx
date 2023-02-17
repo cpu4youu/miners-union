@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext, useCallback } from "react";
 import {
   Box,
   Button,
-  Typography,
   Table,
   TableBody,
   TableCell,
@@ -14,25 +13,13 @@ import {
 import { useNavigate } from "react-router-dom";
 
 import CandidateOneIcon from "../../../assets/imgs/candidateone.png";
-import CandidateTwoIcon from "../../../assets/imgs/candidatetwo.png";
-import CandidateThreeIcon from "../../../assets/imgs/candidatethree.png";
 
 import { smartcontract } from "../../../config";
 import { fetchTable } from "../../../plugins/chain";
+import { WalletContext } from "../../../App";
 
 interface ICandidatePanelProps {
   desktop: boolean;
-}
-
-function createData(
-  icon: string,
-  rank: number,
-  candidate: string,
-  wallet: string,
-  votes: number,
-  more: boolean
-) {
-  return { icon, rank, candidate, wallet, votes, more };
 }
 
 interface Data {
@@ -52,14 +39,20 @@ interface candidate{
   more: boolean
 }
 
-/* const rows = [
-  createData(`${CandidateOneIcon}`, 1, "Timothy", "bak2w.wam", 345984),
-  createData(`${CandidateTwoIcon}`, 2, "Nina", "daed2.wam", 234221),
-  createData(`${CandidateThreeIcon}`, 3, "Jürgen", "4u.2a.wam", 165722),
-];
- */
+function createData(
+  icon: string,
+  rank: number,
+  candidate: string,
+  wallet: string,
+  votes: number,
+  more: boolean
+) {
+  return { icon, rank, candidate, wallet, votes, more };
+}
+
 function CandidatePanel(props: ICandidatePanelProps) {
-  const { desktop } = props;
+  const {claimed} = useContext(WalletContext)
+  // const { desktop } = props;
   const [data, setData] = useState(Array<Data>)
   let navigate = useNavigate();
   const handleClickMenu = (link: string, name: string) => {
@@ -86,7 +79,7 @@ function CandidatePanel(props: ICandidatePanelProps) {
       next = x.next_key
       more = x.more 
       x.rows.forEach((value: any, key: any) => {
-        if(value.planet == "eyeke"){
+        if(value.planet === "eyeke"){
           candi.push({name : value.wallet, votes: value.votes, full_name:"-", image: "-", more : false})
         }
       })
@@ -110,12 +103,11 @@ function CandidatePanel(props: ICandidatePanelProps) {
         const name = x.rows[0].candidate
         const image = x.rows[0].profile_image
         candi.map((value, key)=>{
-          if(value.name == wallet){
+          if(value.name === wallet){
             candi[key] = {name: value.name, votes: value.votes, full_name: name, image: image, more: true}
           }
         })
       }while(more)
-    console.log(candi)
     return candi
 
     }catch(e){
@@ -123,7 +115,7 @@ function CandidatePanel(props: ICandidatePanelProps) {
     }
   };
 
-  async function getDate(){
+  const getData = useCallback(async () =>{
     const x: Array<candidate>| undefined = await getCandidate()
     if(x) {
       x.sort(function(a, b){
@@ -136,20 +128,29 @@ function CandidatePanel(props: ICandidatePanelProps) {
       const y: Array<Data>= []
       x.map(async (value, key) =>{
         var img = CandidateOneIcon
-        if(value.image !="-"){
+        if(value.image !=="-"){
           img = value.image
         }
         y.push(createData(`${img}`, key + 1, value.full_name, value.name, value.votes, value.more))
       })
       setData(y)
     }
-  }
+  }, [])
 
-
+  useEffect(() => {
+    const interval = setInterval(() =>{
+      getData()
+    }, 10000);
+    return () => (clearInterval(interval))
+  }, [getData])
 
   useEffect(() =>{
-    getDate()
-  },[])
+    getData()
+  },[getData])
+
+  useEffect(()=> {
+    getData()
+  }, [claimed, getData])
 
   return (
     <>

@@ -14,9 +14,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { smartcontract } from "../../config";
 import { fetchTable, transaction } from "../../plugins/chain";
 import { WalletContext } from "../../App";
-import CandidateBig from "../../assets/imgs/candidatebig.png";
 import BackButtonIcon from "../../assets/icons/backbutton.png";
-import MargoProfileIcon from "../../assets/imgs/margoprofile.png";
+import eyekeprofile from "../../assets/imgs/eyekeprofile.png";
 import DescriptiveLine from "../../assets/icons/descriptiveline.png";
 
 const useStyles = makeStyles({
@@ -159,7 +158,7 @@ function VotingDetail() {
                   alt=""
                 />
                 <img
-                  src={MargoProfileIcon}
+                  src={eyekeprofile}
                   alt=""
                   width={desktop ? "64px" : "40px"}
                   style={{

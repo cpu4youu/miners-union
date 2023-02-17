@@ -1,3 +1,6 @@
+
+import { useCallback, useEffect, useState, useRef } from "react";
+
 import {
   Box,  
   Typography,
@@ -16,9 +19,24 @@ import classnames from "classnames";
 
 import { makeStyles } from "@mui/styles";
 import MagorProfileIcon from "../../assets/imgs/margoprofile.png";
+import Eyeke from "../../assets/imgs/eyekeprofile.png"
 import VelesProfileIcon from "../../assets/imgs/velesprofile.png";
 import NaronProfileIcon from "../../assets/imgs/naronprofile.png";
 import SpaceshipIcon from "../../assets/icons/spaceship.png";
+
+import { smartcontract } from "../../config";
+import { fetchTable } from "../../plugins/chain";
+//import { useCountdown } from "../../plugins/useCountdown";
+
+interface Mission{
+  key: number
+  creator: string,
+  endtime: string,
+  starttime: string
+  reward: string,
+  unclaimed: string,
+  power: number,
+}
 
 const useStyles = makeStyles({
   contentWrapper: {
@@ -30,49 +48,113 @@ const useStyles = makeStyles({
 });
 
 function createData(
+  key: number,
   icon: string,
   from: string,
-  rewards: number,
+  rewards: string,
   spaceships: number,
   timeremaining: string
 ) {
-  return { icon, from, rewards, spaceships, timeremaining };
+  return { key, icon, from, rewards, spaceships, timeremaining };
 }
 
-const rows = [
-  createData(
-    `${MagorProfileIcon}`,
-    "magor.dac",
-    10000,
-    35600,
-    "2d 23h 15m 10s"
-  ),
-  createData(
-    `${MagorProfileIcon}`,
-    "magor.dac",
-    10000,
-    23700,
-    "4d 08h 12m 05s"
-  ),
-  createData(
-    `${VelesProfileIcon}`,
-    "veles.dac",
-    15000,
-    12645,
-    "6d 12h 45m 59s"
-  ),
-  createData(`${NaronProfileIcon}`, "naron.dac", 75000, 6645, "8d 04h 19m 55s"),
-];
+var rows: any[] = [];
 
 function Missions() {
+  const [data, setData] = useState<Mission[]>()
   const classes = useStyles();
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
   const mobile = useMediaQuery(theme.breakpoints.down(705));
   let navigate = useNavigate();
-  const handleClickMenu = (link: string) => {
+  const handleClickMenu = (link: string, row: number) => {
+    console.log(row)
     navigate(link);
   };
+  
+  const getData = useCallback(async () =>{
+    let more = false
+    let next = ""
+    let mission: Array<Mission> = []
+    do {
+      const x = await fetchTable({
+        json: true, 
+        code: smartcontract,
+        scope: smartcontract,
+        table: "tlmdrops",
+        limit: 10,     
+        lower_bound: next
+    })
+    next = x.next_key
+    more = x.more 
+    console.log(x)
+    x.rows.map((value: any, key: number) => {
+      mission.push({
+        key: value.index,
+        creator: value.creator,
+        endtime: value.endtime,
+        starttime: value.starttime,
+        reward: value.rewards,
+        unclaimed: value.total_power,
+        power: value.unclaimed_rewards,
+      })
+    })
+    } while(more) 
+
+    setData(mission)
+  }, [])
+
+  useEffect(() =>{
+    getData()
+   
+  },[getData])
+
+  function secondsToDhms(seconds:number) {
+    var d = Math.floor(seconds / (3600*24));
+    var h = Math.floor(seconds % (3600*24) / 3600);
+    var m = Math.floor(seconds % 3600 / 60);
+    var s = Math.floor(seconds % 60);
+    
+    var dDisplay = d > 0 ? d + (d == 1 ? " day, " : " days, ") : "";
+    var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
+    var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes, ") : "";
+    return dDisplay + " " + hDisplay + " "+ mDisplay;
+  }
+
+
+  useEffect(() => {
+    const missions: { icon: string; from: string; rewards: string; spaceships: number; timeremaining: string; }[] = []
+
+    if(data){
+      data.map((value) => {
+        var remaining = ""
+        var time = new Date(value.endtime).getTime() / 1000
+        var now = new Date().getTime() / 1000
+        var remain = Math.floor(time - now)
+        remain = remain
+        if(remain <= 0){
+          const s = secondsToDhms(remain * -1)
+          remaining = "expired since: \n" + s.substring(0, s.length-2)
+        } else {
+          const s = secondsToDhms(remain )
+          remaining = s.substring(0, s.length-2)
+        }
+        missions.push(
+          createData(
+          value.key,
+          `${Eyeke}`,
+          value.creator,
+          value.reward,
+          value.power,
+          remaining     
+          ))
+      })
+      rows = missions
+    }
+
+  }, [data])
+
+
   return (
     <Box display="flex" justifyContent="center" py="48px">
       <Box
@@ -151,9 +233,9 @@ function Missions() {
             <TableBody>
               {rows.map((row) => (
                 <TableRow
-                  key={row.from}
+                  key={row.key}
                   sx={{ cursor: "pointer" }}
-                  onClick={() => handleClickMenu("/missiondetails")}
+                  onClick={() => handleClickMenu("/missiondetails", row.key)}
                 >
                   <TableCell
                     component="th"
@@ -198,7 +280,7 @@ function Missions() {
                       background: "rgba(255, 255, 255, 0.04)",
                     }}
                   >
-                    {row.rewards} TLM
+                    {row.rewards}
                   </TableCell>
                   <TableCell
                     align="left"

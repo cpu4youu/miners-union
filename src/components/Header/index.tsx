@@ -2,7 +2,6 @@ import {
   AppBar,
   Box,
   Toolbar,
-  Link,
   IconButton,
   useMediaQuery,
   useTheme,
@@ -18,7 +17,7 @@ import MenuLightningIcon from "../../assets/icons/menulightning.png";
 import MenuRocketIcon from "../../assets/icons/menurocket.png";
 import { useContext, useEffect, useState } from "react";
 import { WalletContext } from "../../App";
-import { checkLogin, fetchTable } from "../../plugins/chain";
+import { fetchTable } from "../../plugins/chain";
 import { useNavigate } from "react-router-dom";
 import { smartcontract } from "../../config";
 
@@ -63,33 +62,80 @@ interface IHeader {
   handleDrawerToggle: () => void;
 }
 
+interface IMenuBoard {
+  icon: string;
+  menuTitle: string;
+  menuText: string;
+  width: string;
+  color: string;
+}
+
+function MenuBoard({ icon, menuTitle, menuText, width, color }: IMenuBoard) {
+  return (
+    <Box sx={{ display: "flex", alignItems: "center" }}>
+      <Box>
+        <img alt="" width={width} src={icon} />
+      </Box>
+      <Box sx={{ display: "flex", flexDirection: "column", px: 1 }}>
+        <Typography sx={{ fontFamily: "Montserrat Bold", fontSize: "20px" }}>
+          {menuTitle}
+        </Typography>
+        <Typography
+          sx={{
+            fontFamily: "Montserrat Bold",
+            fontSize: "12px",
+            color: `${color}`,
+          }}
+        >
+          {menuText}
+        </Typography>
+      </Box>
+    </Box>
+  );
+}
+
+function getInitialStateWallet() {
+  const wallet = localStorage.getItem('wallet')
+  return wallet ? JSON.parse(wallet) : []
+}
+
 function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
-  const theme = useTheme();
-  const mobile = useMediaQuery(theme.breakpoints.down(705));
-  const { wallet, setWallet, loggedIn, setLoggedIn, claimed } =
-    useContext(WalletContext);
-  const [votePower, setVotePower] = useState(0);
-  const [tlmPower, setTLMPower] = useState(0);
+  const {wallet, claimed, setWallet} = useContext(WalletContext)
+  const [votePower, setVotePower] = useState(0)
+  const [tlmPower, setTLMPower] = useState(0)
+
   const classes = useStyles();
   let navigate = useNavigate();
   if (wallet.name === null) {
     navigate("/");
   }
-  async function updateData() {
+
+  async function updateData(){
+    var name
+    if(wallet.name){
+      name = wallet.name
+    } else {
+      const n = getInitialStateWallet()
+      name = n.name
+    }
+
     const x = await fetchTable({
       json: true,
       code: smartcontract,
       scope: smartcontract,
       table: "members",
       limit: 1,
-      lower_bound: wallet.name,
-      upper_bound: wallet.name,
-    });
-    const rows = x.rows;
-    if (rows.length) {
-      setTLMPower(rows[0].tlm_power);
-      setVotePower(rows[0].vote_power);
-    }
+      
+
+      lower_bound: name,
+      upper_bound: name,
+    })
+    const rows = x.rows
+    if(rows.length){
+      setTLMPower(rows[0].tlm_power)
+      setVotePower(rows[0].vote_power)
+    } 
+
   }
 
   useEffect(() => {
@@ -103,6 +149,13 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
       updateData();
     }
   }, [wallet.name]);
+
+  useEffect(() => {
+    const interval = setInterval(() =>{
+      updateData()
+    }, 5000);
+    return () => (clearInterval(interval))
+  }, [])
 
   return (
     <AppBar position="fixed" className={classes.appBar} elevation={0}>
