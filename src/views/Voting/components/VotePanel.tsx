@@ -60,7 +60,7 @@ function VotePanel(props: IVotePanelProps) {
           code: "dao.worlds",
           scope: "eyeke",
           table: "candidates",
-          limit: 10,     
+          limit: 100,     
           lower_bound: next
       })
       next = x.next_key

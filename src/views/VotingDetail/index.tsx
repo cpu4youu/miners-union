@@ -18,6 +18,15 @@ import BackButtonIcon from "../../assets/icons/backbutton.png";
 import eyekeprofile from "../../assets/imgs/eyekeprofile.png";
 import DescriptiveLine from "../../assets/icons/descriptiveline.png";
 
+interface IData{
+  key: number,
+  icon: string,
+  from: string,
+  rewards: string,
+  spaceships: number,
+  timeremaining: string,
+}
+
 const useStyles = makeStyles({
   contentWrapper: {
     width: "1000px",
@@ -25,7 +34,7 @@ const useStyles = makeStyles({
 });
 
 function VotingDetail() {
-  const {wallet, setWallet, loggedIn, setLoggedIn} = useContext(WalletContext)
+  const {wallet} = useContext(WalletContext)
   const [name, setName] = useState("-")
   const [img, setImg] = useState("-")
   const [description, setDescription] = useState("-")
