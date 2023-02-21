@@ -18,7 +18,7 @@ import { WalletContext } from "../../App";
 import { smartcontract } from "../../config";
 
 import { makeStyles } from "@mui/styles";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 
 interface IRequest{
   key: number,
@@ -44,8 +44,11 @@ function JoinRequests() {
   const mobile = useMediaQuery(theme.breakpoints.down(705));
 
   const [rows, setRows] = useState<IRequest[]>([])
+  const [, updateState] = useState();
+  //@ts-ignore
+  const forceUpdate = useCallback(() => updateState({}), []);
   
-  const handleApprove = async(name: string) => {
+  const handleApprove = async(name: string, key: number) => {
     try{
       await checkLogin()
       const r = await transaction({
@@ -63,6 +66,11 @@ function JoinRequests() {
         }]
       })
       if(r){
+        const y = rows
+        y.splice(key, 1)
+        console.log(y)
+        setRows(y)
+        forceUpdate()
         alert(`Approved ${name}!`)
       }
     }catch(e){
@@ -70,7 +78,7 @@ function JoinRequests() {
     }
   }
 
-  const handleDeny = async(name: string) => {
+  const handleDeny = async(name: string, key: number) => {
     try{
       let reason = prompt('Reason for rejection')
       await checkLogin()
@@ -90,12 +98,18 @@ function JoinRequests() {
         }]
       })
       if(r){
+        const y = rows
+        y.splice(key, 1)
+        console.log(y)
+        setRows(y)
+        forceUpdate()
         alert(`Denied ${name}!`)
       }
     }catch(e){
       alert(e)
     }
   }
+
 
   useEffect(() => {
     async function x(){
@@ -235,7 +249,7 @@ function JoinRequests() {
                     >
                       <Button
                         onClick={()=> {
-                          handleApprove(row.wallet)
+                          handleApprove(row.wallet, row.key)
                         }}
                         sx={{
                           px: "32px",
@@ -256,7 +270,7 @@ function JoinRequests() {
                       </Button>
                       <Button
                        onClick={()=> {
-                        handleDeny(row.wallet)
+                        handleDeny(row.wallet, row.key)
                       }}
                         sx={{
                           px: "32px",
