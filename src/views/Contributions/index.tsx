@@ -198,7 +198,7 @@ function Contributions() {
                         alignItems="center"
                         justifyContent="center"
                       >
-                        <img src={velesprofile} alt="" width={row.rank > 3 ? 72 : 60} />
+                        {/* <img src={velesprofile} alt="" width={row.rank < 3 ? 72 : 60} /> */}
                       </Box>
                     </TableCell>
                     <TableCell
