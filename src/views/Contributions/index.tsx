@@ -13,12 +13,13 @@ import {
 import { makeStyles } from "@mui/styles";
 import classnames from "classnames";
 
-import margoprofile from "../../assets/imgs/margoprofile.png";
 import velesprofile from "../../assets/imgs/velesprofile.png";
-import naronprofile from "../../assets/imgs/naronprofile.png";
-import contributorone from "../../assets/imgs/contributorone.png";
-import contributortwo from "../../assets/imgs/contributortwo.png";
-import contributorthree from "../../assets/imgs/contributorthree.png";
+
+
+import { fetchTable} from "../../plugins/chain";
+import { useEffect, useState } from "react";
+import { smartcontract } from "../../config";
+
 
 const useStyles = makeStyles({
   contentWrapper: {
@@ -29,30 +30,74 @@ const useStyles = makeStyles({
   },
 });
 
-function createData(
-  rank: number,
-  icon: string,
-  contributor: string,
-  totalcontribution: number,
-  iconSize: number
-) {
-  return { rank, icon, contributor, totalcontribution, iconSize };
+interface IUser{
+  key: number,
+  name:string,
+  votes: string
 }
 
-const rows = [
-  createData(1, `${margoprofile}`, "magor.dac", 100000, 72),
-  createData(2, `${velesprofile}`, "veles.dac", 90000, 60),
-  createData(3, `${naronprofile}`, "naron.dac", 75000, 60),
-  createData(4, `${contributorone}`, "332ab.wam", 5000, 40),
-  createData(5, `${contributortwo}`, "ag32a.wam", 3000, 40),
-  createData(6, `${contributorthree}`, "4tc.e.wam", 2200, 40),
-];
+interface IRanking{
+  rank: number,
+  name: string,
+  contribution: string,
+}
+
+function createData(
+  rank: number,
+  name: string,
+  contribution: string,
+) {
+  return { rank, name, contribution };
+}
 
 function Contributions() {
   const classes = useStyles();
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
   const mobile = useMediaQuery(theme.breakpoints.down(705));
+
+  const [rows, setRows] = useState<IRanking[]>([])
+
+  useEffect(() => {
+    async function x (){
+      let more = false
+      let next = ""
+      var voters: Array<IUser> = []
+      do {
+        const x = await fetchTable({
+          json: true, 
+          code: smartcontract,
+          scope: smartcontract,
+          table: "contribution",
+          limit: 100,     
+          lower_bound: next
+      })
+      next = x.next_key
+      more = x.more 
+      x.rows.map((value: any, key: any) => {
+        voters.push({
+          key: key,
+          name: value.wallet,
+          votes: value.votes
+        })
+      })
+      } while(more) 
+      voters.sort(function(a, b){
+        var keyA = Number(a.votes.slice(0, -4))
+        var keyB = Number(b.votes.slice(0, -4))
+        if(keyA < keyB) return 1;
+        if(keyA > keyB) return -1;
+        return 0
+      })
+      const rankes = voters.slice(0, 99);
+      const y: Array<IRanking> = []
+      rankes.map((value) => {
+        y.push(createData(value.key, value.name, value.votes))
+      })
+      setRows(y)
+    }
+    x()
+  }, [])
 
   return (
     <>
@@ -136,7 +181,7 @@ function Contributions() {
                         background: "rgba(255, 255, 255, 0.04)",
                       }}
                     >
-                      {row.rank}
+                      {row.rank + 1}
                     </TableCell>
                     <TableCell
                       scope="row"
@@ -153,7 +198,7 @@ function Contributions() {
                         alignItems="center"
                         justifyContent="center"
                       >
-                        <img src={row.icon} alt="" width={row.iconSize} />
+                        <img src={velesprofile} alt="" width={row.rank > 3 ? 72 : 60} />
                       </Box>
                     </TableCell>
                     <TableCell
@@ -168,7 +213,7 @@ function Contributions() {
                         background: "rgba(255, 255, 255, 0.04)",
                       }}
                     >
-                      {row.contributor}
+                      {row?.name}
                     </TableCell>
                     <TableCell
                       align="center"
@@ -185,7 +230,7 @@ function Contributions() {
                         background: "rgba(255, 255, 255, 0.04)",
                       }}
                     >
-                      {row.totalcontribution} TLM
+                      {row.contribution}
                     </TableCell>
                   </TableRow>
                 ))}

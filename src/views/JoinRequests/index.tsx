@@ -13,8 +13,12 @@ import {
   Paper,
 } from "@mui/material";
 import classnames from "classnames";
+import { fetchTable, checkLogin, transaction } from "../../plugins/chain";
+import { WalletContext } from "../../App";
+import { smartcontract } from "../../config";
 
 import { makeStyles } from "@mui/styles";
+import { useContext, useEffect } from "react";
 
 const useStyles = makeStyles({
   contentWrapper: {
@@ -44,11 +48,31 @@ const rows = [
 ];
 
 function JoinRequests() {
+  const {wallet} = useContext(WalletContext);
   const classes = useStyles();
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
   const mobile = useMediaQuery(theme.breakpoints.down(705));
   
+  useEffect(() => {
+    async function x(){
+      console.log("Test")
+      await checkLogin()
+      const r = await fetchTable({
+        json: true, 
+        code: smartcontract,
+        scope: smartcontract,
+        table: "joinrequests",
+        limit: 100
+      })
+      r.rows.map((value: any) => {
+        
+      })
+
+    }
+    x()
+  }, [])
+
   return (
     <Box display="flex" justifyContent="center" py="48px">
       <Box
