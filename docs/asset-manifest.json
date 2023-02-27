@@ -1,0 +1,35 @@
+{
+  "files": {
+    "main.css": "/static/css/main.18b445df.css",
+    "main.js": "/static/js/main.1552c258.js",
+    "static/js/787.cb9fdea6.chunk.js": "/static/js/787.cb9fdea6.chunk.js",
+    "static/media/background.jpg": "/static/media/background.1f735cec8d33dbc68dfe.jpg",
+    "static/media/Montserrat-Regular.ttf": "/static/media/Montserrat-Regular.3cd786652b8a2e9d41f2.ttf",
+    "static/media/Montserrat-Bold.ttf": "/static/media/Montserrat-Bold.079ca05d3ded9bc107ab.ttf",
+    "static/media/Montserrat-SemiBold.ttf": "/static/media/Montserrat-SemiBold.fa8441f345d83a0bc4ec.ttf",
+    "static/media/Montserrat-Medium.ttf": "/static/media/Montserrat-Medium.e2d60bc49517598c0ce8.ttf",
+    "static/media/Montserrat-Light.ttf": "/static/media/Montserrat-Light.02afb26fe72fcc052988.ttf",
+    "static/media/eyekeprofile.png": "/static/media/eyekeprofile.50c41d447755fa662c94.png",
+    "static/media/CourierPrime-Regular.ttf": "/static/media/CourierPrime-Regular.68d89efc577d345bf1f4.ttf",
+    "static/media/candidatebig.png": "/static/media/candidatebig.09cda83a3bb1c9d906a3.png",
+    "static/media/Oxanium-Light.ttf": "/static/media/Oxanium-Light.5a9ee94dc731d17a6d2f.ttf",
+    "static/media/Oxanium-Medium.ttf": "/static/media/Oxanium-Medium.5fbc0c6d3f3943599634.ttf",
+    "static/media/Oxanium-Regular.ttf": "/static/media/Oxanium-Regular.c07e73bb78ad10eb3cdd.ttf",
+    "static/media/Oxanium-Bold.ttf": "/static/media/Oxanium-Bold.2f17c0033e703c53e0c6.ttf",
+    "static/media/velesprofile.png": "/static/media/velesprofile.0b31bdc568f4628e71a0.png",
+    "static/media/naronprofile.png": "/static/media/naronprofile.b5707a831dde83a43603.png",
+    "static/media/margoprofile.png": "/static/media/margoprofile.f12bc759fbb36e64397e.png",
+    "static/media/leftindent.svg": "/static/media/leftindent.1c5240a2ed1ef8d5b3671cbfb0042c05.svg",
+    "static/media/rightindent.svg": "/static/media/rightindent.1ff2bc5f76a60613c22c62fdddb98a10.svg",
+    "index.html": "/index.html",
+    "static/media/arrowDown.svg": "/static/media/arrowDown.46abc7dcc8738c68f78705610ffd9b60.svg",
+    "static/media/arrowUp.svg": "/static/media/arrowUp.8761df882c172a219d02b3f6be3e0868.svg",
+    "main.18b445df.css.map": "/static/css/main.18b445df.css.map",
+    "main.1552c258.js.map": "/static/js/main.1552c258.js.map",
+    "787.cb9fdea6.chunk.js.map": "/static/js/787.cb9fdea6.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.18b445df.css",
+    "static/js/main.1552c258.js"
+  ]
+}

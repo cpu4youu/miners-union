@@ -16,6 +16,7 @@ import {
   ProposalDetails,
   CreateProposal,
   JoinRequests,
+  CandidateScreen,
 } from "./views";
 import { checkLogin } from "./plugins/chain";
 
@@ -169,6 +170,14 @@ function App() {
           element={
             <ViewBase>
               <JoinRequests />          
+            </ViewBase>
+          }
+        />
+        <Route
+          path="/candidatescreen"
+          element={
+            <ViewBase>
+              <CandidateScreen />          
             </ViewBase>
           }
         />

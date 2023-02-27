@@ -1,8 +1,8 @@
-
 import { useCallback, useEffect, useState, useRef } from "react";
 
 import {
-  Box,  
+  Box,
+  Button,
   Typography,
   Table,
   TableBody,
@@ -19,7 +19,7 @@ import classnames from "classnames";
 
 import { makeStyles } from "@mui/styles";
 import MagorProfileIcon from "../../assets/imgs/margoprofile.png";
-import Eyeke from "../../assets/imgs/eyekeprofile.png"
+import Eyeke from "../../assets/imgs/eyekeprofile.png";
 import VelesProfileIcon from "../../assets/imgs/velesprofile.png";
 import NaronProfileIcon from "../../assets/imgs/naronprofile.png";
 import SpaceshipIcon from "../../assets/icons/spaceship.png";
@@ -67,8 +67,8 @@ function createData(
   return { key, icon, from, rewards, spaceships, timeremaining };
 }
 
-
 function Missions() {
+
   const [data, setData] = useState<IMission[]>([])
   const [rows, setRow] = useState<IData[]>([])
   const classes = useStyles();
@@ -95,16 +95,16 @@ function Missions() {
     let mission: Array<IMission> = []
     do {
       const x = await fetchTable({
-        json: true, 
+        json: true,
         code: smartcontract,
         scope: smartcontract,
         table: "tlmdrops",
         limit: 100,     
         lower_bound: next
-    })
-    next = x.next_key
-    more = x.more 
-    console.log(x)
+    });
+    next = x.next_key;
+    more = x.more;
+    console.log(x);
     x.rows.map((value: any, key: number) => {
       mission.push({
         key: value.index,
@@ -114,63 +114,60 @@ function Missions() {
         reward: value.rewards,
         unclaimed: value.total_power,
         power: value.total_power,
-      })
-    })
+      });
+    });
     } while(more) 
 
-    setData(mission)
-  }, [])
+    setData(mission);
+  }, []);
 
-  useEffect(() =>{
-    getData()
-   
-  },[getData])
+  useEffect(() => {
+    getData();
+  }, [getData]);
 
-  function secondsToDhms(seconds:number) {
-    var d = Math.floor(seconds / (3600*24));
-    var h = Math.floor(seconds % (3600*24) / 3600);
-    var m = Math.floor(seconds % 3600 / 60);
+  function secondsToDhms(seconds: number) {
+    var d = Math.floor(seconds / (3600 * 24));
+    var h = Math.floor((seconds % (3600 * 24)) / 3600);
+    var m = Math.floor((seconds % 3600) / 60);
     var s = Math.floor(seconds % 60);
-    
+
     var dDisplay = d > 0 ? d + (d == 1 ? " day, " : " days, ") : "";
     var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
     var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes, ") : "";
-    return dDisplay + " " + hDisplay + " "+ mDisplay;
+    return dDisplay + " " + hDisplay + " " + mDisplay;
   }
-
 
   useEffect(() => {
     const missions: IData[] = []
 
-    if(data){
+    if (data) {
       data.map((value) => {
-        var remaining = ""
-        var time = new Date(value.endtime).getTime() / 1000
-        var now = new Date().getTime() / 1000
-        var remain = Math.floor(time - now)
-        remain = remain
+        var remaining = "";
+        var time = new Date(value.endtime).getTime() / 1000;
+        var now = new Date().getTime() / 1000;
+        var remain = Math.floor(time - now);
+        remain = remain;
         if(remain <= 0){
-          const s = secondsToDhms(remain * -1)
-          remaining = "expired" //since: \n + s.substring(0, s.length-2)
+          const s = secondsToDhms(remain * -1);
+          remaining = "expired" //since: \n + s.substring(0, s.length-2);
         } else {
-          const s = secondsToDhms(remain )
-          remaining = s.substring(0, s.length-2)
+          const s = secondsToDhms(remain);
+          remaining = s.substring(0, s.length - 2);
         }
         missions.push(
           createData(
-          value.key,
-          `${Eyeke}`,
-          value.creator,
-          value.reward,
-          value.power,
-          remaining     
-          ))
-      })
-      setRow(missions)
+            value.key,
+            `${Eyeke}`,
+            value.creator,
+            value.reward,
+            value.power,
+            remaining
+          )
+        );
+      });
+      setRow(missions);
     }
-
-  }, [data])
-
+  }, [data]);
 
   return (
     <Box display="flex" justifyContent="center" py="48px">
@@ -180,6 +177,31 @@ function Missions() {
           mobile ? classes.mobileWrapper : ""
         )}
       >
+        <Box
+          display="flex"
+          justifyContent="flex-end"
+        >
+        <Button
+          sx={{
+            display: "flex",
+            background: "#009DF5",
+            width: "180px",
+            borderRadius: "20px",
+            textAlign: "center",
+            height: "38px",            
+            textTransform: "none",
+            color: "white",
+            lineHeight: "0",
+            fontSize: "18px",
+            fontFamily: "Oxanium Medium",
+            mt: "6px",
+            alignItems: "center",
+            "&: hover": { opacity: "0.9", background: "#009DF5" },
+          }}
+        >
+          Claim Rewards
+        </Button>
+        </Box>
         <TableContainer
           component={Paper}
           sx={{ background: "transparent", boxShadow: "none" }}
