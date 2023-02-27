@@ -11,7 +11,7 @@ import {
   Paper,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-
+import isEqual from 'lodash.isequal';
 import CandidateOneIcon from "../../../assets/imgs/candidateone.png";
 
 import { smartcontract } from "../../../config";
@@ -22,7 +22,7 @@ interface ICandidatePanelProps {
   desktop: boolean;
 }
 
-interface Data {
+interface IData {
   icon: string,
   rank: number,
   candidate: string,
@@ -31,12 +31,24 @@ interface Data {
   more: boolean
 }
 
-interface candidate{
+interface ICandidate{
   name: string
   votes: number
   full_name: string
   image: string
   more: boolean
+}
+
+interface IProfile{
+  avg_vote_time_stamp : string,
+  candidate_name : string,
+  gap_filler : number,
+  is_active: boolean,
+  number_voters : number,
+  rank : number,
+  requestedpay : string
+  running_weight_time : string
+  total_vote_power: number,
 }
 
 function createData(
@@ -50,10 +62,12 @@ function createData(
   return { icon, rank, candidate, wallet, votes, more };
 }
 
+var old: Array<IData>= []
+
 function CandidatePanel(props: ICandidatePanelProps) {
   const {claimed} = useContext(WalletContext)
-  // const { desktop } = props;
-  const [data, setData] = useState(Array<Data>)
+  const { desktop } = props;
+  const [data, setData] = useState(Array<IData>)
   let navigate = useNavigate();
   const handleClickMenu = (link: string, name: string) => {
     navigate(link, {
@@ -66,7 +80,7 @@ function CandidatePanel(props: ICandidatePanelProps) {
     try {
       let more = false
       let next = ""
-      let candi: Array<candidate> = []
+      let candi: Array<ICandidate> = []
       do {
         const x = await fetchTable({
           json: true, 
@@ -116,7 +130,7 @@ function CandidatePanel(props: ICandidatePanelProps) {
   };
 
   const getData = useCallback(async () =>{
-    const x: Array<candidate>| undefined = await getCandidate()
+    const x: Array<ICandidate>| undefined = await getCandidate()
     if(x) {
       x.sort(function(a, b){
         var keyA = a.votes
@@ -125,7 +139,7 @@ function CandidatePanel(props: ICandidatePanelProps) {
         if(keyA > keyB) return -1;
         return 0
       })
-      const y: Array<Data>= []
+      const y: Array<IData>= []
       x.map(async (value, key) =>{
         var img = CandidateOneIcon
         if(value.image !=="-"){
@@ -133,7 +147,11 @@ function CandidatePanel(props: ICandidatePanelProps) {
         }
         y.push(createData(`${img}`, key + 1, value.full_name, value.name, value.votes, value.more))
       })
-      setData(y)
+      
+      if(!isEqual(y, old)){
+        setData(y)
+        old = y
+      }
     }
   }, [])
 
@@ -148,9 +166,43 @@ function CandidatePanel(props: ICandidatePanelProps) {
     getData()
   },[getData])
 
-  useEffect(()=> {
-    getData()
-  }, [claimed, getData])
+ /*  useEffect(() => {
+    async function x(){
+      try {
+        let more = false
+        let next = ""
+        var profiles: Array<IProfile> = []
+        var dataold: Array<IData>= data
+        do{
+          const x = await fetchTable({
+            json: true, 
+            code: "dao.worlds",
+            scope: "eyeke",
+            table: "candidates",
+            limit: 100,
+            lower_bound: next,
+            upper_bound: next,
+          })
+          next = x.next_key
+          more = x.more
+          x.rows.map((value: IProfile) =>{
+            profiles.push(value)
+          })
+        }while(more)
+       profiles.sort(compare) 
+       data.map((value, key) => {
+        profiles.map((prof, rank)=> {
+          if(value.wallet === prof.candidate_name){
+            console.log(dataold[key])
+          }
+        })
+       })
+      } catch(e){
+      alert(e)
+    }
+  }
+    x()
+  }, [data]) */
 
   return (
     <>
@@ -341,5 +393,18 @@ function CandidatePanel(props: ICandidatePanelProps) {
     </>
   );
 }
+
+function compare( a: IProfile, b: IProfile ) {
+  var x = Number(a.total_vote_power)
+  var y = Number(b.total_vote_power)
+  if ( x < y){
+    return 1;
+  }
+  if ( x > y ){
+    return -1;
+  }
+  return 0;
+}
+
 
 export default CandidatePanel;

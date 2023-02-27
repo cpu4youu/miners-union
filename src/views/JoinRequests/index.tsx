@@ -13,8 +13,18 @@ import {
   Paper,
 } from "@mui/material";
 import classnames from "classnames";
+import { fetchTable, checkLogin, transaction } from "../../plugins/chain";
+import { WalletContext } from "../../App";
+import { smartcontract } from "../../config";
 
 import { makeStyles } from "@mui/styles";
+import { useCallback, useContext, useEffect, useState } from "react";
+
+interface IRequest{
+  key: number,
+  timestamp: string,
+  wallet: string
+}
 
 const useStyles = makeStyles({
   contentWrapper: {
@@ -25,30 +35,113 @@ const useStyles = makeStyles({
   },
 });
 
-function createData(
-  request: string,
-  submit: string,  
-) {
-  return { request, submit };
-}
-
-const rows = [
-  createData(
-    "3adsb.wam",
-    "23/01/2023 07:56AM",
-  ),
-  createData(
-    "wasit.wam",
-    "23/01/2023 07:59AM",
-  ),  
-];
 
 function JoinRequests() {
+  const {wallet} = useContext(WalletContext);
   const classes = useStyles();
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
   const mobile = useMediaQuery(theme.breakpoints.down(705));
+
+  const [rows, setRows] = useState<IRequest[]>([])
+  const [, updateState] = useState();
+  //@ts-ignore
+  const forceUpdate = useCallback(() => updateState({}), []);
   
+  const handleApprove = async(name: string, key: number) => {
+    try{
+      await checkLogin()
+      const r = await transaction({
+        actions: [{
+          account: smartcontract,
+          name: 'approvejoin',
+          authorization: [{
+            actor: wallet.name,
+            permission: 'active',
+          }],
+          data: {
+            wallet: wallet.name,
+            request_wallet: name
+          },
+        }]
+      })
+      if(r){
+        const y = rows
+        y.splice(key, 1)
+        console.log(y)
+        setRows(y)
+        forceUpdate()
+        alert(`Approved ${name}!`)
+      }
+    }catch(e){
+      alert(e)
+    }
+  }
+
+  const handleDeny = async(name: string, key: number) => {
+    try{
+      let reason = prompt('Reason for rejection')
+      await checkLogin()
+      const r = await transaction({
+        actions: [{
+          account: smartcontract,
+          name: 'denyjoin',
+          authorization: [{
+            actor: wallet.name,
+            permission: 'active',
+          }],
+          data: {
+            wallet: wallet.name,
+            request_wallet: name,
+            reason: reason?.toString()
+          },
+        }]
+      })
+      if(r){
+        const y = rows
+        y.splice(key, 1)
+        console.log(y)
+        setRows(y)
+        forceUpdate()
+        alert(`Denied ${name}!`)
+      }
+    }catch(e){
+      alert(e)
+    }
+  }
+
+
+  useEffect(() => {
+    async function x(){
+      try{  
+        var requests: Array<IRequest> = []
+        await checkLogin()
+        const r = await fetchTable({
+          json: true, 
+          code: smartcontract,
+          scope: smartcontract,
+          table: "joinrequests",
+          limit: 100
+        })
+        r.rows.map((value: any, key: number) => {
+          const y1 = new Date(value.timestamp).toISOString().split("T")[0]
+          const y2 = new Date(value.timestamp).toTimeString().split(" ")[0]
+          console.log(y1, y2)
+          requests.push({
+            key: key,
+            timestamp: y1 + " " + y2,
+            wallet: value.wallet
+          })
+        })
+        setRows(requests)
+
+      }catch(e){
+        alert(e)
+      }
+    }
+    x()
+  }, [])
+
   return (
     <Box display="flex" justifyContent="center" py="48px">
       <Box
@@ -103,7 +196,7 @@ function JoinRequests() {
             <TableBody>
               {rows.map((row) => (
                 <TableRow
-                  key={row.request}                  
+                  key={row?.key}                  
                 >
                   <TableCell
                     align="left"
@@ -119,7 +212,7 @@ function JoinRequests() {
                       background: "rgba(255, 255, 255, 0.04)",
                     }}
                   >
-                    {row.request}
+                    {row?.wallet}
                   </TableCell>
                   <TableCell
                     align="left"
@@ -133,7 +226,7 @@ function JoinRequests() {
                       background: "rgba(255, 255, 255, 0.04)",
                     }}
                   >
-                    {row.submit}
+                    {row?.timestamp}
                   </TableCell>   
                   <TableCell
                     align="right"
@@ -155,6 +248,9 @@ function JoinRequests() {
                       justifyContent="flex-end"
                     >
                       <Button
+                        onClick={()=> {
+                          handleApprove(row.wallet, row.key)
+                        }}
                         sx={{
                           px: "32px",
                           py: "4px",
@@ -174,6 +270,9 @@ function JoinRequests() {
                         Approve
                       </Button>
                       <Button
+                       onClick={()=> {
+                        handleDeny(row.wallet, row.key)
+                      }}
                         sx={{
                           px: "32px",
                           py: "4px",

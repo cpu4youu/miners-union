@@ -19,7 +19,9 @@
     "anchor-link": "^3.5.1",
     "anchor-link-browser-transport": "^3.5.1",
     "classnames": "^2.3.2",
+    "deep-equal": "^2.2.0",
     "eosjs": "^22.1.0",
+    "lodash.isequal": "^4.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.7.0",
@@ -52,5 +54,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/lodash.isequal": "^4.5.6"
   }
 }

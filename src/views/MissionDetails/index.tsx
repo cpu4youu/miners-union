@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import {
   Box,
   Button,
@@ -10,10 +10,23 @@ import {
   useTheme,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import velesprofile from "../../assets/imgs/velesprofile.png";
 import rocket from "../../assets/imgs/rocket.png";
 import BackButtonIcon from "../../assets/icons/backbutton.png";
+import { fetchTable, checkLogin, transaction } from "../../plugins/chain";
+import { WalletContext } from "../../App";
+import { smartcontract } from "../../config";
+
+interface IMission{
+  key: number,
+  creator: string,
+  endtime: string,
+  starttime: string
+  reward: string,
+  unclaimed: string,
+  power: number,
+}
 
 const useStyles = makeStyles({
   contentWrapper: {
@@ -25,14 +38,47 @@ const useStyles = makeStyles({
 });
 
 function MissionDetails() {
+  const {wallet} = useContext(WalletContext)
+  const [data, setData] = useState<IMission>()
+  const [time, setTime] = useState<string>("0")
+  const [bid, setBid] = useState<string>("0")
+  const [rewardship, setRewardShip] = useState<string>("0")
   const classes = useStyles();
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
+  const location = useLocation();
   let navigate = useNavigate();
   const [Amount, setAmount] = useState<number>(0);
   const handleClickMenu = (link: string) => {
     navigate(link);
   };
+
+  const doBid = async() => {
+    try {
+      if(Amount > 0 && wallet.name){
+        const x = await transaction({
+          actions: [{
+            account: smartcontract,
+            name: 'tlmbid',
+            authorization: [{
+              actor: wallet.name,
+              permission: 'active',
+            }],
+            data: {
+              wallet : wallet.name,
+              pool_index: data?.key,
+              tlm_power: Amount
+            },
+          }]
+        })
+        if(x){
+          alert(`You succesfully send ${Amount} Spaceships on this mission`)
+        }
+      }
+    } catch(e) {
+      alert(e)
+    }
+  }
 
   const handleAmountChange = (e: any) => {
     const floatRegExp = new RegExp("([0-9]+([.][0-9]*)?|[.][0-9]+)$");
@@ -42,7 +88,6 @@ function MissionDetails() {
       if (dotRegExp.test(e.target.value)) {
         setAmount(filteredValue);
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         filteredValue = Math.floor(filteredValue * 1000) / 1000;
         setAmount(filteredValue);
       }
@@ -52,6 +97,51 @@ function MissionDetails() {
   const handleMaxValue = () => {
     setAmount(100000);
   };
+
+  useEffect(() => {
+    checkLogin()
+    if(location.state){
+      const data: IMission = location.state.Data
+      var rewardps: string
+      const tlm = Number(data.reward.slice(0, -4))
+      rewardps = (tlm / data.power).toFixed(6).toString()
+      setRewardShip(rewardps)
+      setData(data)
+      setTime(location.state.time)
+    } else {
+       navigate('/missions')
+    }
+  },[])
+
+  useEffect(()=> {
+    async function x(){
+      if(wallet.chainId && data){
+        console.log("Test")
+        let more = false
+        let next = ""
+        do {
+          const x = await fetchTable({
+            json: true, 
+            code: smartcontract,
+            scope: smartcontract,
+            table: "tlmbids",
+            limit: 100,     
+            lower_bound: next
+        })
+        next = x.next_key
+        more = x.more 
+        x.rows.map((value:any) =>{
+          console.log(value)
+          if(value.pool_index === data.key && value.wallet === wallet.name){
+            setBid(value.total_bid.toString())
+          }
+        })
+        } while(more) 
+      }
+    }
+    x()
+  
+  },[wallet])
 
   return (
     <>
@@ -90,7 +180,7 @@ function MissionDetails() {
                 color="white"
                 style={{ fontFamily: "Oxanium Medium" }}
               >
-                2d 23h 15m 10s
+                {time}
               </Typography>
               <Typography
                 fontSize={desktop ? "24px" : "20px"}
@@ -100,7 +190,7 @@ function MissionDetails() {
                 color="#FFB800"
                 pt="64px"
               >
-                100,000 TLM
+                {data?.reward}
               </Typography>
             </Box>
             <Box>
@@ -111,7 +201,7 @@ function MissionDetails() {
                 lineHeight="45px"
                 color="white"
               >
-                veles.dac
+                {data?.creator}
               </Typography>
               <Box
                 component="img"
@@ -145,7 +235,7 @@ function MissionDetails() {
                 fontWeight="400"
                 lineHeight="25px"
               >
-                35,600 spacecraft are being sent on this mission
+                {`${data?.power} spacecraft are being sent on this mission`}
               </Typography>
               <Typography
                 pt="8px"
@@ -154,8 +244,8 @@ function MissionDetails() {
                 fontWeight="400"
                 lineHeight="25px"
               >
-                2.80 TLM would be paid out per spacecraft if the drop ended
-                right now
+                {`${rewardship} TLM would be paid out per spacecraft if the drop ended
+                right now`} 
               </Typography>
               <Typography
                 pt="34px"
@@ -173,7 +263,7 @@ function MissionDetails() {
                 fontWeight="400"
                 lineHeight="25px"
               >
-                500 spacecraft are being sent on this mission by you
+                {`${bid} spacecraft are being sent on this mission by you`}
               </Typography>
               <Typography
                 pt="8px"
@@ -182,7 +272,7 @@ function MissionDetails() {
                 fontWeight="400"
                 lineHeight="25px"
               >
-                1,400 TLM would be yours if the drop ended right now
+                {`${Number(rewardship) * Number(bid)} TLM would be yours if the drop ended right now`}
               </Typography>
             </Box>
           </Box>
@@ -233,6 +323,7 @@ function MissionDetails() {
                 />
               </FormControl>
               <Button
+                onClick={()=>{doBid()}}
                 sx={{
                   display: "flex",
                   background: "#009DF5",

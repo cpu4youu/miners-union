@@ -28,23 +28,23 @@ import { smartcontract } from "../../config";
 import { fetchTable } from "../../plugins/chain";
 //import { useCountdown } from "../../plugins/useCountdown";
 
-interface Mission {
-  key: number;
-  creator: string;
-  endtime: string;
-  starttime: string;
-  reward: string;
-  unclaimed: string;
-  power: number;
+interface IMission{
+  key: number,
+  creator: string,
+  endtime: string,
+  starttime: string
+  reward: string,
+  unclaimed: string,
+  power: number,
 }
 
-interface Data {
-  key: number;
-  icon: string;
-  from: string;
-  rewards: string;
-  spaceships: number;
-  timeremaining: string;
+interface IData{
+  key: number,
+  icon: string,
+  from: string,
+  rewards: string,
+  spaceships: number,
+  timeremaining: string,
 }
 
 const useStyles = makeStyles({
@@ -68,46 +68,55 @@ function createData(
 }
 
 function Missions() {
-  const [data, setData] = useState<Mission[]>();
-  const [rows, setRow] = useState<Data[]>([]);
+
+  const [data, setData] = useState<IMission[]>([])
+  const [rows, setRow] = useState<IData[]>([])
   const classes = useStyles();
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
   const mobile = useMediaQuery(theme.breakpoints.down(705));
   let navigate = useNavigate();
-  const handleClickMenu = (link: string, row: number) => {
-    console.log(row);
-    navigate(link);
+  const handleClickMenu = (link: string, key: number) => {
+    if(data[key]){
+      navigate(link, {
+        state: {
+          Data : data[key],
+          time: rows[key].timeremaining
+        },
+        replace: true,
+      });
+    }
+    
   };
-
-  const getData = useCallback(async () => {
-    let more = false;
-    let next = "";
-    let mission: Array<Mission> = [];
+  
+  const getData = useCallback(async () =>{
+    let more = false
+    let next = ""
+    let mission: Array<IMission> = []
     do {
       const x = await fetchTable({
         json: true,
         code: smartcontract,
         scope: smartcontract,
         table: "tlmdrops",
-        limit: 10,
-        lower_bound: next,
+        limit: 100,     
+        lower_bound: next
+    });
+    next = x.next_key;
+    more = x.more;
+    console.log(x);
+    x.rows.map((value: any, key: number) => {
+      mission.push({
+        key: value.index,
+        creator: value.creator,
+        endtime: value.endtime,
+        starttime: value.starttime,
+        reward: value.rewards,
+        unclaimed: value.total_power,
+        power: value.total_power,
       });
-      next = x.next_key;
-      more = x.more;
-      console.log(x);
-      x.rows.map((value: any, key: number) => {
-        mission.push({
-          key: value.index,
-          creator: value.creator,
-          endtime: value.endtime,
-          starttime: value.starttime,
-          reward: value.rewards,
-          unclaimed: value.total_power,
-          power: value.unclaimed_rewards,
-        });
-      });
-    } while (more);
+    });
+    } while(more) 
 
     setData(mission);
   }, []);
@@ -129,7 +138,7 @@ function Missions() {
   }
 
   useEffect(() => {
-    const missions: Data[] = [];
+    const missions: IData[] = []
 
     if (data) {
       data.map((value) => {
@@ -138,9 +147,9 @@ function Missions() {
         var now = new Date().getTime() / 1000;
         var remain = Math.floor(time - now);
         remain = remain;
-        if (remain <= 0) {
+        if(remain <= 0){
           const s = secondsToDhms(remain * -1);
-          remaining = "expired since: \n" + s.substring(0, s.length - 2);
+          remaining = "expired" //since: \n + s.substring(0, s.length-2);
         } else {
           const s = secondsToDhms(remain);
           remaining = s.substring(0, s.length - 2);
