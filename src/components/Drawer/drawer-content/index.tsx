@@ -55,6 +55,12 @@ const LinkButtonData = [
     darkIcon: DrawerContributionsBlackIcon,
     text: "Contributions",
   },
+  {
+    link: "/joinrequests",
+    whiteIcon: DrawerProposalsIcon,
+    darkIcon: DrawerProposalsBlackIcon,
+    text: "Application",
+  },
 ];
 
 interface INavContent {

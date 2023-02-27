@@ -264,6 +264,7 @@ function JoinRequests() {
                           borderRadius: "20px",
                           textTransform: "none",
                           background: "#FFB800",
+                          '&: hover' : {background: "#FFB800"},
                         }}                        
                       >
                         Approve
@@ -284,6 +285,7 @@ function JoinRequests() {
                           borderRadius: "20px",
                           textTransform: "none",
                           background: "#BA0000",
+                          '&: hover' : {background: "#BA0000"},
                         }}                        
                       >
                         Deny

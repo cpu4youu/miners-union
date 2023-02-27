@@ -3,11 +3,14 @@ import {
   Box,
   Toolbar,
   IconButton,
+  Link,
   useMediaQuery,
   useTheme,
   Typography,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+
+import { NavLink } from "react-router-dom";
 
 import InfoPopper from "./components/InfoPopper";
 import LeftIndentIcon from "../../assets/icons/leftindent.svg";
@@ -94,15 +97,16 @@ function MenuBoard({ icon, menuTitle, menuText, width, color }: IMenuBoard) {
 }
 
 function getInitialStateWallet() {
-  const wallet = localStorage.getItem('wallet')
-  return wallet ? JSON.parse(wallet) : []
+  const wallet = localStorage.getItem("wallet");
+  return wallet ? JSON.parse(wallet) : [];
 }
 
 function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
-  const {wallet, claimed, setWallet} = useContext(WalletContext)
-  const [votePower, setVotePower] = useState(0)
-  const [tlmPower, setTLMPower] = useState(0)
+  const { wallet, claimed, setWallet } = useContext(WalletContext);
+  const [votePower, setVotePower] = useState(0);
+  const [tlmPower, setTLMPower] = useState(0);
   const theme = useTheme();
+  const desktop = useMediaQuery(theme.breakpoints.up(1048));
   const mobile = useMediaQuery(theme.breakpoints.down(705));
 
   const classes = useStyles();
@@ -111,13 +115,13 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
     navigate("/");
   }
 
-  async function updateData(){
-    var name
-    if(wallet.name){
-      name = wallet.name
+  async function updateData() {
+    var name;
+    if (wallet.name) {
+      name = wallet.name;
     } else {
-      const n = getInitialStateWallet()
-      name = n.name
+      const n = getInitialStateWallet();
+      name = n.name;
     }
 
     const x = await fetchTable({
@@ -126,17 +130,15 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
       scope: smartcontract,
       table: "members",
       limit: 1,
-      
 
       lower_bound: name,
       upper_bound: name,
-    })
-    const rows = x.rows
-    if(rows.length){
-      setTLMPower(rows[0].tlm_power)
-      setVotePower(rows[0].vote_power)
-    } 
-
+    });
+    const rows = x.rows;
+    if (rows.length) {
+      setTLMPower(rows[0].tlm_power);
+      setVotePower(rows[0].vote_power);
+    }
   }
 
   useEffect(() => {
@@ -152,11 +154,11 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
   }, [wallet.name]);
 
   useEffect(() => {
-    const interval = setInterval(() =>{
-      updateData()
+    const interval = setInterval(() => {
+      updateData();
     }, 5000);
-    return () => (clearInterval(interval))
-  }, [])
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <AppBar position="fixed" className={classes.appBar} elevation={0}>
@@ -177,15 +179,17 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
             alignItems: "center",
           }}
         >
-          <Typography
-            className={classes.addressText}
-            sx={{ fontFamily: "Montserrat Light", fontSize: "20px" }}
-          >
-            {wallet.name}
-          </Typography>
+          <Link component={NavLink} to="/candidatescreen" sx={{textDecoration: "none"}}>
+            <Typography
+              className={classes.addressText}
+              sx={{ fontFamily: "Montserrat Light", fontSize: "20px" }}
+            >
+              {wallet.name}
+            </Typography>
+          </Link>
           <Box
             sx={{
-              display: { xs: "none", md: "flex" },
+              display: desktop ? "flex" : "none",
               justifyContent: "space-between",
               width: "300px",
             }}
@@ -205,7 +209,7 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
               color="#009DF5"
             />
           </Box>
-          {!mobile && (
+          {desktop && (
             <Typography
               className={classes.titleText}
               sx={{
@@ -216,7 +220,7 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
               MINERS UNION
             </Typography>
           )}
-          {mobile && (
+          {!desktop && (
             <InfoPopper
               MenuLightningIcon={MenuLightningIcon}
               MenuRocketIcon={MenuRocketIcon}

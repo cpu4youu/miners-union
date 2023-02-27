@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState, useRef, useContext } from "react";
 
 import {
-  Box,  
+  Box,
   Typography,
   Table,
   TableBody,
@@ -20,7 +20,7 @@ import classnames from "classnames";
 
 import { makeStyles } from "@mui/styles";
 import MagorProfileIcon from "../../assets/imgs/margoprofile.png";
-import Eyeke from "../../assets/imgs/eyekeprofile.png"
+import Eyeke from "../../assets/imgs/eyekeprofile.png";
 import VelesProfileIcon from "../../assets/imgs/velesprofile.png";
 import NaronProfileIcon from "../../assets/imgs/naronprofile.png";
 import SpaceshipIcon from "../../assets/icons/spaceship.png";
@@ -67,7 +67,6 @@ function createData(
 ) {
   return { key, icon, from, rewards, spaceships, timeremaining };
 }
-
 
 function Missions() {
   const {wallet} = useContext(WalletContext)
@@ -118,16 +117,16 @@ function Missions() {
     let mission: Array<IMission> = []
     do {
       const x = await fetchTable({
-        json: true, 
+        json: true,
         code: smartcontract,
         scope: smartcontract,
         table: "tlmdrops",
         limit: 100,     
         lower_bound: next
-    })
-    next = x.next_key
-    more = x.more 
-    console.log(x)
+    });
+    next = x.next_key;
+    more = x.more;
+    console.log(x);
     x.rows.map((value: any, key: number) => {
       mission.push({
         key: value.index,
@@ -137,30 +136,28 @@ function Missions() {
         reward: value.rewards,
         unclaimed: value.total_power,
         power: value.total_power,
-      })
-    })
+      });
+    });
     } while(more) 
 
-    setData(mission)
-  }, [])
+    setData(mission);
+  }, []);
 
-  useEffect(() =>{
-    getData()
-   
-  },[getData])
+  useEffect(() => {
+    getData();
+  }, [getData]);
 
-  function secondsToDhms(seconds:number) {
-    var d = Math.floor(seconds / (3600*24));
-    var h = Math.floor(seconds % (3600*24) / 3600);
-    var m = Math.floor(seconds % 3600 / 60);
+  function secondsToDhms(seconds: number) {
+    var d = Math.floor(seconds / (3600 * 24));
+    var h = Math.floor((seconds % (3600 * 24)) / 3600);
+    var m = Math.floor((seconds % 3600) / 60);
     var s = Math.floor(seconds % 60);
-    
+
     var dDisplay = d > 0 ? d + (d == 1 ? " day, " : " days, ") : "";
     var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
     var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes, ") : "";
-    return dDisplay + " " + hDisplay + " "+ mDisplay;
+    return dDisplay + " " + hDisplay + " " + mDisplay;
   }
-
 
   useEffect(() => {
     const missions: IData[] = []
@@ -204,9 +201,7 @@ function Missions() {
       })
       setRow(missions)
     }
-
-  }, [data])
-
+  }, [data]);
 
   return (
     <Box display="flex" justifyContent="center" py="48px">
