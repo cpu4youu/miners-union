@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useState, useRef } from "react";
+
+import { useCallback, useEffect, useState, useRef, useContext } from "react";
 
 import {
   Box,
-  Button,
   Typography,
   Table,
   TableBody,
@@ -13,6 +13,7 @@ import {
   useMediaQuery,
   useTheme,
   Paper,
+  Button,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import classnames from "classnames";
@@ -25,8 +26,8 @@ import NaronProfileIcon from "../../assets/imgs/naronprofile.png";
 import SpaceshipIcon from "../../assets/icons/spaceship.png";
 
 import { smartcontract } from "../../config";
-import { fetchTable } from "../../plugins/chain";
-//import { useCountdown } from "../../plugins/useCountdown";
+import { fetchTable, transaction } from "../../plugins/chain";
+import { WalletContext } from "../../App";
 
 interface IMission{
   key: number,
@@ -68,7 +69,7 @@ function createData(
 }
 
 function Missions() {
-
+  const {wallet} = useContext(WalletContext)
   const [data, setData] = useState<IMission[]>([])
   const [rows, setRow] = useState<IData[]>([])
   const classes = useStyles();
@@ -88,6 +89,27 @@ function Missions() {
     }
     
   };
+
+  const handleClaim = async () => {
+    if(wallet != null){
+      const x = await transaction({
+        actions: [{
+          account: smartcontract,
+          name: "claimtlm",
+          authorization: [{
+            actor: wallet.name,
+            permission: 'active',
+          }],
+          data: {
+            wallet: wallet.name,
+          },
+        }]
+      })
+      if(x){  
+        alert("Succesfully claimed Mission")
+      }
+    }
+  }
   
   const getData = useCallback(async () =>{
     let more = false
@@ -140,32 +162,44 @@ function Missions() {
   useEffect(() => {
     const missions: IData[] = []
 
-    if (data) {
-      data.map((value) => {
-        var remaining = "";
-        var time = new Date(value.endtime).getTime() / 1000;
-        var now = new Date().getTime() / 1000;
-        var remain = Math.floor(time - now);
-        remain = remain;
-        if(remain <= 0){
-          const s = secondsToDhms(remain * -1);
-          remaining = "expired" //since: \n + s.substring(0, s.length-2);
-        } else {
-          const s = secondsToDhms(remain);
-          remaining = s.substring(0, s.length - 2);
-        }
-        missions.push(
-          createData(
+    if(data){
+      data.slice(0).reverse().map((value, key) => {
+        var remaining = ""
+        var time = new Date(value.endtime).getTime() / 1000
+        var test = new Date().toISOString().replace('Z', '')
+        var now = new Date(test).getTime() / 1000 
+        var remain = Math.floor(time - now)
+
+        if(remain > 0){
+          const s = secondsToDhms(remain )
+          remaining = s.substring(0, s.length-2)
+          missions.push(
+            createData(
             value.key,
             `${Eyeke}`,
             value.creator,
             value.reward,
             value.power,
-            remaining
-          )
-        );
-      });
-      setRow(missions);
+            remaining     
+          ))
+          
+        } else {
+          if (key < 15){
+            remaining = "expired" //since: \n + s.substring(0, s.length-2)
+            missions.push(
+              createData(
+              value.key,
+              `${Eyeke}`,
+              value.creator,
+              value.reward,
+              value.power,
+              remaining     
+            ))
+          }
+        }
+        
+      })
+      setRow(missions)
     }
   }, [data]);
 
@@ -182,6 +216,7 @@ function Missions() {
           justifyContent="flex-end"
         >
         <Button
+          onClick={handleClaim}
           sx={{
             display: "flex",
             background: "#009DF5",
