@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
   Box,
   Button,
@@ -20,6 +20,7 @@ import velesprofile from "../../assets/imgs/velesprofile.png";
 import rocket from "../../assets/imgs/rocket.png";
 import BackButtonIcon from "../../assets/icons/backbutton.png";
 import PlanetSelect from "./components/PlanetSelect";
+import { WalletContext } from "../../App";
 
 const useStyles = makeStyles({
   contentWrapper: {
@@ -27,11 +28,12 @@ const useStyles = makeStyles({
   },
 });
 
-const listPlanet = ["Planet1", "Planet2"];
+const listPlanet = ["Eyeke"];
 
 function Information() {
-  const [selectedPlanet, setSelectedPlanet] = useState("None");
-  const [proposer, setProposer] = useState("tdxa3.wam");
+  const {wallet} = useContext(WalletContext)
+  const [selectedPlanet, setSelectedPlanet] = useState("Eyeke");
+  const [proposer, setProposer] = useState(wallet.name ? wallet.name : "Enter your wallet");
   const [title, setTitle] = useState("Miners Union: Add Voti...");
   const [memo, setMemo] = useState("Adding Vote Power to the Miners Union");
   const [description, setDescription] = useState(
@@ -62,6 +64,11 @@ function Information() {
   const handleDescriptionChange = (e: any) => {
     setDescription(e.target.value);
   };
+
+  const handleSubmit = async () => {
+    const response = window.confirm("Are you sure you want to submit this?");
+    console.log(response);
+  }
 
   return (
     <>
@@ -225,6 +232,7 @@ function Information() {
               </FormControl>
             </Box>
             <IconButton
+              onClick={handleSubmit}
               sx={{ mt: desktop ? 2 : 2 }}
               aria-label="send"
               size="large"

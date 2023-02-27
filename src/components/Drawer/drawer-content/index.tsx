@@ -64,7 +64,7 @@ interface INavContent {
 
 function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
   const [isActive] = useState();
-  const {wallet, setWallet, loggedIn, setLoggedIn, claimed, setClaimed} = useContext(WalletContext)
+  const {wallet, setClaimed} = useContext(WalletContext)
 
   const HandleClaim = async () => {
     if(wallet != null){
