@@ -79,6 +79,7 @@ function Missions() {
   let navigate = useNavigate();
   const handleClickMenu = (link: string, key: number) => {
     if(data[key]){
+      console.log(key)
       navigate(link, {
         state: {
           Data : data[key],
@@ -175,7 +176,7 @@ function Missions() {
           remaining = s.substring(0, s.length-2)
           missions.push(
             createData(
-            value.key,
+            key,
             `${Eyeke}`,
             value.creator,
             value.reward,
@@ -188,7 +189,7 @@ function Missions() {
             remaining = "expired" //since: \n + s.substring(0, s.length-2)
             missions.push(
               createData(
-              value.key,
+              key,
               `${Eyeke}`,
               value.creator,
               value.reward,
