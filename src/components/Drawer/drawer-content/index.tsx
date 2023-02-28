@@ -164,7 +164,9 @@ function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
               {mobileOpen && <p>Logout</p>}
             </div>
           </Link>
-          <a href="https://t.me/minersunion" target="_blank"
+          {/*
+          <a href="https://t.me/minersunion" 
+             target="_blank"
           >
             <div
               className={classnames(
@@ -183,11 +185,11 @@ function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
               {mobileOpen && <p>Telegram</p>}
             </div>
           </a>
+          */}
           <Link
             component={NavLink}
             // TODO: Need to link to external page here
             to="https://t.me/minersunion"
-            target="_blank"
             // isActive={(match, location) => {
             //     return checkPage(location, "home");
             // }}
