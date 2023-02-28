@@ -31,24 +31,24 @@ const LinkButtonData = [
     darkIcon: DrawerVotingBlackIcon,
     text: "Voting",
   },
-  {
-    link: "/missions",
-    whiteIcon: DrawerMissionsIcon,
-    darkIcon: DrawerMissionsBlackIcon,
-    text: "Missions",
-  },
+  // {
+  //   link: "/missions",
+  //   whiteIcon: DrawerMissionsIcon,
+  //   darkIcon: DrawerMissionsBlackIcon,
+  //   text: "Missions",
+  // },
   {
     link: "/information",
     whiteIcon: DrawerInformationIcon,
     darkIcon: DrawerInformationBlackIcon,
     text: "Information",
   },
-  {
-    link: "/proposals",
-    whiteIcon: DrawerProposalsIcon,
-    darkIcon: DrawerProposalsBlackIcon,
-    text: "Proposals",
-  },
+  // {
+  //   link: "/proposals",
+  //   whiteIcon: DrawerProposalsIcon,
+  //   darkIcon: DrawerProposalsBlackIcon,
+  //   text: "Proposals",
+  // },
   {
     link: "/contributions",
     whiteIcon: DrawerContributionsIcon,
@@ -186,7 +186,7 @@ function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
             </div>
           </a>
           */}
-          <Link
+          {/*<Link
             component={NavLink}
             // TODO: Need to link to external page here
             to="https://t.me/minersunion"
@@ -211,7 +211,7 @@ function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
               />
               {mobileOpen && <p>Telegram</p>}
             </div>
-          </Link>
+          </Link>*/}
         </div>
       </div>
     </div>
