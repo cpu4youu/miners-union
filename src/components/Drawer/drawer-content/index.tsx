@@ -168,6 +168,7 @@ function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
             component={NavLink}
             // TODO: Need to link to external page here
             to="https://t.me/minersunion"
+            target="_blank"
             // isActive={(match, location) => {
             //     return checkPage(location, "home");
             // }}
