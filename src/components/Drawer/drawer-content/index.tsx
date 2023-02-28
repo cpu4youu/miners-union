@@ -164,6 +164,25 @@ function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
               {mobileOpen && <p>Logout</p>}
             </div>
           </Link>
+          <a href="https://t.me/minersunion" target="_blank"
+          >
+            <div
+              className={classnames(
+                "telegram-menu-item",
+                mobileOpen ? "telegram-menu-item-desktop" : ""
+              )}
+            >
+              <img
+                alt=""
+                src={DrawerTelegramIcon}
+                style={{
+                  marginRight: mobileOpen ? 10 : 0,
+                  marginLeft: mobileOpen ? 50 : 10,
+                }}
+              />
+              {mobileOpen && <p>Telegram</p>}
+            </div>
+          </a>
           <Link
             component={NavLink}
             // TODO: Need to link to external page here
