@@ -125,7 +125,7 @@ function Information() {
             lineHeight="20px"
           >
             We have compiled all the information about the Miners Union 
-            in a gitbook, which can be found <a href="https://info.minersunion.io/">HERE</a>.
+            in a gitbook, which can be found <a href="https://info.minersunion.io/" target="_blank">HERE</a>.
           </Typography>
         </Box>
       </Box>
