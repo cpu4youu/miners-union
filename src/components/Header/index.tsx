@@ -143,7 +143,7 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
 
 
 
-      const date_string = rows[0].last_vote
+      const date_string = rows[0].last_vote + 'Z'
       const last_vote_date = new Date(date_string)
 
       // console.log(last_vote_date.getTime());
