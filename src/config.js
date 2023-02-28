@@ -34,4 +34,5 @@ export const networks = {
     }
 }
 
-export const smartcontract= "uniontester1"
+// export const smartcontract= "uniontester1"
+export const smartcontract= "hq.mu"

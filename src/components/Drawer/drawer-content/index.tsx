@@ -166,7 +166,7 @@ function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
           </Link>
           <Link
             component={NavLink}
-            to="/telegram"
+            to="https://t.me/minersunion"
             // isActive={(match, location) => {
             //     return checkPage(location, "home");
             // }}
