@@ -86,7 +86,7 @@ function CandidatePanel(props: ICandidatePanelProps) {
           json: true, 
           code: smartcontract,
           scope: smartcontract,
-          table: "ucandidates",
+          table: "candidates",
           limit: 10,     
           lower_bound: next
       })
