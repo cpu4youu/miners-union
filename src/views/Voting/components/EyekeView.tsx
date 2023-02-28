@@ -25,7 +25,8 @@ function EyekeView() {
     })
     const rows = x.rows
     if(rows.length){
-      setUnionPower(rows[0].token)
+      setUnionPower(rows[0].voting_tlm)
+      // TODO: need to change Support to show how much eyeke.dac contributed to MU
       setSupport(rows[0].voting_tlm)
     } 
   }
