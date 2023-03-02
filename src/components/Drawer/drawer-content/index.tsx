@@ -135,7 +135,7 @@ function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
           json: true,
           code: smartcontract,
           scope: smartcontract,
-          table: "inspector",
+          table: "inspectors",
           limit: 1,
           lower_bound: wallet.name,
           upper_bound: wallet.name,
