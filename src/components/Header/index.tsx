@@ -160,6 +160,29 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    async function z(){
+    try {
+      const x = await fetchTable({
+        json: true, 
+        code: smartcontract,
+        scope: smartcontract,
+        table: "members",
+        limit: 1,
+        lower_bound: wallet.name,
+        upper_bound: wallet.name,
+      })
+      const rows = x.rows
+      if(x.rows.length === 0 ){
+        navigate("/")
+      } 
+    } catch(e){
+      console.log("Something went wrong")
+    }
+  }
+  z()
+  }, [])
+
   return (
     <AppBar position="fixed" className={classes.appBar} elevation={0}>
       <Toolbar disableGutters className={classes.dappTopbar}>

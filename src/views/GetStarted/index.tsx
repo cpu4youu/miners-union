@@ -45,6 +45,7 @@ function GetStarted() {
   }, [log])
 
   const handleClickMenu = async (link: string) => {
+    console.log(wallet)
     if(log){
       if(wallet.name){
         try {
@@ -60,7 +61,7 @@ function GetStarted() {
         const block = z.rows 
         console.log(block)
         if(block.length > 0){
-          alert("Joinrequest denied: Please contact us on Telegram.")
+          alert("Joinrequest denied: Please contact us on Telegram or discord.")
           return
         }
         const x = await fetchTable({
@@ -72,12 +73,13 @@ function GetStarted() {
           lower_bound: wallet.name,
           upper_bound: wallet.name,
         })
-        const rows = x.rows
-        if(rows.length){
-          navigate("/voting")
-        } else {
+        if(x.rows.length === 0){
           navigate(link);
-        }
+        } else {
+          if(x.rows[0].wallet === wallet.name){
+            navigate("/voting")
+          } 
+        } 
       } catch(e){
         alert(e)
       }
@@ -165,13 +167,13 @@ function GetStarted() {
         <Box
           sx={{
             display: "flex",
-            justifyContent: "space-between",
+            justifyContent: "center",
             mt: 5,
           }}
         >{log
           ? <Button
           style={authButton}
-          onClick={() => {handleLogin()}}
+          onClick={() => {handleClickMenu("/signup")}}
           sx={{
             width: { xs: "140px", sm: "180px", md: "220px" },
             py: { xs: "7px", sm: "6px" },
@@ -198,7 +200,7 @@ function GetStarted() {
             Login
           </Button>}
           
-          <Button
+          {/* <Button
             style={authButton}
             sx={{
               width: { xs: "140px", sm: "180px", md: "200px" },
@@ -210,7 +212,7 @@ function GetStarted() {
             onClick={() => handleClickMenu("/signup")}
           >
             Signup
-          </Button>
+          </Button> */}
         </Box>
       </Box>
     </Box>

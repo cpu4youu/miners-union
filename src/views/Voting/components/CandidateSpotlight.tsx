@@ -14,12 +14,7 @@ import CandidateOneIcon from "../../../assets/imgs/candidateone.png";
 
 function CandidateSpotlight() {
   const [value, setValue] = useState(0);
-
-
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
-
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => { setValue(newValue) };
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
   const mobile = useMediaQuery(theme.breakpoints.down(705));

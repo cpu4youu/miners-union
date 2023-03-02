@@ -19,15 +19,27 @@ interface Data {
   candidate: string,
   slogan: string,
   wallet: string
+  time: string,
 }
 
 function createData(
   icon: string,
   candidate: string,
   slogan: string,
-  wallet: string
+  wallet: string,
+  time: string,
 ) {
-  return { icon, candidate, slogan, wallet};
+  return { icon, candidate, slogan, wallet, time};
+}
+
+function validURL(str: string) {
+  var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+  return !!pattern.test(str);
 }
 
 
@@ -38,7 +50,8 @@ function TabPanel(props: TabPanelProps) {
     icon : CandidateOneIcon,
     candidate: "Candidate Name",
     slogan: "Power to the Miners Union!",
-    wallet: ""
+    wallet: "",
+    time: ""
   })
 
   let navigate = useNavigate();
@@ -61,31 +74,51 @@ function TabPanel(props: TabPanelProps) {
           code: smartcontract,
           scope: smartcontract,
           table: "candprofiles",
-          limit: 1,
+          limit: 10,
           lower_bound: next,
           upper_bound: next,
         })
         next = z.next_key
         more = z.more 
-        const name = z.rows[0].candidate
-        const icon = z.rows[0].profile_image
-        const slogan = z.rows[0].slogan
-        const wallet = z.rows[0].wallet
-        const planet = z.rows[0].planet
-        if(planet ==="eyeke"){
-          x.push({icon : icon, candidate: name, slogan: slogan, wallet: wallet})
-        }
+        console.log(z)
+        z.rows.map((value: any, key: any) => {
+          var icon
+          const name = value.candidate
+          if(validURL(value.profile_image)){
+            icon = value.profile_image
+          } else {
+            icon = CandidateOneIcon
+          }
+          const slogan = value.slogan
+          const wallet = value.wallet
+          const planet = value.planet
+          const time = value.display_until
+          if(planet ==="eyeke"){
+            x.push({icon : icon, candidate: name, slogan: slogan, wallet: wallet, time: time})
+          }
+        })
       }while(more)
     }catch(e){
-      alert(e)
     }
+    console.log(x)
     if(x.length > 0) {
       const y: Array<Data>= []
       x.map(async (value, key) =>{
-        if(value.candidate !== "-") {
-          y.push(createData(value.icon, value.candidate, value.slogan, value.wallet))
+        const now = Math.floor(new Date().getTime() / 1000)
+        const display = Math.floor(new Date(value.time).getTime() / 1000)
+        if(now < display && value.candidate !== "-"){
+          y.push(createData(value.icon, value.candidate, value.slogan, value.wallet, value.time))
         }
       })
+      if(y.length === 0){
+        y.push(createData(
+          CandidateOneIcon,
+          "?",
+          "Here could be your spotlight",
+          "None",
+          ""
+        ))
+      }
       setData(y)
     }
     return true
@@ -158,23 +191,36 @@ function TabPanel(props: TabPanelProps) {
                 </Typography>
               </Box>
             </Box>
+            {profile.candidate === "?" ? 
+             <Box
+             style={{
+              fontFamily: "Oxanium Medium",
+              fontSize: "18px",
+              borderRadius: "20px",
+              padding: "4px 32px",
+              marginLeft: mobile? "24px" : "48px",
+              textTransform: 'none',                
+            }}
+             >
+             </Box>:
             <Button
-              style={{
-                fontFamily: "Oxanium Medium",
-                color: "white",
-                fontSize: "18px",
-                border: "1px solid white",
-                borderRadius: "20px",
-                padding: "4px 32px",
-                marginLeft: mobile? "24px" : "48px",
-                textTransform: 'none',                
-                background:
-                  "linear-gradient(176.22deg, #FF01FF -60.52%, rgba(33, 33, 33, 0.8) -24.61%, rgba(33, 33, 33, 0.5) 59.39%, #FFFFFF 123.24%)",
-              }}
-              onClick={() => handleClickMenu("/votingdetail", profile.wallet)}
-            >
-              More
-            </Button>
+            style={{
+              fontFamily: "Oxanium Medium",
+              color: "white",
+              fontSize: "18px",
+              border: "1px solid white",
+              borderRadius: "20px",
+              padding: "4px 32px",
+              marginLeft: mobile? "24px" : "48px",
+              textTransform: 'none',                
+              background:
+                "linear-gradient(176.22deg, #FF01FF -60.52%, rgba(33, 33, 33, 0.8) -24.61%, rgba(33, 33, 33, 0.5) 59.39%, #FFFFFF 123.24%)",
+            }}
+            onClick={() => handleClickMenu("/votingdetail", profile.wallet)}
+          >
+            More
+          </Button>}
+           
           </Box>
         </Box>
       )}
