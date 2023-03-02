@@ -1,4 +1,4 @@
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Link, Button, Box } from "@mui/material";
 import classnames from "classnames";
@@ -21,10 +21,10 @@ import DrawerLogoutIcon from "../../../assets/icons/drawerlogout.png";
 import DrawerTelegramIcon from "../../../assets/icons/drawertelegram.png";
 
 import { smartcontract } from "../../../config";
-import { transaction } from "../../../plugins/chain";
+import { fetchTable, transaction } from "../../../plugins/chain";
 import { WalletContext } from "../../../App";
 
-const LinkButtonData = [
+const LinkButtonDataInspector = [
   {
     link: "/voting",
     whiteIcon: DrawerVotingIcon,
@@ -62,6 +62,38 @@ const LinkButtonData = [
     text: "Application",
   },
 ];
+const LinkButtonDataNormal = [
+  {
+    link: "/voting",
+    whiteIcon: DrawerVotingIcon,
+    darkIcon: DrawerVotingBlackIcon,
+    text: "Voting",
+  },
+  {
+    link: "/missions",
+    whiteIcon: DrawerMissionsIcon,
+    darkIcon: DrawerMissionsBlackIcon,
+    text: "Missions",
+  },
+  {
+    link: "/information",
+    whiteIcon: DrawerInformationIcon,
+    darkIcon: DrawerInformationBlackIcon,
+    text: "Information",
+  },
+  {
+    link: "/proposals",
+    whiteIcon: DrawerProposalsIcon,
+    darkIcon: DrawerProposalsBlackIcon,
+    text: "Proposals",
+  },
+  {
+    link: "/contributions",
+    whiteIcon: DrawerContributionsIcon,
+    darkIcon: DrawerContributionsBlackIcon,
+    text: "Contributions",
+  },
+];
 
 interface INavContent {
   mobileOpen: boolean;
@@ -71,6 +103,7 @@ interface INavContent {
 function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
   const [isActive] = useState();
   const {wallet, setClaimed} = useContext(WalletContext)
+  const [isInspector, setInspector] = useState(false)
 
   const HandleClaim = async () => {
     if(wallet != null){
@@ -94,6 +127,26 @@ function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
       }
     }
   }
+
+  useEffect(() => {
+    async function z(){
+      if(wallet != null){
+        const r = await fetchTable({
+          json: true,
+          code: smartcontract,
+          scope: smartcontract,
+          table: "inspectors",
+          limit: 1,
+          lower_bound: wallet.name,
+          upper_bound: wallet.name,
+        })
+        if(r.rows[0].wallet === wallet.name) {
+          setInspector(true);
+        }
+      }
+    }
+    z()
+  }, [])
   
   return (
     <div
@@ -124,7 +177,8 @@ function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
             </div>
           </Button>
 
-          {LinkButtonData.map((value, index) => {
+          {isInspector ? 
+          LinkButtonDataInspector.map((value: any, index: any) => {
             const { link, whiteIcon, darkIcon, text } = value;
             return (
               <HoverableLinkButton
@@ -136,7 +190,21 @@ function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
                 text={text}
               />
             );
-          })}
+          })
+        :
+        LinkButtonDataNormal.map((value: any, index: any) => {
+          const { link, whiteIcon, darkIcon, text } = value;
+          return (
+            <HoverableLinkButton
+              key={index}
+              link={link}
+              mobileOpen={mobileOpen}
+              whiteIcon={whiteIcon}
+              darkIcon={darkIcon}
+              text={text}
+            />
+          );
+        })}
 
           <Link
             component={NavLink}

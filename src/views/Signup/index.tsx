@@ -39,11 +39,11 @@ const Terms = [
 
 function Signup() {
   let navigate = useNavigate();
-  const {wallet, setWallet, loggedIn, setLoggedIn} = useContext(WalletContext)
+  const {wallet} = useContext(WalletContext)
   const [pending, setPending] = useState(false)
   const [cost, setCost] = useState("0.0000 TLM")
   
-  const handleClickMenu = async (link: string) => {
+  const handleClickMenu = async () => {
     try {
       const x = await fetchTable({
         json: true, 
@@ -55,9 +55,12 @@ function Signup() {
         upper_bound: wallet.name,
       })
       const rows = x.rows
-      if(rows.length){
-        navigate("/voting");
-      }
+      console.log(rows)
+      if(x.rows.length !== 0 ){
+        if(x.rows[0].wallet === wallet.name){
+          navigate("/voting")
+        } 
+      } 
     } catch(e){
       alert(e)
     }
@@ -65,7 +68,7 @@ function Signup() {
 
   const handleRequest = async () => {
     try {
-      if(wallet.name == null){
+      if(wallet.name === null){
         await Login()
         return
       }
@@ -94,7 +97,7 @@ function Signup() {
     }
   }
   useEffect(() => {
-    if(wallet.name == null){
+    if(wallet.name === null){
       navigate("/")
     }
   })
@@ -216,7 +219,7 @@ function Signup() {
               fontSize: { xs: "16px", sm: "20px" },
               color: "white",
             }}
-            onClick={() => {}}
+            onClick={() => {handleClickMenu()}}
           >
             YOUR REQUEST IS PENDING!
           </Button> 
@@ -238,7 +241,6 @@ function Signup() {
             {`SEND JOIN REQUEST (${cost})`}
           </Button>
           }
-          
         </Box>
       </Box>
     </Box>

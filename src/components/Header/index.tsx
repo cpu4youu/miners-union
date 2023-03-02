@@ -134,25 +134,10 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
       lower_bound: name,
       upper_bound: name,
     });
-    const rows = x.rows;
-    if (rows.length) {
-      setTLMPower(rows[0].tlm_power);
+    if (x.rows.length) {
+      setTLMPower(x.rows[0].tlm_power);
+      setVotePower(x.rows[0].vote_power);
 
-
-
-
-
-
-      const date_string = rows[0].last_vote + 'Z'
-      const last_vote_date = new Date(date_string)
-
-      // console.log(last_vote_date.getTime());
-
-      const test = new Date().toISOString()
-      const now = new Date(test).getTime()
-      const days = Math.floor((now - last_vote_date.getTime()) / (60*60*24*1000))
-      const vote_power_with_decay = (parseInt(rows[0].vote_power) * Math.pow(0.925,days))
-      setVotePower(Math.trunc(vote_power_with_decay));
     }
   }
 
@@ -174,6 +159,28 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
     }, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    async function z(){
+    try {
+      const x = await fetchTable({
+        json: true, 
+        code: smartcontract,
+        scope: smartcontract,
+        table: "members",
+        limit: 1,
+        lower_bound: wallet.name,
+        upper_bound: wallet.name,
+      })
+      if(x.rows.length === 0 ){
+        navigate("/")
+      } 
+    } catch(e){
+      console.log("Something went wrong")
+    }
+  }
+  z()
+  }, [])
 
   return (
     <AppBar position="fixed" className={classes.appBar} elevation={0}>

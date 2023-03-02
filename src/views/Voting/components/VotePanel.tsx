@@ -19,9 +19,10 @@ interface IVotePanelProps {
   desktop: boolean;
 }
 
+
 function VotePanel(props: IVotePanelProps) {
   const { desktop } = props;
-  const {wallet, setWallet, loggedIn, setLoggedIn} = useContext(WalletContext)
+  const {wallet} = useContext(WalletContext)
   const [selectedCandidateOne, setSelectedCandidateOne] = useState("None");
   const [selectedCandidateTwo, setSelectedCandidateTwo] = useState("None");
   const [selectedCandidateThree, setSelectedCandidateThree] = useState("None");
@@ -29,7 +30,14 @@ function VotePanel(props: IVotePanelProps) {
   const [listCandidate, setCandidates] = useState(["None"])
   const [candidateAmount, setCandidateAmount] = useState<number>(0)
   const [voteperCandidate, setVotesperCandidate] = useState<number>(0)
+  const [votePower, setVotePower] = useState(0);
+  const [tlmPower, setTLMPower] = useState(0);
 
+  function getInitialStateWallet() {
+    const wallet = localStorage.getItem("wallet");
+    return wallet ? JSON.parse(wallet) : [];
+  }
+  
   const handleVoteAmountChange = (e: any) => {
     const floatRegExp = new RegExp("([0-9]+([.][0-9]*)?|[.][0-9]+)$");
     const dotRegExp = new RegExp("^([0-9]+[.][0]*)$");
@@ -44,6 +52,7 @@ function VotePanel(props: IVotePanelProps) {
       }
     }
   };
+
 
   const handleMaxValue = async () => {
     // setVoteAmount(100);
@@ -155,12 +164,43 @@ function VotePanel(props: IVotePanelProps) {
 
   useEffect(() =>{
     const perCandi = voteAmount / candidateAmount
-    if(isNaN(perCandi)){
+    console.log(perCandi)
+    if(isNaN(perCandi) || !isFinite(perCandi)){
       setVotesperCandidate(0)
     } else {
       setVotesperCandidate(Number(perCandi.toFixed(2)))
     }
   },[candidateAmount, voteAmount])
+
+  useEffect(() => {
+    async function x(){
+      var name;
+    if (wallet.name) {
+      name = wallet.name;
+    } else {
+      const n = getInitialStateWallet();
+      name = n.name;
+    }
+
+    const x = await fetchTable({
+      json: true,
+      code: smartcontract,
+      scope: smartcontract,
+      table: "members",
+      limit: 1,
+
+      lower_bound: name,
+      upper_bound: name,
+    });
+    const rows = x.rows;
+    if (rows.length) {
+      setTLMPower(rows[0].tlm_power);
+      setVotePower(rows[0].vote_power);
+    }
+    }
+    x()
+  })
+
 
   return (
     <>
@@ -311,3 +351,4 @@ function VotePanel(props: IVotePanelProps) {
 
 
 export default VotePanel;
+

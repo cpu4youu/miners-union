@@ -166,7 +166,7 @@ function CandidatePanel(props: ICandidatePanelProps) {
     getData()
   },[getData])
 
- /*  useEffect(() => {
+  useEffect(() => {
     async function x(){
       try {
         let more = false
@@ -202,7 +202,7 @@ function CandidatePanel(props: ICandidatePanelProps) {
     }
   }
     x()
-  }, [data]) */
+  }, [data])
 
   return (
     <>

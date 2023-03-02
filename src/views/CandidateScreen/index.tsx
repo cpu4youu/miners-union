@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -18,6 +18,9 @@ import CloseIcon from "@mui/icons-material/Close";
 import CandidateProfile from "../../assets/imgs/candidatebig.png";
 import eyekeprofile from "../../assets/imgs/eyekeprofile.png";
 import DescriptiveLine from "../../assets/icons/descriptiveline.png";
+import { fetchTable, transaction } from "../../plugins/chain";
+import { smartcontract } from "../../config";
+import { isBuffer } from "lodash";
 
 const modalStyle = {
   position: "absolute" as "absolute",
@@ -47,9 +50,17 @@ const useStyles = makeStyles({
 
 function CandidateScreen() {
   const [candidateName, setCandidateName] = useState("");
-  const [profileImage, setProfileImage] = useState("");
+  const [wallet, setWallet] = useState("")
+  const [profileImage, setProfileImage] = useState("")
   const [slogan, setSlogan] = useState("");
   const [description, setDescription] = useState("");
+  const [decay, setDecay] = useState("")
+  const [cost, setCost] = useState("")
+  const [spotcost, setSpotCost] = useState("")
+  const [time, setTime] = useState(0)
+  const [days, setDays] = useState(0)
+  const [unavailable, setUnavailable] = useState(false)
+  const [created, setCreated] = useState(false)
   const [openModal, setOpenModal] = useState(false);
   const classes = useStyles();
   const theme = useTheme();
@@ -73,12 +84,160 @@ function CandidateScreen() {
   };
 
   const handleModalOpen = () => {
-    setOpenModal(true);
+    if(!created){
+      setOpenModal(true);
+    } else {
+      alert("Please create a profile first before using spotlight")
+    }
+    
   };
 
   const handleModalClose = () => {
     setOpenModal(false);
   };
+
+  const handleSpotlight = async() => {
+    if(spotcost && !unavailable){
+        try {
+          const r = await transaction({
+            actions: [{
+              account: "alien.worlds",
+              name: "transfer",
+              authorization: [{
+                actor: wallet,
+                permission: 'active',
+              }],
+              data: {
+                from: wallet,
+                to: smartcontract,
+                quantity: spotcost,
+                memo: "deposit"
+              },
+            },{
+              account: smartcontract,
+              name: "boostprofile",
+              authorization: [{
+                actor: wallet,
+                permission: 'active',
+              }],
+              data: {
+                wallet: wallet,
+              },
+            }]
+          })
+          if(r){
+            alert(r)
+          }
+        }catch (e){
+          alert(e)
+        }
+    }
+  }
+  
+  
+
+  const handleSetProfile = async () => {
+    try{
+      const r = await transaction({
+        actions: [{
+          account: smartcontract,
+          name: "setprofile",
+          authorization: [{
+            actor: wallet,
+            permission: 'active',
+          }],
+          data: {
+            wallet: wallet,
+            planet: "eyeke",
+            candidate: candidateName,
+            slogan: slogan,
+            profile_image: profileImage,
+            description: description,
+          },
+        }]
+      })
+      if(r){
+        alert(r)
+      }
+    } catch (e) {
+      alert(e)
+    }
+    
+  }
+  
+  function getInitialStateWallet() {
+    const wallet = localStorage.getItem("wallet");
+    return wallet ? JSON.parse(wallet) : [];
+  }
+
+  useEffect(() => {
+    const wallet = getInitialStateWallet()
+    setWallet(wallet.name)
+    setCandidateName(wallet.name)
+    async function x() {
+      const r = await fetchTable({
+        json: true,
+        code: smartcontract,
+        scope: smartcontract,
+        table: "candprofiles",
+        limit: 1,
+  
+        lower_bound: wallet.name,
+        upper_bound: wallet.name,
+      })
+
+      if(r.rows[0]){
+        var img = r.rows[0].profile_image;
+        var desc = r.rows[0].description;
+        var slogan = r.rows[0].slogan;
+        var name = r.rows[0].candidate;
+        var datum = new Date(r.rows[0].display_until).getTime()
+        setTime(Math.floor(datum / 1000))
+        handleCandidateNameChange(name);
+        handleDescriptionChange(desc);
+        handleProfileImageChange(img);
+        handleSloganChange(slogan);
+        setCreated(true)
+      } else {
+        setCreated(false)
+      }
+    const x = await fetchTable({
+      json: true,
+      code: smartcontract,
+      scope: smartcontract,
+      table: "config",
+      limit: 1,
+    })
+    const dec = x.rows[0].decay_per_pay
+    const cos = x.rows[0].candidate_ad_cost_minute
+    const day = x.rows[0].candidate_ad_days
+    setDecay(dec)
+    setCost(cos)
+    setDays(day)
+    }
+    x()
+  }, [])
+
+  useEffect(() =>{
+    if(time > 0 && cost){
+      var now = Math.floor(new Date().getTime() / 1000)
+      const c = Number(cost.split(" ")[0])
+      if(time < now){
+        const s = (c * days * 24 * 60).toPrecision(4) + " TLM"
+        setSpotCost(s)
+      } else {
+        const diff = (now - time) / 60 
+        const s = Number((c * (days * 24 * 60 + diff)).toPrecision(4))
+        if(s > 0){
+          setSpotCost(s + " TLM")
+        } else {
+          setUnavailable(true)
+          setSpotCost("Unavailable")
+        }    
+      }
+    }
+  }, [decay, cost, time])
+
 
   return (
     <Box padding={desktop ? "36px 12px" : "24px 0"}>
@@ -167,7 +326,7 @@ function CandidateScreen() {
             <Box display="flex" justifyContent="space-between">
               <Box position="relative" ml={desktop ? "28px" : "16px"}>
                 <img
-                  src={CandidateProfile}
+                  src={profileImage !== "" ? profileImage : CandidateProfile}
                   width={desktop ? "120px" : "72px"}
                   alt=""
                 />
@@ -246,7 +405,7 @@ function CandidateScreen() {
               pt="16px"
             >
               <Button
-                onClick={handleModalOpen}
+                onClick={handleSetProfile}
                 sx={{
                   display: "flex",
                   background: "#009DF5",
@@ -268,6 +427,7 @@ function CandidateScreen() {
                 Set Profile
               </Button>
               <Button
+                onClick={handleModalOpen}
                 sx={{
                   display: "flex",
                   background: "#009DF5",
@@ -353,9 +513,9 @@ function CandidateScreen() {
             textAlign="center"
             fontFamily="Oxanium Light"
           >
-            Activating the Spotlight for your profile means that it will be
-            displayed to other players on the voting page. This lasts 30 days
-            and will cost you some TLM
+            {`Activating the Spotlight for your profile means that it will be
+            displayed to other players on the voting page. This lasts ${days} days
+            and will cost you some TLM`}  
           </Typography>
           <Typography
             variant="body1"
@@ -366,9 +526,11 @@ function CandidateScreen() {
             mb="16px"
             color="#FFB800"
           >
-            100 TLM
+            {spotcost}
           </Typography>
           <Button
+            onClick={handleSpotlight}
+            disabled={unavailable}
             sx={{
               display: "flex",
               marginTop: 1,
