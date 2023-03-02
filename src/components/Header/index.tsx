@@ -134,10 +134,9 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
       lower_bound: name,
       upper_bound: name,
     });
-    const rows = x.rows;
-    if (rows.length) {
-      setTLMPower(rows[0].tlm_power);
-      setVotePower(rows[0].vote_power);
+    if (x.rows.length) {
+      setTLMPower(x.rows[0].tlm_power);
+      setVotePower(x.rows[0].vote_power);
     }
   }
 
@@ -172,7 +171,6 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
         lower_bound: wallet.name,
         upper_bound: wallet.name,
       })
-      const rows = x.rows
       if(x.rows.length === 0 ){
         navigate("/")
       } 

@@ -19,6 +19,7 @@ import { smartcontract } from "../../config";
 
 import { makeStyles } from "@mui/styles";
 import { useCallback, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface IRequest{
   key: number,
@@ -42,6 +43,7 @@ function JoinRequests() {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
   const mobile = useMediaQuery(theme.breakpoints.down(705));
+  let navigate = useNavigate();
 
   const [rows, setRows] = useState<IRequest[]>([])
   const [, updateState] = useState();
@@ -140,6 +142,27 @@ function JoinRequests() {
       }
     }
     x()
+  }, [])
+
+  useEffect(() => {
+    async function z(){
+      if(wallet != null){
+        const r = await fetchTable({
+          json: true,
+          code: smartcontract,
+          scope: smartcontract,
+          table: "inspectors",
+          limit: 1,
+          lower_bound: wallet.name,
+          upper_bound: wallet.name,
+        })
+        console.log(r)
+        if(r.rows.length === 0) {
+          navigate("/voting")
+        }
+      }
+    }
+    z()
   }, [])
 
   return (
