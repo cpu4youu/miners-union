@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 import "./App.css";
 
 import {
@@ -109,7 +109,7 @@ function App() {
             </ViewBase>
           }
         />
-        <Route
+        {/*<Route
           path="/missions"
           element={
             <ViewBase>
@@ -124,7 +124,7 @@ function App() {
               <MissionDetails />
             </ViewBase>
           }
-        />
+        />*/}
         <Route
           path="/information"
           element={
@@ -141,7 +141,7 @@ function App() {
             </ViewBase>
           }
         />
-        <Route
+        {/*<Route
           path="/proposals"
           element={
             <ViewBase>
@@ -164,7 +164,7 @@ function App() {
               <CreateProposal />
             </ViewBase>
           }
-        />
+        />*/}
         <Route
           path="/joinrequests"
           element={
