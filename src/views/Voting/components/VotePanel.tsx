@@ -51,8 +51,36 @@ function VotePanel(props: IVotePanelProps) {
     }
   };
 
-  const handleMaxValue = () => {
-    setVoteAmount(votePower);
+
+  const handleMaxValue = async () => {
+    // setVoteAmount(100);
+    // TODO: need votePower() from Header - index.tsx
+    // this is a hack Isaiah added
+    var name;
+    if (wallet.name) {
+      name = wallet.name;
+    } else {
+      const temp_wallet = localStorage.getItem("wallet");
+      const n = temp_wallet ? JSON.parse(temp_wallet) : [];
+      name = n.name;
+    }
+
+    const x = await fetchTable({
+      json: true,
+      code: smartcontract,
+      scope: smartcontract,
+      table: "members",
+      limit: 1,
+
+      lower_bound: name,
+      upper_bound: name,
+    });
+    const rows = x.rows;
+    if (rows.length) {
+      setVoteAmount(rows[0].vote_power);
+    } else {
+      setVoteAmount(1);
+    }
   };
 
   const getCandidate = async () => {

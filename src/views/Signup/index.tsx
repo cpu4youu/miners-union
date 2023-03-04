@@ -33,7 +33,7 @@ const Terms = [
   },
   {
     content:
-      "To sign up there is a fee of 50 Trilium. This fee is in place to discourage bots from spamming us with join requests as well as to reward our inspectors for their work. This fee will not be refunded regardless of the outcome.",
+      "To sign up there is a fee of Trilium. This fee is in place to discourage bots from spamming us with join requests as well as to reward our inspectors for their work. This fee will not be refunded regardless of the outcome.",
   },
 ];
 

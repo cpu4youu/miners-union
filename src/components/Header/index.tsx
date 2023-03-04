@@ -137,6 +137,7 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
     if (x.rows.length) {
       setTLMPower(x.rows[0].tlm_power);
       setVotePower(x.rows[0].vote_power);
+
     }
   }
 

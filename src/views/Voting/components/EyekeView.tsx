@@ -25,9 +25,32 @@ function EyekeView() {
     })
     const rows = x.rows
     if(rows.length){
-      setUnionPower(rows[0].token)
-      setSupport(rows[0].voting_tlm)
+      setUnionPower(rows[0].voting_tlm)
     } 
+    // TODO: allow for more than 10 rows 
+    const support = await fetchTable({
+      json: true, 
+      code: smartcontract,
+      scope: smartcontract,
+      table: "contribution",
+      limit: 20,
+      lower_bound: "eyeke",
+      upper_bound: "eyeke",
+    })
+    const supportrows = support.rows
+    var amount = "";
+    if(supportrows.length){
+      const name = "eyeke.dac"
+      for(var i = 0; i < supportrows.length; i++)
+      {
+        if(supportrows[i].wallet == name)
+        {
+          amount = supportrows[i].votes
+          break
+        }
+      }
+      setSupport(amount)
+    }
   }
 
   useEffect(() =>{

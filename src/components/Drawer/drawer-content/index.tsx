@@ -31,24 +31,24 @@ const LinkButtonDataInspector = [
     darkIcon: DrawerVotingBlackIcon,
     text: "Voting",
   },
-  {
-    link: "/missions",
-    whiteIcon: DrawerMissionsIcon,
-    darkIcon: DrawerMissionsBlackIcon,
-    text: "Missions",
-  },
+  // {
+  //   link: "/missions",
+  //   whiteIcon: DrawerMissionsIcon,
+  //   darkIcon: DrawerMissionsBlackIcon,
+  //   text: "Missions",
+  // },
   {
     link: "/information",
     whiteIcon: DrawerInformationIcon,
     darkIcon: DrawerInformationBlackIcon,
     text: "Information",
   },
-  {
-    link: "/proposals",
-    whiteIcon: DrawerProposalsIcon,
-    darkIcon: DrawerProposalsBlackIcon,
-    text: "Proposals",
-  },
+  // {
+  //   link: "/proposals",
+  //   whiteIcon: DrawerProposalsIcon,
+  //   darkIcon: DrawerProposalsBlackIcon,
+  //   text: "Proposals",
+  // },
   {
     link: "/contributions",
     whiteIcon: DrawerContributionsIcon,
@@ -232,9 +232,32 @@ function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
               {mobileOpen && <p>Logout</p>}
             </div>
           </Link>
-          <Link
+          {/*
+          <a href="https://t.me/minersunion" 
+             target="_blank"
+          >
+            <div
+              className={classnames(
+                "telegram-menu-item",
+                mobileOpen ? "telegram-menu-item-desktop" : ""
+              )}
+            >
+              <img
+                alt=""
+                src={DrawerTelegramIcon}
+                style={{
+                  marginRight: mobileOpen ? 10 : 0,
+                  marginLeft: mobileOpen ? 50 : 10,
+                }}
+              />
+              {mobileOpen && <p>Telegram</p>}
+            </div>
+          </a>
+          */}
+          {/*<Link
             component={NavLink}
-            to="/telegram"
+            // TODO: Need to link to external page here
+            to="https://t.me/minersunion"
             // isActive={(match, location) => {
             //     return checkPage(location, "home");
             // }}
@@ -256,7 +279,7 @@ function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
               />
               {mobileOpen && <p>Telegram</p>}
             </div>
-          </Link>
+          </Link>*/}
         </div>
       </div>
     </div>
