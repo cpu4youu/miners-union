@@ -102,9 +102,9 @@ function getInitialStateWallet() {
 }
 
 function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
-  const { wallet, claimed, setWallet } = useContext(WalletContext);
-  const [votePower, setVotePower] = useState(0);
-  const [tlmPower, setTLMPower] = useState(0);
+  const { wallet, claimed, votePower, setVotePower, tlmPower, setTLMPower } = useContext(WalletContext);
+/*   const [votePower, setVotePower] = useState(0);
+  const [tlmPower, setTLMPower] = useState(0); */
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
   const mobile = useMediaQuery(theme.breakpoints.down(705));

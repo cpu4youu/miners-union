@@ -32,6 +32,10 @@ export const WalletContext = React.createContext({
   setLoggedIn : (loggedIn: boolean) => {},
   claimed: false,
   setClaimed : (claimed: boolean) => {},
+  tlmPower : 0,
+  setTLMPower : (tlmPower: number) => {},
+  votePower: 0,
+  setVotePower: (votePower: number) => {},
 });
 
 
@@ -44,6 +48,8 @@ function App() {
     }});
   const [loggedIn, setLoggedIn] = React.useState(false)
   const [claimed, setClaimed] = React.useState(false)
+  const [votePower, setVotePower] = React.useState(0)
+  const [tlmPower, setTLMPower] = React.useState(0)
 
   function getInitialStateWallet() {
     const wallet = localStorage.getItem('wallet')
@@ -53,22 +59,24 @@ function App() {
     const loggedIn = localStorage.getItem('loggedIn')
     return loggedIn ? JSON.parse(loggedIn) : []
   }
+
   useEffect(() => {
     if(wallet.name != null){
       localStorage.setItem('wallet', JSON.stringify(wallet))
     }
   }, [wallet]);
 
-  useEffect(()=>{
+   useEffect(()=>{
     if(loggedIn){
       localStorage.setItem('loggedIn', JSON.stringify(loggedIn))
     }
   }, [loggedIn])
 
+
+
   useEffect(() => {
     const x = getInitialStateWallet()
     const y = getInitialStateLoggedIn()
-    console.log(y)
     if(x != wallet){
       setWallet(x)
     }
@@ -89,6 +97,12 @@ function App() {
         setLoggedIn: setLoggedIn,
         claimed: claimed,
         setClaimed: setClaimed,
+        tlmPower: tlmPower,
+        setTLMPower: setTLMPower,
+        votePower: votePower,
+        setVotePower: setVotePower,
+
+
         }}>
       <Routes>
         <Route path="/" element={<GetStarted />} />

@@ -38,7 +38,8 @@ const useStyles = makeStyles({
 });
 
 function MissionDetails() {
-  const {wallet} = useContext(WalletContext)
+  const {wallet, tlmPower} = useContext(WalletContext)
+  const [maxSpace, setMaxSpace] = useState(0)
   const [data, setData] = useState<IMission>()
   const [time, setTime] = useState<string>("0")
   const [bid, setBid] = useState<string>("0")
@@ -95,17 +96,22 @@ function MissionDetails() {
   };
 
   const handleMaxValue = () => {
-    setAmount(100000);
+    setAmount(tlmPower);
   };
 
   useEffect(() => {
     checkLogin()
     if(location.state){
       const data: IMission = location.state.Data
-      var rewardps: string
+      var rewardps: number
       const tlm = Number(data.reward.slice(0, -4))
-      rewardps = (tlm / data.power).toFixed(6).toString()
-      setRewardShip(rewardps)
+      rewardps = Number((tlm / data.power).toFixed(6))
+      if(isFinite(rewardps)){
+        setRewardShip(rewardps.toString())
+      } else{
+        setRewardShip(tlm.toString())
+      }
+      
       setData(data)
       setTime(location.state.time)
     } else {
@@ -143,6 +149,9 @@ function MissionDetails() {
   
   },[wallet])
 
+  useEffect(() => {
+
+  }, [])
   return (
     <>
       <Button onClick={() => handleClickMenu("/missions")}>

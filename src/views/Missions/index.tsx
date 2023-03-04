@@ -30,6 +30,7 @@ import { fetchTable, transaction } from "../../plugins/chain";
 import { WalletContext } from "../../App";
 
 interface IMission{
+  rank:number,
   key: number,
   creator: string,
   endtime: string,
@@ -40,6 +41,7 @@ interface IMission{
 }
 
 interface IData{
+  rank:number,
   key: number,
   icon: string,
   from: string,
@@ -58,6 +60,7 @@ const useStyles = makeStyles({
 });
 
 function createData(
+  rank: number,
   key: number,
   icon: string,
   from: string,
@@ -65,7 +68,7 @@ function createData(
   spaceships: number,
   timeremaining: string
 ) {
-  return { key, icon, from, rewards, spaceships, timeremaining };
+  return { rank, key, icon, from, rewards, spaceships, timeremaining };
 }
 
 function Missions() {
@@ -130,6 +133,7 @@ function Missions() {
     console.log(x);
     x.rows.map((value: any, key: number) => {
       mission.push({
+        rank: value.index,
         key: value.index,
         creator: value.creator,
         endtime: value.endtime,
@@ -140,7 +144,6 @@ function Missions() {
       });
     });
     } while(more) 
-
     setData(mission);
   }, []);
 
@@ -177,6 +180,7 @@ function Missions() {
           missions.push(
             createData(
             key,
+            value.key,
             `${Eyeke}`,
             value.creator,
             value.reward,
@@ -190,6 +194,7 @@ function Missions() {
             missions.push(
               createData(
               key,
+              value.key,
               `${Eyeke}`,
               value.creator,
               value.reward,
@@ -200,6 +205,7 @@ function Missions() {
         }
         
       })
+      console.log(missions)
       setRow(missions)
     }
   }, [data]);

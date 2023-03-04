@@ -193,7 +193,6 @@ function CandidatePanel(props: ICandidatePanelProps) {
        data.map((value, key) => {
         profiles.map((prof, rank)=> {
           if(value.wallet === prof.candidate_name){
-            console.log(dataold[key])
           }
         })
        })
@@ -201,7 +200,7 @@ function CandidatePanel(props: ICandidatePanelProps) {
       alert(e)
     }
   }
-    x()
+   // x()
   }, [data])
 
   return (
