@@ -80,7 +80,6 @@ function TabPanel(props: TabPanelProps) {
         })
         next = z.next_key
         more = z.more 
-        console.log(z)
         z.rows.map((value: any, key: any) => {
           var icon
           const name = value.candidate
@@ -100,7 +99,6 @@ function TabPanel(props: TabPanelProps) {
       }while(more)
     }catch(e){
     }
-    console.log(x)
     if(x.length > 0) {
       const y: Array<Data>= []
       x.map(async (value, key) =>{
