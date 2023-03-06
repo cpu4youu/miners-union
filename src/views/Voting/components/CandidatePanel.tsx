@@ -109,7 +109,6 @@ function CandidatePanel(props: ICandidatePanelProps) {
           table: "candprofiles",
           limit: 1,
           lower_bound: next,
-          upper_bound: next,
         })
         next = x.next_key
         more = x.more 
@@ -181,7 +180,6 @@ function CandidatePanel(props: ICandidatePanelProps) {
             table: "candidates",
             limit: 100,
             lower_bound: next,
-            upper_bound: next,
           })
           next = x.next_key
           more = x.more
