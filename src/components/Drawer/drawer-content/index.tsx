@@ -31,24 +31,24 @@ const LinkButtonDataInspector = [
     darkIcon: DrawerVotingBlackIcon,
     text: "Voting",
   },
-  // {
-  //   link: "/missions",
-  //   whiteIcon: DrawerMissionsIcon,
-  //   darkIcon: DrawerMissionsBlackIcon,
-  //   text: "Missions",
-  // },
+  {
+    link: "/missions",
+    whiteIcon: DrawerMissionsIcon,
+    darkIcon: DrawerMissionsBlackIcon,
+    text: "Missions",
+  },
   {
     link: "/information",
     whiteIcon: DrawerInformationIcon,
     darkIcon: DrawerInformationBlackIcon,
     text: "Information",
   },
-  // {
-  //   link: "/proposals",
-  //   whiteIcon: DrawerProposalsIcon,
-  //   darkIcon: DrawerProposalsBlackIcon,
-  //   text: "Proposals",
-  // },
+  {
+    link: "/proposals",
+    whiteIcon: DrawerProposalsIcon,
+    darkIcon: DrawerProposalsBlackIcon,
+    text: "Proposals",
+  },
   {
     link: "/contributions",
     whiteIcon: DrawerContributionsIcon,
@@ -81,12 +81,12 @@ const LinkButtonDataNormal = [
     darkIcon: DrawerInformationBlackIcon,
     text: "Information",
   },
-  {
-    link: "/proposals",
-    whiteIcon: DrawerProposalsIcon,
-    darkIcon: DrawerProposalsBlackIcon,
-    text: "Proposals",
-  },
+  // {
+  //   link: "/proposals",
+  //   whiteIcon: DrawerProposalsIcon,
+  //   darkIcon: DrawerProposalsBlackIcon,
+  //   text: "Proposals",
+  // },
   {
     link: "/contributions",
     whiteIcon: DrawerContributionsIcon,
