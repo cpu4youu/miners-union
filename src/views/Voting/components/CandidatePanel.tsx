@@ -23,6 +23,7 @@ interface ICandidatePanelProps {
 }
 
 interface IData {
+  index: number,
   icon: string,
   rank: number,
   candidate: string,
@@ -32,6 +33,7 @@ interface IData {
 }
 
 interface ICandidate{
+  index: number,
   name: string
   votes: number
   full_name: string
@@ -52,6 +54,7 @@ interface IProfile{
 }
 
 function createData(
+  index: number,
   icon: string,
   rank: number,
   candidate: string,
@@ -59,7 +62,7 @@ function createData(
   votes: number,
   more: boolean
 ) {
-  return { icon, rank, candidate, wallet, votes, more };
+  return {index, icon, rank, candidate, wallet, votes, more };
 }
 
 var old: Array<IData>= []
@@ -69,9 +72,9 @@ function CandidatePanel(props: ICandidatePanelProps) {
   const [data, setData] = useState(Array<IData>)
   const [isLoading, setIsLoading] = useState(true)
   let navigate = useNavigate();
-  const handleClickMenu = (link: string, name: string) => {
+  const handleClickMenu = (link: string, name: string, index: number) => {
     navigate(link, {
-      state: {wallet: name},
+      state: {wallet: name, index: index},
       replace: true,
     });
   };
@@ -91,11 +94,12 @@ function CandidatePanel(props: ICandidatePanelProps) {
           limit: 10,     
           lower_bound: next
       })
+      console.log(x)
       next = x.next_key
       more = x.more 
       x.rows.forEach((value: any, key: any) => {
         if(value.planet === "eyeke"){
-          candi.push({name : value.wallet, votes: value.votes, full_name:"-", image: "-", more : false})
+          candi.push({index: value.index, name : value.wallet, votes: value.votes, full_name:"-", image: "-", more : false})
         }
       })
       } while(more) 
@@ -119,7 +123,7 @@ function CandidatePanel(props: ICandidatePanelProps) {
         candi.map((value, key)=>{
           if(value.name === wallet){
             if(!checkURL(image)) image = CandidateOneIcon;
-            candi[key] = {name: value.name, votes: value.votes, full_name: name, image: image, more: true}
+            candi[key] = {index: value.index, name: value.name, votes: value.votes, full_name: name, image: image, more: true}
           }
         })
       }while(more)
@@ -147,7 +151,7 @@ function CandidatePanel(props: ICandidatePanelProps) {
         if(value.image !=="-"){
           img = value.image
         }
-        y.push(createData(`${img}`, key + 1, value.full_name, value.name, value.votes, value.more))
+        y.push(createData(value.index, `${img}`, key + 1, value.full_name, value.name, value.votes, value.more))
       })
       setData(y)
       /* if(!isEqual(y, old)){
@@ -393,7 +397,7 @@ function CandidatePanel(props: ICandidatePanelProps) {
                     background:
                       "linear-gradient(176.22deg, #FF01FF -60.52%, rgba(33, 33, 33, 0.8) -24.61%, rgba(33, 33, 33, 0.5) 59.39%, #FFFFFF 123.24%)",
                   }}
-                  onClick={() => handleClickMenu("/votingdetail", dat.wallet)}
+                  onClick={() => handleClickMenu("/votingdetail", dat.wallet, dat.index)}
                 >
                   More
                 </Button>
