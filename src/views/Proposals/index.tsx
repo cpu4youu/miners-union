@@ -28,6 +28,7 @@ const useStyles = makeStyles({
 });
 
 function createData(
+  key: number,
   proposalTitle: string,
   proposalAmount: number,
   proposalAddress: string,
@@ -35,6 +36,7 @@ function createData(
   submissionDate: string
 ) {
   return {
+    key,
     proposalTitle,
     proposalAmount,
     proposalAddress,
@@ -45,6 +47,7 @@ function createData(
 
 const rows = [
   createData(
+    0,
     "Miners Union Extension",
     200000,
     "4dadw.wam",
@@ -52,6 +55,7 @@ const rows = [
     "23/01/2023 06:00AM"
   ),
   createData(
+    1,
     "Miners Union Extension",
     200000,
     "4dadw.wam",
@@ -59,6 +63,7 @@ const rows = [
     "23/01/2023 06:00AM"
   ),
   createData(
+    2,
     "Miners Union Extension",
     200000,
     "4dadw.wam",
@@ -66,6 +71,7 @@ const rows = [
     "23/01/2023 06:00AM"
   ),
   createData(
+    3,
     "Miners Union Extension",
     200000,
     "4dadw.wam",

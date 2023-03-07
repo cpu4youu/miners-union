@@ -54,6 +54,49 @@ function MissionDetails() {
     navigate(link);
   };
 
+  const loadDate = async () =>{
+    const x = await checkLogin()
+    console.log(x)
+    if(location.state){
+
+      const datax: IMission = location.state.Data
+      var rewardps: number
+      const tlm = Number(datax.reward.slice(0, -4))
+      rewardps = Number((tlm / datax.power).toFixed(6))
+      if(isFinite(rewardps)){
+        setRewardShip(rewardps.toString())
+      } else{
+        setRewardShip(tlm.toString())
+      }
+      setData(datax)
+      setTime(location.state.time)
+      if(wallet.name && datax){
+        let more = false
+        let next = ""
+        do {
+          const x = await fetchTable({
+            json: true, 
+            code: smartcontract,
+            scope: smartcontract,
+            table: "tlmbids",
+            limit: 100,     
+            lower_bound: next
+        })
+        next = x.next_key
+        more = x.more 
+        x.rows.map((value:any) =>{
+          if(value.pool_index === datax.key && value.wallet === wallet.name){
+            setBid(value.total_bid.toString())
+          }
+        })
+        } while(more) 
+      }
+    } else {
+       navigate('/missions')
+    }
+    
+  }
+
   const doBid = async() => {
     try {
       if(Amount > 0 && wallet.name){
@@ -75,6 +118,7 @@ function MissionDetails() {
         if(x){
           alert(`You succesfully send ${Amount} Spaceships on this mission`)
         }
+
       }
     } catch(e) {
       alert(e)
@@ -100,58 +144,9 @@ function MissionDetails() {
   };
 
   useEffect(() => {
-    checkLogin()
-    if(location.state){
-      const data: IMission = location.state.Data
-      var rewardps: number
-      const tlm = Number(data.reward.slice(0, -4))
-      rewardps = Number((tlm / data.power).toFixed(6))
-      if(isFinite(rewardps)){
-        setRewardShip(rewardps.toString())
-      } else{
-        setRewardShip(tlm.toString())
-      }
-      
-      setData(data)
-      setTime(location.state.time)
-    } else {
-       navigate('/missions')
-    }
+    loadDate()
   },[])
 
-  useEffect(()=> {
-    async function x(){
-      if(wallet.chainId && data){
-        console.log("Test")
-        let more = false
-        let next = ""
-        do {
-          const x = await fetchTable({
-            json: true, 
-            code: smartcontract,
-            scope: smartcontract,
-            table: "tlmbids",
-            limit: 100,     
-            lower_bound: next
-        })
-        next = x.next_key
-        more = x.more 
-        x.rows.map((value:any) =>{
-          console.log(value)
-          if(value.pool_index === data.key && value.wallet === wallet.name){
-            setBid(value.total_bid.toString())
-          }
-        })
-        } while(more) 
-      }
-    }
-    x()
-  
-  },[wallet])
-
-  useEffect(() => {
-
-  }, [])
   return (
     <>
       <Button onClick={() => handleClickMenu("/missions")}>

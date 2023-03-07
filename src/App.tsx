@@ -123,7 +123,7 @@ function App() {
             </ViewBase>
           }
         />
-        {/*<Route
+        <Route
           path="/missions"
           element={
             <ViewBase>
@@ -138,7 +138,7 @@ function App() {
               <MissionDetails />
             </ViewBase>
           }
-        />*/}
+        />
         <Route
           path="/information"
           element={
@@ -155,7 +155,7 @@ function App() {
             </ViewBase>
           }
         />
-        {/*<Route
+        <Route
           path="/proposals"
           element={
             <ViewBase>
@@ -178,7 +178,7 @@ function App() {
               <CreateProposal />
             </ViewBase>
           }
-        />*/}
+        />
         <Route
           path="/joinrequests"
           element={

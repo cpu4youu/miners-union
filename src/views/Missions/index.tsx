@@ -80,13 +80,13 @@ function Missions() {
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
   const mobile = useMediaQuery(theme.breakpoints.down(705));
   let navigate = useNavigate();
-  const handleClickMenu = (link: string, key: number) => {
+
+  const handleClickMenu = (link: string, key: number, rank: number) => {
     if(data[key]){
-      console.log(key)
       navigate(link, {
         state: {
           Data : data[key],
-          time: rows[key].timeremaining
+          time: rows[rank].timeremaining
         },
         replace: true,
       });
@@ -133,7 +133,7 @@ function Missions() {
     console.log(x);
     x.rows.map((value: any, key: number) => {
       mission.push({
-        rank: value.index,
+        rank: key,
         key: value.index,
         creator: value.creator,
         endtime: value.endtime,
@@ -160,7 +160,7 @@ function Missions() {
     var dDisplay = d > 0 ? d + (d == 1 ? " day, " : " days, ") : "";
     var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
     var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes, ") : "";
-    return dDisplay + " " + hDisplay + " " + mDisplay;
+    return dDisplay + " " + hDisplay;
   }
 
   useEffect(() => {
@@ -316,7 +316,7 @@ function Missions() {
                 <TableRow
                   key={row.key}
                   sx={{ cursor: "pointer" }}
-                  onClick={() => handleClickMenu("/missiondetails", row.key)}
+                  onClick={() => handleClickMenu("/missiondetails", row.key, row.rank)}
                 >
                   <TableCell
                     component="th"

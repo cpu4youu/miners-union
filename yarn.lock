@@ -2500,10 +2500,10 @@
     "@typescript-eslint/types" "5.49.0"
     eslint-visitor-keys "^3.3.0"
 
-"@waxio/waxjs@^1.2.0-beta.2":
-  version "1.2.0-beta.2"
-  resolved "https://registry.npmjs.org/@waxio/waxjs/-/waxjs-1.2.0-beta.2.tgz"
-  integrity sha512-H9pzVt4cca34MVu2qzTa7OQl1rXulxImS9pUcOg1EvPUHj6+mwvCSl6shXSTlwGQiNl+NIemB4cMAxw2PLfwoA==
+"@waxio/waxjs@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@waxio/waxjs/-/waxjs-1.3.0.tgz#9e93fa00532f6eef172366104ffd5378fb86cbe6"
+  integrity sha512-2iFhptM4gVEO90z3FNguybkBmJs6bEUJHs9cHv+GyT5M5da32YgLnTVHLI/o1HqZ21+CLwLtjY4KrG8DEWWRUQ==
   dependencies:
     eosjs "^22.1.0"
 

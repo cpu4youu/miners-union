@@ -9,13 +9,13 @@ import {
   TableHead,
   TableRow,
   Paper,
+  LinearProgress 
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import isEqual from 'lodash.isequal';
 import CandidateOneIcon from "../../../assets/imgs/candidateone.png";
 
 import { smartcontract } from "../../../config";
-import { fetchTable } from "../../../plugins/chain";
+import { checkLogin, fetchTable } from "../../../plugins/chain";
 import { WalletContext } from "../../../App";
 
 interface ICandidatePanelProps {
@@ -65,9 +65,9 @@ function createData(
 var old: Array<IData>= []
 
 function CandidatePanel(props: ICandidatePanelProps) {
-  const {claimed} = useContext(WalletContext)
   const { desktop } = props;
   const [data, setData] = useState(Array<IData>)
+  const [isLoading, setIsLoading] = useState(true)
   let navigate = useNavigate();
   const handleClickMenu = (link: string, name: string) => {
     navigate(link, {
@@ -77,6 +77,7 @@ function CandidatePanel(props: ICandidatePanelProps) {
   };
 
   async function getCandidate() {
+    await checkLogin()
     try {
       let more = false
       let next = ""
@@ -109,15 +110,15 @@ function CandidatePanel(props: ICandidatePanelProps) {
           table: "candprofiles",
           limit: 1,
           lower_bound: next,
-          upper_bound: next,
         })
         next = x.next_key
         more = x.more 
         const wallet = x.rows[0].wallet
         const name = x.rows[0].candidate
-        const image = x.rows[0].profile_image
+        var image = x.rows[0].profile_image
         candi.map((value, key)=>{
           if(value.name === wallet){
+            if(!checkURL(image)) image = CandidateOneIcon;
             candi[key] = {name: value.name, votes: value.votes, full_name: name, image: image, more: true}
           }
         })
@@ -125,13 +126,14 @@ function CandidatePanel(props: ICandidatePanelProps) {
     return candi
 
     }catch(e){
-      alert(e)
+      console.log(e)
     }
   };
 
   const getData = useCallback(async () =>{
     const x: Array<ICandidate>| undefined = await getCandidate()
-    if(x) {
+    console.log(x)
+    if(x){
       x.sort(function(a, b){
         var keyA = a.votes
         var keyB = b.votes
@@ -147,11 +149,11 @@ function CandidatePanel(props: ICandidatePanelProps) {
         }
         y.push(createData(`${img}`, key + 1, value.full_name, value.name, value.votes, value.more))
       })
-      
-      if(!isEqual(y, old)){
+      setData(y)
+      /* if(!isEqual(y, old)){
         setData(y)
         old = y
-      }
+      } */
     }
   }, [])
 
@@ -163,10 +165,15 @@ function CandidatePanel(props: ICandidatePanelProps) {
   }, [getData])
 
   useEffect(() =>{
+    setIsLoading(true)
     getData()
   },[getData])
 
   useEffect(() => {
+    setIsLoading(false)  
+  },[data])
+
+  /* useEffect(() => {
     async function x(){
       try {
         let more = false
@@ -197,14 +204,23 @@ function CandidatePanel(props: ICandidatePanelProps) {
         })
        })
       } catch(e){
-      alert(e)
+      console.log(e)
     }
   }
    // x()
-  }, [data])
+  }, [data]) */
 
   return (
     <>
+    {isLoading ? 
+      <LinearProgress  
+      
+      sx={{
+        size:"100px",
+        color: "white",
+      }}
+      /> 
+      :
       <TableContainer
         component={Paper}
         sx={{ background: "transparent", boxShadow: "none" }}
@@ -290,10 +306,11 @@ function CandidatePanel(props: ICandidatePanelProps) {
                     borderBottom: "none",
                     background:
                       "radial-gradient(50% 50% at 50% 50%, #009DF5 0%, #0089D7 100%)",
+                    height: "64px"
                   }}
                 >
                   <Box display="flex" alignItems="center">
-                    <img src={dat.icon} alt="" width="64px" />
+                    <img src={dat.icon} alt="" width="64px"/>
                   </Box>
                 </TableCell>
                 <TableCell
@@ -389,11 +406,16 @@ function CandidatePanel(props: ICandidatePanelProps) {
           </TableBody>
         </Table>
       </TableContainer>
+    }
     </>
   );
 }
 
-function compare( a: IProfile, b: IProfile ) {
+function checkURL(url: string) {
+  return(url.match(/\.(jpeg|jpg|gif|png)$/) != null);
+}
+
+/* function compare( a: IProfile, b: IProfile ) {
   var x = Number(a.total_vote_power)
   var y = Number(b.total_vote_power)
   if ( x < y){
@@ -404,6 +426,6 @@ function compare( a: IProfile, b: IProfile ) {
   }
   return 0;
 }
-
+ */
 
 export default CandidatePanel;

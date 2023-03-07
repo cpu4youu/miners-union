@@ -91,9 +91,10 @@ function Contributions() {
       })
       const rankes = voters.slice(0, 99);
       const y: Array<IRanking> = []
-      rankes.map((value) => {
-        y.push(createData(value.key, value.name, value.votes))
+      rankes.map((value, key) => {
+        y.push(createData(key , value.name, value.votes))
       })
+      console.log(y)
       setRows(y)
     }
     x()
