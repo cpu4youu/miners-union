@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -17,6 +17,8 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import classnames from "classnames";
+import { fetchTable } from "../../plugins/chain";
+import { smartcontract } from "../../config";
 
 const useStyles = makeStyles({
   contentWrapper: {
@@ -89,6 +91,27 @@ function Proposals() {
   const handleClickMenu = (link: string) => {
     navigate(link);
   };
+
+  useEffect(()=> {
+    async function x() {
+      let more = false
+      let next = ""
+      do {
+        const x = await fetchTable({
+          json: true,
+          code: smartcontract, 
+          scope: smartcontract,
+          table: "proposals",
+          limit: 100,     
+          lower_bound: next
+        });
+        next = x.next_key;
+        more = x.more;
+        console.log(x);
+      } while(more) 
+    }
+    x()
+  },[])
 
   return (
     <>

@@ -127,22 +127,22 @@ function Missions() {
         table: "tlmdrops",
         limit: 100,     
         lower_bound: next
-    });
-    next = x.next_key;
-    more = x.more;
-    console.log(x);
-    x.rows.map((value: any, key: number) => {
-      mission.push({
-        rank: key,
-        key: value.index,
-        creator: value.creator,
-        endtime: value.endtime,
-        starttime: value.starttime,
-        reward: value.rewards,
-        unclaimed: value.total_power,
-        power: value.total_power,
       });
-    });
+      next = x.next_key;
+      more = x.more;
+      console.log(x);
+      x.rows.map((value: any, key: number) => {
+        mission.push({
+          rank: key,
+          key: value.index,
+          creator: value.creator,
+          endtime: value.endtime,
+          starttime: value.starttime,
+          reward: value.rewards,
+          unclaimed: value.total_power,
+          power: value.total_power,
+        });
+      });
     } while(more) 
     setData(mission);
   }, []);
