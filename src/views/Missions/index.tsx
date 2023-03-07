@@ -205,7 +205,6 @@ function Missions() {
         }
         
       })
-      console.log(missions)
       setRow(missions)
     }
   }, [data]);

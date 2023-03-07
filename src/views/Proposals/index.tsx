@@ -29,10 +29,32 @@ const useStyles = makeStyles({
   },
 });
 
+interface IProposal{
+  archive_date: string,
+  creation_date: string,
+  description: string,
+  from: string,
+  memo: string,
+  proposal_name: string,
+  title: string,
+  tlm: string,
+  to: string,
+  votes: number,
+}
+
+interface IRow{
+  key: number,
+  proposalTitle: string,
+  proposalAmount: string,
+  proposalAddress: string,
+  votes: number,
+  submissionDate: string
+}
+
 function createData(
   key: number,
   proposalTitle: string,
-  proposalAmount: number,
+  proposalAmount: string,
   proposalAddress: string,
   votes: number,
   submissionDate: string
@@ -47,47 +69,13 @@ function createData(
   };
 }
 
-const rows = [
-  createData(
-    0,
-    "Miners Union Extension",
-    200000,
-    "4dadw.wam",
-    45000,
-    "23/01/2023 06:00AM"
-  ),
-  createData(
-    1,
-    "Miners Union Extension",
-    200000,
-    "4dadw.wam",
-    45000,
-    "23/01/2023 06:00AM"
-  ),
-  createData(
-    2,
-    "Miners Union Extension",
-    200000,
-    "4dadw.wam",
-    45000,
-    "23/01/2023 06:00AM"
-  ),
-  createData(
-    3,
-    "Miners Union Extension",
-    200000,
-    "4dadw.wam",
-    45000,
-    "23/01/2023 06:00AM"
-  ),
-];
-
 function Proposals() {
   const classes = useStyles();
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
   const mobile = useMediaQuery(theme.breakpoints.down(705));
   let navigate = useNavigate();
+  const [rows, setRows] = useState<IRow[]>([])
   const handleClickMenu = (link: string) => {
     navigate(link);
   };
@@ -96,6 +84,8 @@ function Proposals() {
     async function x() {
       let more = false
       let next = ""
+      const proposals: Array<IProposal> = []
+      const data: Array<IRow> = []
       do {
         const x = await fetchTable({
           json: true,
@@ -107,8 +97,22 @@ function Proposals() {
         });
         next = x.next_key;
         more = x.more;
-        console.log(x);
+        x.rows.map((value: any)=> {
+          proposals.push(value)
+        })
       } while(more) 
+      proposals.map((value: IProposal, key: number)=> {
+        const now = Number(new Date().getTime() / 1000).toFixed(0)
+        const end = Number(new Date(value.archive_date).getTime()/ 1000).toFixed(0)
+        if(now > end){
+          proposals.splice(key, 1)
+          
+        } else {
+          const date = new Date(value.creation_date).toDateString()
+          data.push(createData(key, value.title, value.tlm, value.from, value.votes, date))
+        }
+      })
+      setRows(data)
     }
     x()
   },[])
@@ -247,7 +251,7 @@ function Proposals() {
                       >
                         <Typography pb="6px">{row.proposalTitle}</Typography>
                         <Typography pb="6px" color="#FFB800">
-                          {row.proposalAmount} TLM
+                          {row.proposalAmount}
                         </Typography>
                         <Typography>{row.proposalAddress}</Typography>
                       </Box>
