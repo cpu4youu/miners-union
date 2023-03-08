@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -19,6 +19,9 @@ import CloseIcon from "@mui/icons-material/Close";
 import BackButtonIcon from "../../assets/icons/backbutton.png";
 
 import { makeStyles } from "@mui/styles";
+import { WalletContext } from "../../App";
+import { checkLogin, transaction } from "../../plugins/chain";
+import { smartcontract } from "../../config";
 
 const modalStyle = {
   position: "absolute" as "absolute",
@@ -49,6 +52,7 @@ const useStyles = makeStyles({
 function CreateProposal() {
   const classes = useStyles();
   const theme = useTheme();
+  const {wallet} = useContext(WalletContext)
 
   const [proposal, setProposal] = useState("");
   const [receiveWallet, setReceiveWallet] = useState("");
@@ -74,7 +78,17 @@ function CreateProposal() {
   };
 
   const handleTlmAmountChange = (e: any) => {
-    setTlmAmount(e.target.value);
+    const floatRegExp = new RegExp("([0-9]+([.][0-9]*)?|[.][0-9]+)$");
+    const dotRegExp = new RegExp("^([0-9]+[.][0]*)$");
+    if (e.target.value === "" || floatRegExp.test(e.target.value)) {
+      let filteredValue = e.target.value;
+      if (dotRegExp.test(e.target.value)) {
+        setTlmAmount(filteredValue);
+      } else {
+        filteredValue = Math.floor(filteredValue * 1000) / 1000;
+        setTlmAmount(filteredValue);
+      }
+    }
   };
 
   const handleMemoChange = (e: any) => {
@@ -92,6 +106,48 @@ function CreateProposal() {
   const handleModalClose = () => {
     setOpenModal(false);
   };
+
+  const handleSubmit = async () => {
+      try{
+        await checkLogin()
+        if(wallet.name){
+          const t = await transaction({
+            actions: [{
+              account: "alien.worlds",
+              name: 'transfer',
+              authorization: [{
+                actor: wallet.name,
+                permission: 'active',
+              }],
+              data: {
+                from: "wallet.name",
+                memo: "deposit",
+                quantity: "100.0000 TLM",
+                to: smartcontract
+              },
+            },{
+              account: smartcontract,
+              name: 'addproposal',
+              authorization: [{
+                actor: wallet.name,
+                permission: 'active',
+              }],
+              data: {
+                description: description,
+                memo: memo,
+                title: proposal,
+                tlm: tlmAmount + " TLM",
+                to: receiveWallet,
+                wallet: wallet.name
+              },
+            }]
+        })
+        console.log(t)
+      }
+      }catch(e){
+        alert(e)
+      }
+  }
 
   return (
     <>
@@ -398,6 +454,7 @@ function CreateProposal() {
             Once submitted a proposal cannot be changed.
           </Typography>
           <Button
+            onClick={handleSubmit}
             sx={{
               display: "flex",
               marginTop: 1,

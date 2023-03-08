@@ -23,7 +23,7 @@ import PlanetSelect from "./components/PlanetSelect";
 
 import BackButtonIcon from "../../assets/icons/backbutton.png";
 import { WalletContext } from "../../App";
-import { fetchTable } from "../../plugins/chain";
+import { checkLogin, fetchTable, transaction } from "../../plugins/chain";
 import { smartcontract, planets } from "../../config";
 
 const modalStyle = {
@@ -72,7 +72,7 @@ function ProposalDetails() {
   const [selectedPlanet, setSelectedPlanet] = useState("None");
   const [proposal, setProposal] = useState<IProposal>()
   const [time, setTime] = useState<string>("")
-  const {votePower} = useContext(WalletContext)
+  const {votePower, wallet} = useContext(WalletContext)
   const location = useLocation();
   const classes = useStyles();
   const theme = useTheme();
@@ -113,6 +113,35 @@ function ProposalDetails() {
   const handleModalClose = () => {
     setOpenModal(false);
   };
+
+  const handleVote = async () => {
+    try{
+      await checkLogin()
+      if(wallet.name){
+          const t = await transaction({
+            actions: [{
+              account: smartcontract,
+              name: 'voteproposal',
+              authorization: [{
+                actor: wallet.name,
+                permission: 'active',
+              }],
+              data: {
+                wallet: wallet.name,
+                proposal_name: key,
+                votes: Amount
+              },
+            }]
+          })
+          //alert(t)
+      } else {
+        console.log("Not Logged in please refresh")
+      }
+      
+    } catch(e){
+      console.log(e)
+    }
+  }
 
   useEffect(()=> {
     async function x(){
@@ -371,6 +400,7 @@ function ProposalDetails() {
               />
             </FormControl>
             <Button
+              onClick={handleVote}
               sx={{
                 display: "flex",
                 marginTop: 1,
