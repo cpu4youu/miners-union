@@ -14,7 +14,7 @@ interface IPlanetSelectProps {
 function PlanetSelect(props: IPlanetSelectProps) {
   const { desktop, listPlanet, selectedPlanet, setSelectedPlanet } = props;
   const [menuOpen, setMenuOpen] = useState(false);
-
+  
   return (
     <>
       <Select

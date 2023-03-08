@@ -48,7 +48,8 @@ interface IRow{
   proposalAmount: string,
   proposalAddress: string,
   votes: number,
-  submissionDate: string
+  submissionDate: string,
+  proposal_name: string
 }
 
 function createData(
@@ -57,7 +58,8 @@ function createData(
   proposalAmount: string,
   proposalAddress: string,
   votes: number,
-  submissionDate: string
+  submissionDate: string,
+  proposal_name: string,
 ) {
   return {
     key,
@@ -66,6 +68,7 @@ function createData(
     proposalAddress,
     votes,
     submissionDate,
+    proposal_name
   };
 }
 
@@ -76,8 +79,17 @@ function Proposals() {
   const mobile = useMediaQuery(theme.breakpoints.down(705));
   let navigate = useNavigate();
   const [rows, setRows] = useState<IRow[]>([])
-  const handleClickMenu = (link: string) => {
-    navigate(link);
+  const handleClickMenu = (link: string, proposal_name: string) => {
+    if(link === "/proposaldetails"){
+      navigate(link, {
+        state: {
+          key : proposal_name,
+        },
+        replace: true,
+      });
+    } else {  
+      navigate(link);
+    }
   };
 
   useEffect(()=> {
@@ -101,15 +113,26 @@ function Proposals() {
           proposals.push(value)
         })
       } while(more) 
+      console.log(proposals)
       proposals.map((value: IProposal, key: number)=> {
         const now = Number(new Date().getTime() / 1000).toFixed(0)
         const end = Number(new Date(value.archive_date).getTime()/ 1000).toFixed(0)
         if(now > end){
           proposals.splice(key, 1)
-          
         } else {
-          const date = new Date(value.creation_date).toDateString()
-          data.push(createData(key, value.title, value.tlm, value.from, value.votes, date))
+          const date = new Date(value.creation_date)
+          const options = {
+            day: '2-digit',
+            month: '2-digit',
+            year: '2-digit',
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+          };
+          //@ts-ignore
+          const formatter = new Intl.DateTimeFormat('en-GB', options);
+          const formattedDate = formatter.format(date);
+          data.push(createData(key, value.title, value.tlm, value.from, value.votes, formattedDate, value.proposal_name))
         }
       })
       setRows(data)
@@ -156,7 +179,7 @@ function Proposals() {
                 borderBottom: "1px solid rgba(255, 255, 255, 0.61)",
                 cursor: "pointer",
               }}
-              onClick={() => handleClickMenu("/createproposal")}
+              onClick={() => handleClickMenu("/createproposal", "")}
             >
               <Typography
                 fontFamily="Oxanium Medium"
@@ -333,7 +356,7 @@ function Proposals() {
                           background:
                             "linear-gradient(176.22deg, #FF01FF -60.52%, rgba(33, 33, 33, 0.8) -24.61%, rgba(33, 33, 33, 0.5) 59.39%, #FFFFFF 123.24%)",
                         }}
-                        onClick={() => handleClickMenu("/proposaldetails")}
+                        onClick={() => handleClickMenu("/proposaldetails", row.proposal_name)}
                       >
                         Details
                       </Button>
