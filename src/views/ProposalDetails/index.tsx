@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -22,6 +22,9 @@ import { makeStyles } from "@mui/styles";
 import PlanetSelect from "./components/PlanetSelect";
 
 import BackButtonIcon from "../../assets/icons/backbutton.png";
+import { WalletContext } from "../../App";
+import { checkLogin, fetchTable, transaction } from "../../plugins/chain";
+import { smartcontract, planets } from "../../config";
 
 const modalStyle = {
   position: "absolute" as "absolute",
@@ -49,19 +52,41 @@ const useStyles = makeStyles({
   },
 });
 
-const listPlanet = ["Planet1", "Planet2"];
+interface IProposal{
+  archive_date: string,
+  creation_date: string,
+  description: string,
+  from: string,
+  memo: string,
+  proposal_name: string,
+  title: string,
+  tlm: string,
+  to: string,
+  votes: number,
+}
+
+
+const listPlanet = planets;
 
 function ProposalDetails() {
   const [selectedPlanet, setSelectedPlanet] = useState("None");
+  const [proposal, setProposal] = useState<IProposal>()
+  const [time, setTime] = useState<string>("")
+  const {votePower, wallet} = useContext(WalletContext)
+  const location = useLocation();
   const classes = useStyles();
   const theme = useTheme();
   const [openModal, setOpenModal] = useState(false);
   const [Amount, setAmount] = useState<number>(0);
   let navigate = useNavigate();
+  var key: string
+  if(location.state){
+    key = location.state.key
+  }
   const handleClickMenu = (link: string) => {
     navigate(link);
   };
-
+  
   const handleAmountChange = (e: any) => {
     const floatRegExp = new RegExp("([0-9]+([.][0-9]*)?|[.][0-9]+)$");
     const dotRegExp = new RegExp("^([0-9]+[.][0]*)$");
@@ -70,11 +95,15 @@ function ProposalDetails() {
       if (dotRegExp.test(e.target.value)) {
         setAmount(filteredValue);
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  
         filteredValue = Math.floor(filteredValue * 1000) / 1000;
         setAmount(filteredValue);
       }
     }
+  };
+
+  const handleMaxValue = () => {
+    setAmount(votePower);
   };
 
   const handleModalOpen = () => {
@@ -84,6 +113,66 @@ function ProposalDetails() {
   const handleModalClose = () => {
     setOpenModal(false);
   };
+
+  const handleVote = async () => {
+    try{
+      await checkLogin()
+      if(wallet.name){
+          const t = await transaction({
+            actions: [{
+              account: smartcontract,
+              name: 'voteproposal',
+              authorization: [{
+                actor: wallet.name,
+                permission: 'active',
+              }],
+              data: {
+                wallet: wallet.name,
+                proposal_name: key,
+                votes: Amount
+              },
+            }]
+          })
+          //alert(t)
+      } else {
+        console.log("Not Logged in please refresh")
+      }
+      
+    } catch(e){
+      console.log(e)
+    }
+  }
+
+  useEffect(()=> {
+    async function x(){
+      const r = await fetchTable({
+        json: true,
+        code: smartcontract, 
+        scope: smartcontract,
+        table: "proposals",
+        limit: 1,     
+        lower_bound: key,
+        upper_bound: key
+      })
+      if(r.rows[0]){
+        setProposal(r.rows[0])
+        const options = {
+          day: '2-digit',
+          month: '2-digit',
+          year: '2-digit',
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: true
+        };
+        const date = new Date(r.rows[0].creation_date)
+        //@ts-ignore
+        const formatter = new Intl.DateTimeFormat('en-GB', options);
+        const formattedDate = formatter.format(date);
+        setTime(formattedDate)
+      }
+    }
+    x()
+  }, [])
 
   const desktop = useMediaQuery(theme.breakpoints.up(1300));
   const mobile = useMediaQuery(theme.breakpoints.down(603));
@@ -126,9 +215,9 @@ function ProposalDetails() {
                 lineHeight="1.1"
                 fontWeight={600}
               >
-                Proposal: Miners Union Extension
+                {proposal?.title}
               </Typography>
-              <Typography variant="h6">by 4dadw.wam</Typography>
+              <Typography variant="h6">by {proposal?.from}</Typography>
             </Box>
             <Box
               sx={{
@@ -138,7 +227,7 @@ function ProposalDetails() {
                 justifyContent: "space-between",
               }}
             >
-              <Box sx={{ width: desktop ? "100%" : mobile ? "100%" : "45%" }}>
+              <Box sx={{ width: desktop ? "100%" : mobile ? "100%" : "45%" , visibility: "hidden",}}>
                 <FormHelperText
                   sx={{
                     color: "#EBB309",
@@ -174,6 +263,7 @@ function ProposalDetails() {
                   alignItems: "center",
                   boxShadow: "inset 0px 0px 36px 1px rgba(54, 0, 206, 0.61)",
                   "&: hover": { opacity: "0.9", background: "#FFB800" },
+                  visibility: "hidden",
                 }}
               >
                 Copy to Planet
@@ -191,7 +281,7 @@ function ProposalDetails() {
             }}
           >
             <Typography color="#FFB800" fontSize={desktop ? "36px" : "20px"}>
-              200,000 TLM
+              {proposal?.tlm}
             </Typography>
             <Button
               sx={{
@@ -227,9 +317,9 @@ function ProposalDetails() {
             }}
           >
             <Typography variant="h6">
-              Submission Date: 23/01/2023 06:00AM
+              Submission Date: {time}
             </Typography>
-            <Typography variant="h6">Receiving Wallet: tas3.a3.wam</Typography>
+            <Typography variant="h6">Receiving Wallet: {proposal?.to}</Typography>
           </Box>
           <Divider
             sx={{
@@ -239,31 +329,7 @@ function ProposalDetails() {
           />
           <Box>
             <Typography fontSize={desktop ? "20px" : "18px"} mt={3}>
-              Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-              nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam
-              erat, sed diam voluptua. At vero eos et accusam et justo duo
-              dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
-              sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit
-              amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
-              invidunt ut labore et dolore magna aliquyam erat, sed diam
-              voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
-              Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum
-              dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing
-              elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
-              magna aliquyam erat, sed diam voluptua. At vero eos et accusam et
-              justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea
-              takimata sanctus est Lorem ipsum dolor sit amet.
-            </Typography>
-            <Typography fontSize={desktop ? "20px" : "18px"} mt={3}>
-              Duis autem veleum iriure dolor in hendrerit in vulputate velit
-              esse molestie consequat, vel illum dolore eu feugiat nulla
-              facilisis at vero eros et accumsan et iusto odio dignissim qui
-              blandit praesent luptatum zzril delenit augue duis dolore te
-              feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer
-              adipiscing elit, sed diam nonummy nibh euismod tincidunt ut
-              laoreet dolore magna aliquam erat volutpat. sanctus est Lorem ised
-              diam voluptua. At vero eos et accusam et justo duo dolores et ea
-              rebum. Stet clita
+             {proposal?.description}
             </Typography>
           </Box>
         </Box>
@@ -305,6 +371,22 @@ function ProposalDetails() {
                 value={Amount}
                 onChange={handleAmountChange}
                 aria-describedby="outlined-weight-helper-text"
+                endAdornment={
+                  <InputAdornment position="end">
+                    <Button
+                      sx={{
+                        color: "white",
+                        border: "1px solid rgba(255, 255, 255, 0.12)",
+                        borderRadius: "12px",
+                        padding: "2px 4px",
+                        minWidth: "44px",
+                        fontSize: "10px",
+                      }}
+                      onClick={handleMaxValue}
+                    >
+                      Max
+                    </Button>
+                  </InputAdornment>}
                 sx={{
                   borderRadius: "20px",
                   color: "white",
@@ -318,6 +400,7 @@ function ProposalDetails() {
               />
             </FormControl>
             <Button
+              onClick={handleVote}
               sx={{
                 display: "flex",
                 marginTop: 1,

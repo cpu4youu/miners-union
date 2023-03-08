@@ -31,11 +31,7 @@ function VotePanel(props: IVotePanelProps) {
   const [candidateAmount, setCandidateAmount] = useState<number>(0)
   const [voteperCandidate, setVotesperCandidate] = useState<number>(0)
 
-  function getInitialStateWallet() {
-    const wallet = localStorage.getItem("wallet");
-    return wallet ? JSON.parse(wallet) : [];
-  }
-  
+
   const handleVoteAmountChange = (e: any) => {
     const floatRegExp = new RegExp("([0-9]+([.][0-9]*)?|[.][0-9]+)$");
     const dotRegExp = new RegExp("^([0-9]+[.][0]*)$");
@@ -53,33 +49,8 @@ function VotePanel(props: IVotePanelProps) {
 
 
   const handleMaxValue = async () => {
-    // setVoteAmount(100);
-    // TODO: need votePower() from Header - index.tsx
-    // this is a hack Isaiah added
-    var name;
-    if (wallet.name) {
-      name = wallet.name;
-    } else {
-      const temp_wallet = localStorage.getItem("wallet");
-      const n = temp_wallet ? JSON.parse(temp_wallet) : [];
-      name = n.name;
-    }
-
-    const x = await fetchTable({
-      json: true,
-      code: smartcontract,
-      scope: smartcontract,
-      table: "members",
-      limit: 1,
-
-      lower_bound: name,
-      upper_bound: name,
-    });
-    const rows = x.rows;
-    if (rows.length) {
-      setVoteAmount(rows[0].vote_power);
-    } else {
-      setVoteAmount(1);
+    if(votePower){
+      setVoteAmount(votePower)
     }
   };
 

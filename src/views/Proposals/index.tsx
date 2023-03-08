@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -17,6 +17,8 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import classnames from "classnames";
+import { fetchTable } from "../../plugins/chain";
+import { smartcontract } from "../../config";
 
 const useStyles = makeStyles({
   contentWrapper: {
@@ -27,52 +29,48 @@ const useStyles = makeStyles({
   },
 });
 
-function createData(
+interface IProposal{
+  archive_date: string,
+  creation_date: string,
+  description: string,
+  from: string,
+  memo: string,
+  proposal_name: string,
+  title: string,
+  tlm: string,
+  to: string,
+  votes: number,
+}
+
+interface IRow{
+  key: number,
   proposalTitle: string,
-  proposalAmount: number,
+  proposalAmount: string,
   proposalAddress: string,
   votes: number,
-  submissionDate: string
+  submissionDate: string,
+  proposal_name: string
+}
+
+function createData(
+  key: number,
+  proposalTitle: string,
+  proposalAmount: string,
+  proposalAddress: string,
+  votes: number,
+  submissionDate: string,
+  proposal_name: string,
 ) {
   return {
+    key,
     proposalTitle,
     proposalAmount,
     proposalAddress,
     votes,
     submissionDate,
+    proposal_name
   };
 }
-
-const rows = [
-  createData(
-    "Miners Union Extension",
-    200000,
-    "4dadw.wam",
-    45000,
-    "23/01/2023 06:00AM"
-  ),
-  createData(
-    "Miners Union Extension",
-    200000,
-    "4dadw.wam",
-    45000,
-    "23/01/2023 06:00AM"
-  ),
-  createData(
-    "Miners Union Extension",
-    200000,
-    "4dadw.wam",
-    45000,
-    "23/01/2023 06:00AM"
-  ),
-  createData(
-    "Miners Union Extension",
-    200000,
-    "4dadw.wam",
-    45000,
-    "23/01/2023 06:00AM"
-  ),
-];
 
 function Proposals() {
   const classes = useStyles();
@@ -80,9 +78,67 @@ function Proposals() {
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
   const mobile = useMediaQuery(theme.breakpoints.down(705));
   let navigate = useNavigate();
-  const handleClickMenu = (link: string) => {
-    navigate(link);
+  const [rows, setRows] = useState<IRow[]>([])
+  const handleClickMenu = (link: string, proposal_name: string) => {
+    if(link === "/proposaldetails"){
+      navigate(link, {
+        state: {
+          key : proposal_name,
+        },
+        replace: true,
+      });
+    } else {  
+      navigate(link);
+    }
   };
+
+  useEffect(()=> {
+    async function x() {
+      let more = false
+      let next = ""
+      const proposals: Array<IProposal> = []
+      const data: Array<IRow> = []
+      do {
+        const x = await fetchTable({
+          json: true,
+          code: smartcontract, 
+          scope: smartcontract,
+          table: "proposals",
+          limit: 100,     
+          lower_bound: next
+        });
+        next = x.next_key;
+        more = x.more;
+        x.rows.map((value: any)=> {
+          proposals.push(value)
+        })
+      } while(more) 
+      console.log(proposals)
+      proposals.map((value: IProposal, key: number)=> {
+        const now = Number(new Date().getTime() / 1000).toFixed(0)
+        const end = Number(new Date(value.archive_date).getTime()/ 1000).toFixed(0)
+        if(now > end){
+          proposals.splice(key, 1)
+        } else {
+          const date = new Date(value.creation_date)
+          const options = {
+            day: '2-digit',
+            month: '2-digit',
+            year: '2-digit',
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+          };
+          //@ts-ignore
+          const formatter = new Intl.DateTimeFormat('en-GB', options);
+          const formattedDate = formatter.format(date);
+          data.push(createData(key, value.title, value.tlm, value.from, value.votes, formattedDate, value.proposal_name))
+        }
+      })
+      setRows(data)
+    }
+    x()
+  },[])
 
   return (
     <>
@@ -123,7 +179,7 @@ function Proposals() {
                 borderBottom: "1px solid rgba(255, 255, 255, 0.61)",
                 cursor: "pointer",
               }}
-              onClick={() => handleClickMenu("/createproposal")}
+              onClick={() => handleClickMenu("/createproposal", "")}
             >
               <Typography
                 fontFamily="Oxanium Medium"
@@ -218,7 +274,7 @@ function Proposals() {
                       >
                         <Typography pb="6px">{row.proposalTitle}</Typography>
                         <Typography pb="6px" color="#FFB800">
-                          {row.proposalAmount} TLM
+                          {row.proposalAmount}
                         </Typography>
                         <Typography>{row.proposalAddress}</Typography>
                       </Box>
@@ -300,7 +356,7 @@ function Proposals() {
                           background:
                             "linear-gradient(176.22deg, #FF01FF -60.52%, rgba(33, 33, 33, 0.8) -24.61%, rgba(33, 33, 33, 0.5) 59.39%, #FFFFFF 123.24%)",
                         }}
-                        onClick={() => handleClickMenu("/proposaldetails")}
+                        onClick={() => handleClickMenu("/proposaldetails", row.proposal_name)}
                       >
                         Details
                       </Button>

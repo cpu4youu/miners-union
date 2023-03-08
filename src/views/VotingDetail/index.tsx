@@ -34,7 +34,7 @@ const useStyles = makeStyles({
 });
 
 function VotingDetail() {
-  const {wallet} = useContext(WalletContext)
+  const {wallet, votePower} = useContext(WalletContext)
   const [name, setName] = useState("-")
   const [img, setImg] = useState("-")
   const [description, setDescription] = useState("-")
@@ -43,6 +43,7 @@ function VotingDetail() {
 
   const location = useLocation();
   const wallet_name = location.state.wallet
+  const index = location.state.index
   const classes = useStyles();
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
@@ -95,10 +96,9 @@ function VotingDetail() {
       json: true, 
       code: smartcontract,
       scope: smartcontract,
-      table: "ucandidates",
+      table: "candidates",
       limit: 1,     
-      lower_bound: wallet_name ,
-      upper_bound: wallet_name 
+      lower_bound: index,
     })
     if(y.rows[0]){
       setVotes(y.rows[0].votes)
@@ -121,7 +121,7 @@ function VotingDetail() {
   };
 
   const handleMaxValue = () => {
-    setVoteAmount(100000);
+    setVoteAmount(votePower);
   };
 
   useEffect(()=> {

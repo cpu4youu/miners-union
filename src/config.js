@@ -35,3 +35,4 @@ export const networks = {
 }
 
 export const smartcontract= "hq.mu"
+export const planets = ["eyeke", "naron", "neri"]
