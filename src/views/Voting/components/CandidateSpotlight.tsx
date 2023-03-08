@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import {
   Box,
   Button,
@@ -11,10 +11,17 @@ import {
 import TabPanel from "./TabPanel";
 
 import CandidateOneIcon from "../../../assets/imgs/candidateone.png";
+import { WalletContext } from "../../../App";
+import { planets } from "../../../config";
 
 function CandidateSpotlight() {
+  const  { planet, setPlanet } = useContext(WalletContext) 
   const [value, setValue] = useState(0);
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => { setValue(newValue) };
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => { 
+    console.log(planets[newValue])
+    setPlanet(planets[newValue])
+    setValue(newValue) 
+  };
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
   const mobile = useMediaQuery(theme.breakpoints.down(705));
@@ -22,61 +29,33 @@ function CandidateSpotlight() {
   return (
     <Box style={{ marginTop: desktop ? "0" : "20px" }}>
       <Box>
-        <Tabs
+      <Tabs
           value={value}
           onChange={handleChange}
           aria-label="basic tabs example"
         >
-         {/*  <Tab
-            label="Naron"
-            style={{
-              color: "white",
-              opacity: "0.7",
-              fontSize: desktop ? "24px" : "20px",
-              fontFamily: "Oxanium Medium",
-              textTransform: "none",
-            }}
-          /> */}
-          <Tab
-            label="Eyeke"
-            style={{
-              color: "white",
-              opacity: "0.7",
-              fontSize: desktop ? "24px" : "20px",
-              fontFamily: "Oxanium Medium",
-              textTransform: "none",
-            }}
-          />
-         {/*  <Tab
-            label="Kavian"
-            style={{
-              color: "white",
-              opacity: "0.7",
-              fontSize: desktop ? "24px" : "20px",
-              fontFamily: "Oxanium Medium",
-              textTransform: "none",
-            }}
-          /> */}
+          {planets.map((planet) => (
+             <Tab
+             label={planet}
+             style={{
+               color: "white",
+               opacity: "0.7",
+               fontSize: desktop ? "24px" : "20px",
+               fontFamily: "Oxanium Medium",
+               textTransform: "capitalize",
+             }}
+           />
+          ))}
         </Tabs>
       </Box>
-      <TabPanel
+      {planets.map((plant, key) => (
+        <TabPanel
         value={value}
-        index={0}
+        index={key}
         profileIcon={CandidateOneIcon}
         mobile={mobile}
-      />
-     {/*  <TabPanel
-        value={value}
-        index={1}
-        profileIcon={CandidateOneIcon}
-        mobile={mobile}
-      />
-      <TabPanel
-        value={value}
-        index={2}
-        profileIcon={CandidateOneIcon}
-        mobile={mobile}
-      /> */}
+        />
+      ))}
     </Box>
   );
 }
