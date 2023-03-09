@@ -62,7 +62,7 @@ function MissionDetails() {
       const datax: IMission = location.state.Data
       var rewardps: number
       const tlm = Number(datax.reward.slice(0, -4))
-      rewardps = Number((tlm / datax.power).toFixed(6))
+      rewardps = Number((tlm / datax.power).toFixed(4))
       if(isFinite(rewardps)){
         setRewardShip(rewardps.toString())
       } else{
@@ -276,7 +276,7 @@ function MissionDetails() {
                 fontWeight="400"
                 lineHeight="25px"
               >
-                {`${Number(rewardship) * Number(bid)} TLM would be yours if the drop ended right now`}
+                {`${(Number(rewardship) * Number(bid)).toFixed(4)} TLM would be yours if the drop ended right now`}
               </Typography>
             </Box>
           </Box>
