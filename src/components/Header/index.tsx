@@ -136,7 +136,15 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
     });
     if (x.rows.length) {
       setTLMPower(x.rows[0].tlm_power);
-      setVotePower(x.rows[0].vote_power);
+
+      const date_string = x.rows[0].last_vote + 'Z'
+      const last_vote_date = new Date(date_string)
+      const test = new Date().toISOString()
+      const now = new Date(test).getTime()
+      const days = Math.floor((now - last_vote_date.getTime()) / (60*60*24*1000))
+      const vote_power_with_decay = (parseInt(x.rows[0].vote_power) * Math.pow(0.925,days))
+      setVotePower(Math.trunc(vote_power_with_decay));
+      // setVotePower(x.rows[0].vote_power);
 
     }
   }
