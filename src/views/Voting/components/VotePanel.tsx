@@ -22,7 +22,7 @@ interface IVotePanelProps {
 
 function VotePanel(props: IVotePanelProps) {
   const { desktop } = props;
-  const {wallet, votePower, setVotePower, tlmPower, setTLMPower} = useContext(WalletContext)
+  const {wallet, votePower, setVotePower, tlmPower, setTLMPower, planet} = useContext(WalletContext)
   const [selectedCandidateOne, setSelectedCandidateOne] = useState("None");
   const [selectedCandidateTwo, setSelectedCandidateTwo] = useState("None");
   const [selectedCandidateThree, setSelectedCandidateThree] = useState("None");
@@ -60,10 +60,14 @@ function VotePanel(props: IVotePanelProps) {
       let next = ""
       const candi: string[] = []
       do {
+        var p = planet
+        if (p = "neri") {
+          p = "nerix"
+        }
         const x = await fetchTable({
           json: true, 
           code: "dao.worlds",
-          scope: "eyeke",
+          scope: p,
           table: "candidates",
           limit: 100,     
           lower_bound: next
@@ -72,7 +76,7 @@ function VotePanel(props: IVotePanelProps) {
       more = x.more 
       x.rows.forEach((value: any, key: any) => {
         const name: string = value.candidate_name
-        if(value.is_active == 1){
+        if(value.is_active === 1){
           candi.push(name)
         }
       })
@@ -86,9 +90,9 @@ function VotePanel(props: IVotePanelProps) {
 
   const doVote = async () => {
     const names = []
-    if(selectedCandidateOne != "None") names.push(selectedCandidateOne)
-    if(selectedCandidateTwo != "None") names.push(selectedCandidateTwo)
-    if(selectedCandidateThree != "None") names.push(selectedCandidateThree)
+    if(selectedCandidateOne !== "None") names.push(selectedCandidateOne)
+    if(selectedCandidateTwo !== "None") names.push(selectedCandidateTwo)
+    if(selectedCandidateThree !== "None") names.push(selectedCandidateThree)
     if(names.length > 0){
       const x = await transaction({
         actions: [{
@@ -101,7 +105,7 @@ function VotePanel(props: IVotePanelProps) {
           data: {
             wallet: wallet.name,
             new_candidates: names,
-            planet: "eyeke",
+            planet: planet,
             votes: voteAmount,
           },
         }]
@@ -121,13 +125,17 @@ function VotePanel(props: IVotePanelProps) {
       }
     }
     x()
-  },[])
+    setSelectedCandidateOne("None")
+    setSelectedCandidateTwo("None")
+    setSelectedCandidateThree("None")
+    setVoteAmount(0)
+  },[planet])
 
   useEffect(() =>{
     let x = 0
-    if(selectedCandidateOne != "None") x += 1;
-    if(selectedCandidateTwo != "None") x += 1;
-    if(selectedCandidateThree != "None")x +=1 ;
+    if(selectedCandidateOne !== "None") x += 1;
+    if(selectedCandidateTwo !== "None") x += 1;
+    if(selectedCandidateThree !== "None")x +=1 ;
     setCandidateAmount(x)
   },[selectedCandidateOne,selectedCandidateTwo, selectedCandidateThree, voteAmount])
 

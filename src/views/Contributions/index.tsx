@@ -33,7 +33,10 @@ const useStyles = makeStyles({
 interface IUser{
   key: number,
   name:string,
-  votes: string
+  votes: string,
+  cpu: string,
+  drops: string,
+  other: string
 }
 
 interface IRanking{
@@ -78,13 +81,17 @@ function Contributions() {
         voters.push({
           key: key,
           name: value.wallet,
-          votes: value.votes
+          votes: value.votes,
+          cpu: value.cpu,
+          drops: value.drops,
+          other: value.other
         })
+        return 0
       })
       } while(more) 
       voters.sort(function(a, b){
-        var keyA = Number(a.votes.slice(0, -4))
-        var keyB = Number(b.votes.slice(0, -4))
+        var keyA = Number(a.votes.slice(0, -4)) + Number(a.cpu.slice(0, -4)) + Number(a.drops.slice(0, -4)) + Number(a.other.slice(0, -4))
+        var keyB = Number(b.votes.slice(0, -4)) + Number(b.cpu.slice(0, -4)) + Number(b.drops.slice(0, -4)) + Number(b.other.slice(0, -4))
         if(keyA < keyB) return 1;
         if(keyA > keyB) return -1;
         return 0
@@ -92,7 +99,9 @@ function Contributions() {
       const rankes = voters.slice(0, 99);
       const y: Array<IRanking> = []
       rankes.map((value, key) => {
-        y.push(createData(key , value.name, value.votes))
+        var total = Number(value.votes.slice(0, -4)) + Number(value.cpu.slice(0, -4)) + Number(value.drops.slice(0, -4)) + Number(value.other.slice(0, -4))
+        y.push(createData(key , value.name, total.toFixed(0) + " TLM"))
+        return 0
       })
       console.log(y)
       setRows(y)
