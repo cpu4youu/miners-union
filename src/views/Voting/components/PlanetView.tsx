@@ -1,46 +1,79 @@
 import { Box, Button, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useContext, useEffect, useState } from 'react'
+import { WalletContext } from "../../../App";
 
-import eyekeprofile from "../../../assets/imgs/eyekeprofile.png";
+import Eyeke from "../../../assets/imgs/Eyeke.png";
+import Kavian from "../../../assets/imgs/Kavian.png";
+import Magor from "../../../assets/imgs/Magor.png";
+import Naron from "../../../assets/imgs/Naron.png";
+import Neri from "../../../assets/imgs/Neri.png";
+import Veles from "../../../assets/imgs/Veles.png"
 import { smartcontract } from "../../../config";
 import { fetchTable } from "../../../plugins/chain";
 
 
-function EyekeView() {
-
-  const [unionPower, setUnionPower] = useState("0 EYE")
+function PlanetView() {
+  const {planet} = useContext(WalletContext)
+  const [picture, setPicture] = useState("")
+  const [unionPower, setUnionPower] = useState("0 TLM")
   const [support, setSupport] = useState("0 TLM")
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
   const mobile = useMediaQuery(theme.breakpoints.down(705));
+
   async function getData(){
+    switch(planet){
+      case "eyeke":
+        setPicture(Eyeke)
+        break;
+      case "naron":
+        setPicture(Naron)
+        break;
+      case "neri":
+        setPicture(Neri)
+        break;
+      case "veles":
+        setPicture(Veles)
+        break;
+      case "kavian":
+        setPicture(Kavian)
+        break;
+      case "magor":
+        setPicture(Magor)
+        break;
+    }
+    var name: string
+    var plant: string
+    if(planet === "neri"){
+      name = planet + ".dac"
+      plant = planet + "x"
+    } else {
+      name = planet + ".dac"
+      plant = planet
+    }
     const x = await fetchTable({
       json: true, 
       code: smartcontract,
       scope: smartcontract,
       table: "planets",
       limit: 1,
-      lower_bound: "eyeke",
-      upper_bound: "eyeke",
+      lower_bound: plant,
+      upper_bound: plant,
     })
     const rows = x.rows
     if(rows.length){
       setUnionPower(rows[0].voting_tlm)
     } 
-    // TODO: allow for more than 10 rows 
     const support = await fetchTable({
       json: true, 
       code: smartcontract,
       scope: smartcontract,
       table: "contribution",
-      limit: 20,
-      lower_bound: "eyeke",
-      upper_bound: "eyeke",
+      limit: 100,
     })
     const supportrows = support.rows
     var amount = "";
     if(supportrows.length){
-      const name = "eyeke.dac"
       for(var i = 0; i < supportrows.length; i++)
       {
         if(supportrows[i].wallet == name)
@@ -55,21 +88,25 @@ function EyekeView() {
 
   useEffect(() =>{
     getData()
-  },[])
+  },[planet])
   return (
     <Box>
       <Typography
         paddingBottom="20px"
         color="white"
-        style={{fontFamily: "Oxanium Medium", fontSize: mobile? "32px" : "42px"}}
+        style={{
+          fontFamily: "Oxanium Medium", 
+          fontSize: mobile? "32px" : "42px",
+          textTransform: "capitalize"
+        }}
       >
-        Eyeke
+        {planet}
       </Typography>
       <Box
         display="flex"
         justifyContent="flex-start"
       >
-        <img src={eyekeprofile} alt="" width={mobile? "130px" : "160px"} />
+        <img src={picture} alt="" width={mobile? "130px" : "160px"} />
         <Box
           display="flex"
           flexDirection="column"
@@ -99,4 +136,4 @@ function EyekeView() {
 
 }
 
-export default EyekeView; 
+export default PlanetView; 

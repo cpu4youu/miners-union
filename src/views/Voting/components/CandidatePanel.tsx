@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext, useCallback } from "react";
+import { useEffect, useState, useContext, useCallback, useRef } from "react";
 import {
   Box,
   Button,
@@ -68,9 +68,11 @@ function createData(
 var old: Array<IData>= []
 
 function CandidatePanel(props: ICandidatePanelProps) {
+  const { planet } = useContext(WalletContext)
   const { desktop } = props;
   const [data, setData] = useState(Array<IData>)
   const [isLoading, setIsLoading] = useState(true)
+  const intervalRef = useRef(null);
   let navigate = useNavigate();
   const handleClickMenu = (link: string, name: string, index: number) => {
     navigate(link, {
@@ -79,7 +81,7 @@ function CandidatePanel(props: ICandidatePanelProps) {
     });
   };
 
-  async function getCandidate() {
+  async function getCandidate(plant: string) {
     await checkLogin()
     try {
       let more = false
@@ -94,16 +96,15 @@ function CandidatePanel(props: ICandidatePanelProps) {
           limit: 10,     
           lower_bound: next
       })
-      console.log(x)
       next = x.next_key
       more = x.more 
       x.rows.forEach((value: any, key: any) => {
-        if(value.planet === "eyeke"){
+        if(value.planet === plant){
           candi.push({index: value.index, name : value.wallet, votes: value.votes, full_name:"-", image: "-", more : false})
         }
       })
       } while(more) 
-
+      console.log(candi)
       more = false
       next = ""
       do{
@@ -134,8 +135,8 @@ function CandidatePanel(props: ICandidatePanelProps) {
     }
   };
 
-  const getData = useCallback(async () =>{
-    const x: Array<ICandidate>| undefined = await getCandidate()
+  const getData = useCallback(async (plant: string) =>{
+    const x: Array<ICandidate>| undefined = await getCandidate(plant)
     console.log(x)
     if(x){
       x.sort(function(a, b){
@@ -162,16 +163,29 @@ function CandidatePanel(props: ICandidatePanelProps) {
   }, [])
 
   useEffect(() => {
-    const interval = setInterval(() =>{
-      getData()
-    }, 10000);
-    return () => (clearInterval(interval))
+    //@ts-ignore
+    intervalRef.current = setInterval(() =>{
+      getData(planet)
+    }, 5000);
+    //@ts-ignore
+    return () => (clearInterval(intervalRef.current))
   }, [getData])
+
+  useEffect(() => {
+    //@ts-ignore
+    clearInterval(intervalRef.current);
+    //@ts-ignore
+    intervalRef.current = setInterval(() => {
+      getData(planet)
+    }, 5000);
+     //@ts-ignore
+    return () => clearInterval(intervalRef.current);
+  },[planet])
 
   useEffect(() =>{
     setIsLoading(true)
-    getData()
-  },[getData])
+    getData(planet)
+  },[getData, planet])
 
   useEffect(() => {
     setIsLoading(false)  

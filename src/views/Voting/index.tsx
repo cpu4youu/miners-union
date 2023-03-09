@@ -6,10 +6,12 @@ import {
 import classnames from "classnames";
 import { makeStyles } from "@mui/styles";
 
-import EyekeView from "./components/EyekeView";
+import PlanetView from "./components/PlanetView";
 import CandidateSpotlight from "./components/CandidateSpotlight";
 import VotePanel from "./components/VotePanel";
 import CandidatePanel from "./components/CandidatePanel";
+import { useContext } from "react";
+import { WalletContext } from "../../App";
 
 
 const useStyles = makeStyles({
@@ -40,7 +42,7 @@ function Voting() {
           justifyContent="space-between"
           flexDirection={desktop ? "row" : "column"}
         >
-          <EyekeView />
+          <PlanetView />
           <CandidateSpotlight />
         </Box>
       </Box>

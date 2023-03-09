@@ -36,6 +36,8 @@ export const WalletContext = React.createContext({
   setTLMPower : (tlmPower: number) => {},
   votePower: 0,
   setVotePower: (votePower: number) => {},
+  planet: "eyeke",
+  setPlanet: (planet: string) => {}
 });
 
 
@@ -50,6 +52,7 @@ function App() {
   const [claimed, setClaimed] = React.useState(false)
   const [votePower, setVotePower] = React.useState(0)
   const [tlmPower, setTLMPower] = React.useState(0)
+  const [planet, setPlanet] = React.useState("eyeke")
 
   function getInitialStateWallet() {
     const wallet = localStorage.getItem('wallet')
@@ -71,6 +74,10 @@ function App() {
       localStorage.setItem('loggedIn', JSON.stringify(loggedIn))
     }
   }, [loggedIn])
+
+  useEffect(() => {
+    console.log(planet + " hier")
+  },[planet])
 
 
 
@@ -101,6 +108,8 @@ function App() {
         setTLMPower: setTLMPower,
         votePower: votePower,
         setVotePower: setVotePower,
+        planet: planet,
+        setPlanet: setPlanet
 
 
         }}>
