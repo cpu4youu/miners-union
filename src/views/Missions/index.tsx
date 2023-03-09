@@ -129,13 +129,14 @@ function Missions() {
       more = x.more;
       console.log(x);
       x.rows.map((value: any, key: number) => {
+        const reward = format(value.rewards)
         mission.push({
           rank: key,
           key: value.index,
           creator: value.creator,
           endtime: value.endtime,
           starttime: value.starttime,
-          reward: value.rewards,
+          reward: reward,
           unclaimed: value.total_power,
           power: value.total_power,
         });
@@ -408,3 +409,9 @@ function Missions() {
 }
 
 export default Missions;
+
+function format(num: number) {
+  return num.toString().replace(/^[+-]?\d+/, function(int) {
+    return int.replace(/(\d)(?=(\d{3})+$)/g, '$1,');
+  });
+}
