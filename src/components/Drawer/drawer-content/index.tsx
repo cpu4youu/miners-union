@@ -16,9 +16,11 @@ import DrawerProposalsBlackIcon from "../../../assets/icons/drawerproposalsblack
 import DrawerContributionsBlackIcon from "../../../assets/icons/drawercontributionsblack.png";
 
 import HoverableLinkButton from "./HoverableLinkButton";
+import HoverableSocialLinkButton from "./HoverableSocialLinkButton";
 
 import DrawerLogoutIcon from "../../../assets/icons/drawerlogout.png";
 import DrawerTelegramIcon from "../../../assets/icons/drawertelegram.png";
+import DrawerDiscordIcon from "../../../assets/icons/drawerdiscord.png";
 
 import { smartcontract } from "../../../config";
 import { fetchTable, transaction } from "../../../plugins/chain";
@@ -92,6 +94,19 @@ const LinkButtonDataNormal = [
     whiteIcon: DrawerContributionsIcon,
     darkIcon: DrawerContributionsBlackIcon,
     text: "Contributions",
+  },
+];
+
+const LinkButtonDataSocial = [
+  {
+    link: "https://t.me/minersunion",
+    iccon: DrawerTelegramIcon,
+    text: "Telegram",
+  },
+  {
+    link: "https://t.me/minersunion",
+    icon: DrawerDiscordIcon,
+    text: "Discord",
   },
 ];
 
@@ -232,8 +247,8 @@ function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
               {mobileOpen && <p>Logout</p>}
             </div>
           </Link>
-          {/*
-          <a href="https://t.me/minersunion" 
+          
+          {/*<a href="https://t.me/minersunion" 
              target="_blank"
           >
             <div
@@ -252,8 +267,21 @@ function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
               />
               {mobileOpen && <p>Telegram</p>}
             </div>
-          </a>
-          */}
+          </a>*/}
+
+          {LinkButtonDataSocial.map((value: any, index: any) => {
+            const { link, icon, text } = value;
+            return (
+              <HoverableSocialLinkButton
+                key={index}
+                link={link}
+                mobileOpen={mobileOpen}
+                icon={icon}
+                text={text}
+              />
+            );
+          })}
+          
           {/*<Link
             component={NavLink}
             // TODO: Need to link to external page here
