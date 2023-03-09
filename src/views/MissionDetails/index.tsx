@@ -17,6 +17,13 @@ import BackButtonIcon from "../../assets/icons/backbutton.png";
 import { fetchTable, checkLogin, transaction } from "../../plugins/chain";
 import { WalletContext } from "../../App";
 import { smartcontract } from "../../config";
+import MissionIcon from "../../assets/imgs/missionicon.png";
+import Eyeke from "../../assets/imgs/Eyeke.png";
+import Kavian from "../../assets/imgs/Kavian.png";
+import Magor from "../../assets/imgs/Magor.png";
+import Naron from "../../assets/imgs/Naron.png";
+import Neri from "../../assets/imgs/Neri.png";
+import Veles from "../../assets/imgs/Veles.png"
 
 interface IMission{
   key: number,
@@ -39,7 +46,7 @@ const useStyles = makeStyles({
 
 function MissionDetails() {
   const {wallet, tlmPower} = useContext(WalletContext)
-  const [maxSpace, setMaxSpace] = useState(0)
+  const [picture , setPicture] = useState(MissionIcon)
   const [data, setData] = useState<IMission>()
   const [time, setTime] = useState<string>("0")
   const [bid, setBid] = useState<string>("0")
@@ -67,6 +74,26 @@ function MissionDetails() {
         setRewardShip(rewardps.toString())
       } else{
         setRewardShip(tlm.toString())
+      }
+      switch(datax.creator){
+      case "eyeke.dac":
+        setPicture(Eyeke)
+        break;
+      case "naron.dac":
+        setPicture(Naron)
+        break;
+      case "neri.dac":
+        setPicture(Neri)
+        break;
+      case "veles.dac":
+        setPicture(Veles)
+        break;
+      case "kavian.dac":
+        setPicture(Kavian)
+        break;
+      case "magor.dac":
+        setPicture(Magor)
+        break;
       }
       setData(datax)
       setTime(location.state.time)
@@ -116,9 +143,11 @@ function MissionDetails() {
           }]
         })
         if(x){
-          alert(`You succesfully send ${Amount} Spaceships on this mission`)
+          alert(x)
+          await loadDate()
+        } else {
+          console.log("Something went wrong!")
         }
-
       }
     } catch(e) {
       alert(e)
@@ -146,6 +175,7 @@ function MissionDetails() {
   useEffect(() => {
     loadDate()
   },[])
+
 
   return (
     <>
@@ -209,7 +239,7 @@ function MissionDetails() {
               </Typography>
               <Box
                 component="img"
-                src={velesprofile}
+                src={picture}
                 width={desktop ? "134px" : "100px"}
                 height={desktop ? "134px" : "100px"}
                 pt="32px"

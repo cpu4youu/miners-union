@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -14,13 +14,12 @@ import {
   Divider,
 } from "@mui/material";
 
-import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
 import BackButtonIcon from "../../assets/icons/backbutton.png";
 
 import { makeStyles } from "@mui/styles";
 import { WalletContext } from "../../App";
-import { checkLogin, transaction } from "../../plugins/chain";
+import { checkLogin, fetchTable, transaction } from "../../plugins/chain";
 import { smartcontract } from "../../config";
 
 const modalStyle = {
@@ -53,7 +52,7 @@ function CreateProposal() {
   const classes = useStyles();
   const theme = useTheme();
   const {wallet} = useContext(WalletContext)
-
+  const [proposalcost, setProposalCost] = useState("1.0000 TLM")
   const [proposal, setProposal] = useState("");
   const [receiveWallet, setReceiveWallet] = useState("");
   const [memo, setMemo] = useState("");
@@ -120,9 +119,9 @@ function CreateProposal() {
                 permission: 'active',
               }],
               data: {
-                from: "wallet.name",
+                from: wallet.name,
                 memo: "deposit",
-                quantity: "100.0000 TLM",
+                quantity: proposalcost,
                 to: smartcontract
               },
             },{
@@ -148,6 +147,22 @@ function CreateProposal() {
         alert(e)
       }
   }
+
+  useEffect(() =>{
+    async function x(){
+      const r = await fetchTable({
+        json: true, 
+        code: smartcontract,
+        scope: smartcontract,
+        table: "propconfig",
+        limit: 100,
+      })
+      if(r.rows.length > 0){
+        setProposalCost(r.rows[0].proposal_cost)
+      }
+    }
+    x()
+  }, [])
 
   return (
     <>
@@ -362,7 +377,7 @@ function CreateProposal() {
                 variant="body1"
                 sx={{ width: desktop ? "220px" : "100%", mt: 3 }}
               >
-                Creating a Proposal costs 100 TLM. Please make sure everything
+                Creating a Proposal costs {proposalcost}. Please make sure everything
                 is correct.
               </Typography>
             </Box>
@@ -433,7 +448,7 @@ function CreateProposal() {
             textAlign="center"
             fontFamily="Oxanium Light"
           >
-            Creating this Proposal costs 100 TLM.
+            Creating this Proposal costs {proposalcost}.
           </Typography>
           <Typography
             variant="body1"

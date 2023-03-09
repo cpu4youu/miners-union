@@ -1,5 +1,5 @@
 
-import { useCallback, useEffect, useState, useRef, useContext } from "react";
+import { useCallback, useEffect, useState, useContext } from "react";
 
 import {
   Box,
@@ -19,11 +19,7 @@ import { useNavigate } from "react-router-dom";
 import classnames from "classnames";
 
 import { makeStyles } from "@mui/styles";
-import MagorProfileIcon from "../../assets/imgs/margoprofile.png";
-import Eyeke from "../../assets/imgs/eyekeprofile.png";
 import MissionIcon from "../../assets/imgs/missionicon.png";
-import VelesProfileIcon from "../../assets/imgs/velesprofile.png";
-import NaronProfileIcon from "../../assets/imgs/naronprofile.png";
 import SpaceshipIcon from "../../assets/icons/spaceship.png";
 
 import { smartcontract } from "../../config";
