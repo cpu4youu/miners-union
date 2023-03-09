@@ -99,12 +99,16 @@ function CandidatePanel(props: ICandidatePanelProps) {
       next = x.next_key
       more = x.more 
       x.rows.forEach((value: any, key: any) => {
-        if(value.planet === plant){
+        let p = plant
+        if (p === "neri") {
+          p = "nerix"
+        }
+        if(value.planet === p){
           candi.push({index: value.index, name : value.wallet, votes: value.votes, full_name:"-", image: "-", more : false})
         }
       })
       } while(more) 
-      console.log(candi)
+      // console.log(candi)
       more = false
       next = ""
       do{

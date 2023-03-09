@@ -18,7 +18,7 @@ import {
   JoinRequests,
   CandidateScreen,
 } from "./views";
-import { checkLogin } from "./plugins/chain";
+import { checkLogin, Login } from "./plugins/chain";
 
 export const WalletContext = React.createContext({
   wallet : {
@@ -90,6 +90,7 @@ function App() {
     if(y){
       setLoggedIn(y)
       checkLogin()
+      
     }
   },[])
   
@@ -100,7 +101,7 @@ function App() {
     <WalletContext.Provider value={
         {wallet: wallet, 
         setWallet: setWallet, 
-        loggedIn: loggedIn , 
+        loggedIn: loggedIn, 
         setLoggedIn: setLoggedIn,
         claimed: claimed,
         setClaimed: setClaimed,

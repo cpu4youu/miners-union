@@ -129,7 +129,8 @@ function Missions() {
       more = x.more;
       console.log(x);
       x.rows.map((value: any, key: number) => {
-        const reward = format(value.rewards)
+        console.log("-------",value.rewards)
+        const reward = parseFloat(value.rewards).toFixed(0) +" TLM"
         mission.push({
           rank: key,
           key: value.index,

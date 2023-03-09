@@ -60,8 +60,8 @@ function VotePanel(props: IVotePanelProps) {
       let next = ""
       const candi: string[] = []
       do {
-        var p = planet
-        if (p = "neri") {
+        let p = planet
+        if (p === "neri") {
           p = "nerix"
         }
         const x = await fetchTable({
