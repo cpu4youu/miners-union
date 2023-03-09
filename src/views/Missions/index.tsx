@@ -307,7 +307,7 @@ function Missions() {
                     background: "transparent",
                   }}
                 >
-                  Time Remaining
+                  Time left to Join
                 </TableCell>
               </TableRow>
             </TableHead>
