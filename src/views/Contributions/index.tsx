@@ -9,6 +9,7 @@ import {
   useMediaQuery,
   useTheme,
   Paper,
+  Typography,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import classnames from "classnames";
@@ -60,6 +61,8 @@ function Contributions() {
   const mobile = useMediaQuery(theme.breakpoints.down(705));
 
   const [rows, setRows] = useState<IRanking[]>([])
+  const [total, setTotal] = useState("0 TLM")
+
 
   useEffect(() => {
     async function x (){
@@ -97,13 +100,15 @@ function Contributions() {
         return 0
       })
       const rankes = voters.slice(0, 99);
+      var t = 0;
       const y: Array<IRanking> = []
       rankes.map((value, key) => {
         var total = Number(value.votes.slice(0, -4)) + Number(value.cpu.slice(0, -4)) + Number(value.drops.slice(0, -4)) + Number(value.other.slice(0, -4))
-        y.push(createData(key , value.name, total.toFixed(0) + " TLM"))
+        y.push(createData(key , value.name, format(Number(total.toFixed(0))) + " TLM"))
+        t += total
         return 0
       })
-      console.log(y)
+      setTotal(format(t) + " TLM")
       setRows(y)
     }
     x()
@@ -118,6 +123,20 @@ function Contributions() {
             mobile ? classes.mobileWrapper : ""
           )}
         >
+          <Box
+          display="flex"
+          justifyContent="flex-center"
+          >
+          <Typography
+                fontSize={desktop ? "24px" : "20px"}
+                lineHeight="30px"
+                fontWeight="700"
+                color="white"
+                style={{ fontFamily: "Oxanium Medium" }}
+              >
+                Total Contribution: {total}
+              </Typography>
+          </Box>
           <TableContainer
             component={Paper}
             sx={{ background: "transparent", boxShadow: "none" }}
@@ -169,7 +188,7 @@ function Contributions() {
                       background: "transparent",
                     }}
                   >
-                    Total Contribution
+                    Contribution
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -254,3 +273,9 @@ function Contributions() {
 }
 
 export default Contributions;
+
+function format(num: number) {
+  return num.toString().replace(/^[+-]?\d+/, function(int) {
+    return int.replace(/(\d)(?=(\d{3})+$)/g, '$1,');
+  });
+}
