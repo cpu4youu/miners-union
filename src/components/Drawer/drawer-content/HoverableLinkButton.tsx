@@ -48,7 +48,9 @@ const HoverableLinkButton = ({
         <img
           alt=""
           src={(isShown || isActive) ? darkIcon : whiteIcon}
-          style={{ marginRight: mobileOpen ? 10 : 0 }}
+          style={{ 
+            marginRight: mobileOpen ? 10 : 0 
+          }}
         />
         {mobileOpen && <p>{text}</p>}
       </Box>

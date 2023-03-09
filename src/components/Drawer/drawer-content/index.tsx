@@ -100,11 +100,11 @@ const LinkButtonDataNormal = [
 const LinkButtonDataSocial = [
   {
     link: "https://t.me/minersunion",
-    iccon: DrawerTelegramIcon,
+    icon: DrawerTelegramIcon,
     text: "Telegram",
   },
   {
-    link: "https://t.me/minersunion",
+    link: "https://discord.gg/9Y6GanVY6r",
     icon: DrawerDiscordIcon,
     text: "Discord",
   },
@@ -157,6 +157,8 @@ function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
         })
         if(r.rows[0].wallet === wallet.name) {
           setInspector(true);
+        } else {
+          setInspector(false);
         }
       }
     }
@@ -282,7 +284,7 @@ function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
             );
           })}
           
-          {/*<Link
+          {/* <Link
             component={NavLink}
             // TODO: Need to link to external page here
             to="https://t.me/minersunion"
@@ -307,7 +309,7 @@ function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
               />
               {mobileOpen && <p>Telegram</p>}
             </div>
-          </Link>*/}
+          </Link> */}
         </div>
       </div>
     </div>

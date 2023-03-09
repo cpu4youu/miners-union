@@ -30,7 +30,10 @@ const HoverableSocialLinkButton = ({
         <img
           alt=""
           src={(icon)}
-          style={{ marginRight: mobileOpen ? 10 : 0 }}
+          style={{
+             marginRight: mobileOpen ? 10 : 0,
+             width: "auto",
+            }}
         />
         {mobileOpen && <p>{text}</p>}
     </Button>
