@@ -221,7 +221,7 @@ function VotingDetail() {
                 pb="20px"
                 style={{ fontFamily: "Oxanium Light" }}
               >
-                {votes.toString()}
+                {format(votes)}
               </Typography>
               <Typography
                 fontSize="12px"
@@ -325,5 +325,10 @@ function checkURL(url: string) {
   return(url.match(/\.(jpeg|jpg|gif|png|webp)$/) != null);
 }
 
+function format(num: any) {
+  return num.toString().replace(/^[+-]?\d+/, function(int: string) {
+    return int.replace(/(\d)(?=(\d{3})+$)/g, '$1,');
+  });
+}
 
 export default VotingDetail;
