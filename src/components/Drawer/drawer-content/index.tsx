@@ -121,7 +121,7 @@ function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
   const [isInspector, setInspector] = useState(false)
 
   const HandleClaim = async () => {
-    if(wallet != null){
+    if(wallet.name != null){
       const x = await transaction({
         actions: [{
           account: smartcontract,
@@ -145,7 +145,7 @@ function NavContent({ mobileOpen, isSmallerScreen }: INavContent) {
 
   useEffect(() => {
     async function z(){
-      if(wallet != null){
+      if(wallet.name != null){
         const r = await fetchTable({
           json: true,
           code: smartcontract,

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -21,6 +21,7 @@ import DescriptiveLine from "../../assets/icons/descriptiveline.png";
 import { fetchTable, transaction } from "../../plugins/chain";
 import { smartcontract } from "../../config";
 import { isBuffer } from "lodash";
+import { WalletContext } from "../../App";
 
 const modalStyle = {
   position: "absolute" as "absolute",
@@ -49,6 +50,7 @@ const useStyles = makeStyles({
 });
 
 function CandidateScreen() {
+  const {planet} = useContext(WalletContext)
   const [candidateName, setCandidateName] = useState("");
   const [wallet, setWallet] = useState("")
   const [profileImage, setProfileImage] = useState("")
@@ -126,7 +128,8 @@ function CandidateScreen() {
             }]
           })
           if(r){
-            alert(r)
+            console.log(r)
+            alert("Succesfully boosted")
           }
         }catch (e){
           alert(e)
@@ -138,6 +141,10 @@ function CandidateScreen() {
 
   const handleSetProfile = async () => {
     try{
+      let p = planet
+      if (p === "neri") {
+        p = "nerix"
+      }
       const r = await transaction({
         actions: [{
           account: smartcontract,
@@ -148,7 +155,7 @@ function CandidateScreen() {
           }],
           data: {
             wallet: wallet,
-            planet: "eyeke",
+            planet: p,
             candidate: candidateName,
             slogan: slogan,
             profile_image: profileImage,
@@ -157,7 +164,8 @@ function CandidateScreen() {
         }]
       })
       if(r){
-        alert(r)
+        console.log(r)
+        alert("Succesfully submited your profile!")
       }
     } catch (e) {
       alert(e)
