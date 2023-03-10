@@ -17,6 +17,7 @@ import LeftIndentIcon from "../../assets/icons/leftindent.svg";
 import RightIndentIcon from "../../assets/icons/rightindent.svg";
 import MenuLightningIcon from "../../assets/icons/menulightning.png";
 import MenuRocketIcon from "../../assets/icons/menurocket.png";
+import MenuTLMIcon from "../../assets/icons/tlm.png";
 import { useContext, useEffect, useState } from "react";
 import { WalletContext } from "../../App";
 import { fetchTable } from "../../plugins/chain";
@@ -74,7 +75,7 @@ interface IMenuBoard {
 
 function MenuBoard({ icon, menuTitle, menuText, width, color }: IMenuBoard) {
   return (
-    <Box sx={{ display: "flex", alignItems: "center" }}>
+    <Box sx={{ display: "flex", alignItems: "center" , padding: "20px"}}>
       <Box>
         <img alt="" width={width} src={icon} />
       </Box>
@@ -103,8 +104,7 @@ function getInitialStateWallet() {
 
 function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
   const { wallet, claimed, votePower, setVotePower, tlmPower, setTLMPower } = useContext(WalletContext);
-/*   const [votePower, setVotePower] = useState(0);
-  const [tlmPower, setTLMPower] = useState(0); */
+  const [tlm, setTLM] = useState("0")
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
   const mobile = useMediaQuery(theme.breakpoints.down(705));
@@ -134,6 +134,13 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
       lower_bound: name,
       upper_bound: name,
     });
+    const z = await fetchTable({
+      json: true,
+      code: "alien.worlds",
+      scope: wallet.name,
+      table: "accounts",
+      limit: 1,
+    })
     if (x.rows.length) {
       setTLMPower(x.rows[0].tlm_power);
 
@@ -144,8 +151,11 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
       const days = Math.floor((now - last_vote_date.getTime()) / (60*60*24*1000))
       const vote_power_with_decay = (parseInt(x.rows[0].vote_power) * Math.pow(0.925,days))
       setVotePower(Math.trunc(vote_power_with_decay));
-      // setVotePower(x.rows[0].vote_power);
+      //setVotePower(10000);
 
+    }
+    if(z.rows.length){
+      setTLM(z.rows[0].balance.split(" ")[0])
     }
   }
 
@@ -221,22 +231,29 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
             sx={{
               display: desktop ? "flex" : "none",
               justifyContent: "space-between",
-              width: "300px",
+              width: "auto",
             }}
           >
             <MenuBoard
               icon={MenuLightningIcon}
-              menuTitle={votePower.toString()}
+              menuTitle={format(votePower)}
               menuText="Voting Power"
               width="20px"
               color="#F1AE02"
             />
             <MenuBoard
               icon={MenuRocketIcon}
-              menuTitle={tlmPower.toString()}
+              menuTitle={format(tlmPower)}
               menuText="Spacecraft"
               width="24px"
               color="#009DF5"
+            />
+            <MenuBoard
+              icon={MenuTLMIcon}
+              menuTitle={format(tlm)}
+              menuText="Trilium Balance"
+              width="24px"
+              color="#CD48CD"
             />
           </Box>
           {desktop && (
@@ -263,5 +280,12 @@ function Header({ mobileOpen, handleDrawerToggle }: IHeader) {
     </AppBar>
   );
 }
+
+function format(num: any) {
+  return num.toString().replace(/^[+-]?\d+/, function(int: string) {
+    return int.replace(/(\d)(?=(\d{3})+$)/g, '$1,');
+  });
+}
+
 
 export default Header;

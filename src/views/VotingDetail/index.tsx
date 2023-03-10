@@ -17,6 +17,7 @@ import { WalletContext } from "../../App";
 import BackButtonIcon from "../../assets/icons/backbutton.png";
 import eyekeprofile from "../../assets/imgs/eyekeprofile.png";
 import DescriptiveLine from "../../assets/icons/descriptiveline.png";
+import CandidateOneIcon from "../../assets/imgs/candidateone.png";
 
 interface IData{
   key: number,
@@ -87,7 +88,9 @@ function VotingDetail() {
     })
     if(x.rows[0]){
       setName(x.rows[0].candidate)
-      setImg(x.rows[0].profile_image)
+      var image = x.rows[0].profile_image
+      if(!checkURL(image)) image = CandidateOneIcon;
+      setImg(image)
       setDescription(x.rows[0].description)
       setSlogan(x.rows[0].slogan)
     }
@@ -317,5 +320,10 @@ function VotingDetail() {
     </>
   );
 }
+
+function checkURL(url: string) {
+  return(url.match(/\.(jpeg|jpg|gif|png|webp)$/) != null);
+}
+
 
 export default VotingDetail;
