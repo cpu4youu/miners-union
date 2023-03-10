@@ -62,7 +62,8 @@ function PlanetView() {
     })
     const rows = x.rows
     if(rows.length){
-      setUnionPower(rows[0].voting_tlm)
+      const z = Number(rows[0].voting_tlm.split(" ")[0]).toFixed(0)
+      setUnionPower(format(z) + " TLM")
     } 
     const support = await fetchTable({
       json: true, 
@@ -78,7 +79,8 @@ function PlanetView() {
       {
         if(supportrows[i].wallet == name)
         {
-          amount = supportrows[i].votes
+          const s =  Number(supportrows[i].votes.split(" ")[0]).toFixed(0)
+          amount = format(s) + " TLM"
           break
         }
       }
@@ -134,6 +136,12 @@ function PlanetView() {
     </Box>
   );
 
+}
+
+function format(num: any) {
+  return num.toString().replace(/^[+-]?\d+/, function(int: string) {
+    return int.replace(/(\d)(?=(\d{3})+$)/g, '$1,');
+  });
 }
 
 export default PlanetView; 

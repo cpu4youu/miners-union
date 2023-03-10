@@ -193,7 +193,7 @@ function CandidatePanel(props: ICandidatePanelProps) {
         if(value.image !=="-"){
           img = value.image
         }
-        y.push(createData(value.index, `${img}`, key + 1, value.full_name, value.name, value.votes, value.more))
+        y.push(createData(value.index, `${img}`, key + 1, value.full_name, value.name, format(value.votes), value.more))
       })
       setData(y)
       /* if(!isEqual(y, old)){
@@ -434,20 +434,13 @@ function CandidatePanel(props: ICandidatePanelProps) {
 }
 
 function checkURL(url: string) {
-  return(url.match(/\.(jpeg|jpg|gif|png)$/) != null);
+  return(url.match(/\.(jpeg|jpg|gif|png|webp)$/) != null);
 }
 
-/* function compare( a: IProfile, b: IProfile ) {
-  var x = Number(a.total_vote_power)
-  var y = Number(b.total_vote_power)
-  if ( x < y){
-    return 1;
-  }
-  if ( x > y ){
-    return -1;
-  }
-  return 0;
+function format(num: any) {
+  return num.toString().replace(/^[+-]?\d+/, function(int: string) {
+    return int.replace(/(\d)(?=(\d{3})+$)/g, '$1,');
+  });
 }
- */
 
 export default CandidatePanel;
