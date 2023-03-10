@@ -60,8 +60,8 @@ function VotePanel(props: IVotePanelProps) {
       let next = ""
       const candi: string[] = []
       do {
-        var p = planet
-        if (p = "neri") {
+        let p = planet
+        if (p === "neri") {
           p = "nerix"
         }
         const x = await fetchTable({
@@ -94,6 +94,10 @@ function VotePanel(props: IVotePanelProps) {
     if(selectedCandidateTwo !== "None") names.push(selectedCandidateTwo)
     if(selectedCandidateThree !== "None") names.push(selectedCandidateThree)
     if(names.length > 0){
+      let p = planet
+      if (p === "neri") {
+        p = "nerix"
+      }
       const x = await transaction({
         actions: [{
           account: smartcontract,
@@ -105,7 +109,7 @@ function VotePanel(props: IVotePanelProps) {
           data: {
             wallet: wallet.name,
             new_candidates: names,
-            planet: planet,
+            planet: p,
             votes: voteAmount,
           },
         }]

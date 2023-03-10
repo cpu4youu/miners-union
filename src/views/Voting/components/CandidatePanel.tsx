@@ -45,7 +45,7 @@ interface IProfile{
   avg_vote_time_stamp : string,
   candidate_name : string,
   gap_filler : number,
-  is_active: boolean,
+  is_active: number,
   number_voters : number,
   rank : number,
   requestedpay : string
@@ -81,12 +81,53 @@ function CandidatePanel(props: ICandidatePanelProps) {
     });
   };
 
+  async function getActiveCandidates(plant: string){
+      try {
+        let more = false
+        let next = ""
+        var profiles: Array<IProfile> = []
+        var dataold: Array<IData>= data
+        do{
+          const x = await fetchTable({
+            json: true, 
+            code: "dao.worlds",
+            scope: plant,
+            table: "candidates",
+            limit: 100,
+            lower_bound: next,
+          })
+          next = x.next_key
+          more = x.more
+          x.rows.map((value: IProfile) =>{
+            profiles.push(value)
+          })
+        }while(more)
+        var actives = []
+        let i = 0
+        do{
+          if(profiles[i].is_active === 1){
+            actives.push(profiles[i].candidate_name)
+          }
+          i++
+        }while(i < profiles.length)
+       return actives
+      } catch(e){
+      console.log(e)
+    }
+  }
+
   async function getCandidate(plant: string) {
     await checkLogin()
     try {
       let more = false
       let next = ""
       let candi: Array<ICandidate> = []
+      let p = plant
+        if (p === "neri") {
+          p = "nerix"
+        }    
+      let dwc = await getActiveCandidates(p)
+      let dworlds_candidates = dwc ? dwc : []
       do {
         const x = await fetchTable({
           json: true, 
@@ -99,12 +140,12 @@ function CandidatePanel(props: ICandidatePanelProps) {
       next = x.next_key
       more = x.more 
       x.rows.forEach((value: any, key: any) => {
-        if(value.planet === plant){
+        if(value.planet === p && dworlds_candidates.includes(value.wallet)){
           candi.push({index: value.index, name : value.wallet, votes: value.votes, full_name:"-", image: "-", more : false})
         }
       })
       } while(more) 
-      console.log(candi)
+      // console.log(candi)
       more = false
       next = ""
       do{
@@ -190,42 +231,6 @@ function CandidatePanel(props: ICandidatePanelProps) {
   useEffect(() => {
     setIsLoading(false)  
   },[data])
-
-  /* useEffect(() => {
-    async function x(){
-      try {
-        let more = false
-        let next = ""
-        var profiles: Array<IProfile> = []
-        var dataold: Array<IData>= data
-        do{
-          const x = await fetchTable({
-            json: true, 
-            code: "dao.worlds",
-            scope: "eyeke",
-            table: "candidates",
-            limit: 100,
-            lower_bound: next,
-          })
-          next = x.next_key
-          more = x.more
-          x.rows.map((value: IProfile) =>{
-            profiles.push(value)
-          })
-        }while(more)
-       profiles.sort(compare) 
-       data.map((value, key) => {
-        profiles.map((prof, rank)=> {
-          if(value.wallet === prof.candidate_name){
-          }
-        })
-       })
-      } catch(e){
-      console.log(e)
-    }
-  }
-   // x()
-  }, [data]) */
 
   return (
     <>

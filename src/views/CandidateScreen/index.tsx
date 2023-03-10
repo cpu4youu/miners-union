@@ -299,7 +299,7 @@ function CandidateScreen() {
                     marginLeft: "16px",
                   }}
                 >
-                  Link to your profile image
+                  Link to your profile image (Link must end in: jpeg,jpg,gif,png)
                 </FormHelperText>
                 <FormControl
                   sx={{ flexGrow: "1", width: desktop ? "400px" : "100%" }}
@@ -330,7 +330,7 @@ function CandidateScreen() {
                   width={desktop ? "120px" : "72px"}
                   alt=""
                 />
-                <img
+                {/*<img
                   src={eyekeprofile}
                   alt=""
                   width={desktop ? "64px" : "40px"}
@@ -339,7 +339,7 @@ function CandidateScreen() {
                     top: desktop ? "70px" : "44px",
                     left: desktop ? "-24px" : "-16px",
                   }}
-                />
+                />*/}
                 <img
                   src={DescriptiveLine}
                   alt=""

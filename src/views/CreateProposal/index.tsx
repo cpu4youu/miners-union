@@ -135,7 +135,7 @@ function CreateProposal() {
                 description: description,
                 memo: memo,
                 title: proposal,
-                tlm: tlmAmount + " TLM",
+                tlm: parseFloat(tlmAmount).toFixed(4) + " TLM",
                 to: receiveWallet,
                 wallet: wallet.name
               },

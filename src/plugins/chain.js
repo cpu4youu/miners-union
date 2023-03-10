@@ -34,6 +34,7 @@ async function fetchTable(packed){
 }
 
 export async function transaction(packed){
+  await Login()
   const x = await wallet.transact(packed)
   return x
 }
