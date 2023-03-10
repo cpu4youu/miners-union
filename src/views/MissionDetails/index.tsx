@@ -143,7 +143,7 @@ function MissionDetails() {
           }]
         })
         if(x){
-          alert(x)
+          console.log(x)
           await loadDate()
         } else {
           console.log("Something went wrong!")

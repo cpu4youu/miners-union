@@ -129,14 +129,15 @@ function Missions() {
       more = x.more;
       console.log(x);
       x.rows.map((value: any, key: number) => {
-        const reward = format(value.rewards)
+        const s =  Number(value.rewards.split(" ")[0]).toFixed(0)
+        const reward = format(s)
         mission.push({
           rank: key,
           key: value.index,
           creator: value.creator,
           endtime: value.endtime,
           starttime: value.starttime,
-          reward: reward,
+          reward: reward + " TLM",
           unclaimed: value.total_power,
           power: value.total_power,
         });
@@ -182,7 +183,7 @@ function Missions() {
             `${MissionIcon}`,
             value.creator,
             value.reward,
-            value.power,
+            format(value.power),
             remaining     
           ))
           
@@ -410,8 +411,8 @@ function Missions() {
 
 export default Missions;
 
-function format(num: number) {
-  return num.toString().replace(/^[+-]?\d+/, function(int) {
+function format(num: any) {
+  return num.toString().replace(/^[+-]?\d+/, function(int: string) {
     return int.replace(/(\d)(?=(\d{3})+$)/g, '$1,');
   });
 }
