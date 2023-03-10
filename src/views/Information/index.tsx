@@ -28,11 +28,8 @@ const useStyles = makeStyles({
   },
 });
 
-const listPlanet = ["Eyeke"];
-
 function Information() {
   const {wallet} = useContext(WalletContext)
-  const [selectedPlanet, setSelectedPlanet] = useState("Eyeke");
   const [proposer, setProposer] = useState(wallet.name ? wallet.name : "Enter your wallet");
   const [title, setTitle] = useState("Miners Union: Add Voti...");
   const [memo, setMemo] = useState("Adding Vote Power to the Miners Union");

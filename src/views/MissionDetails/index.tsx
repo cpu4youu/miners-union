@@ -143,7 +143,7 @@ function MissionDetails() {
           }]
         })
         if(x){
-          console.log(x)
+         alert("Succesfully sent your spaceships to the mission")
           await loadDate()
         } else {
           console.log("Something went wrong!")

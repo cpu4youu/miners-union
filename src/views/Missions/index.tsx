@@ -107,7 +107,7 @@ function Missions() {
         }]
       })
       if(x){  
-        alert("Succesfully claimed Mission")
+        alert("Succesfully claimed your missions")
       }
     }
   }

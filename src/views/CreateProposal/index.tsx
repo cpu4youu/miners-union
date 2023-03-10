@@ -142,6 +142,9 @@ function CreateProposal() {
             }]
         })
         console.log(t)
+        if(t){
+          alert("Succesfully created the proposal")
+        }
       }
       }catch(e){
         alert(e)

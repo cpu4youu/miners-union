@@ -58,7 +58,6 @@ export default class WCWWallet {
       })
       return trans
     } catch(e){
-      
       alert(e)
     }
     

@@ -133,7 +133,10 @@ function ProposalDetails() {
               },
             }]
           })
-          //alert(t)
+          if(t){
+            alert("Succesfully voted for the proposal")
+            console.log(t)
+          }
       } else {
         console.log("Not Logged in please refresh")
       }
