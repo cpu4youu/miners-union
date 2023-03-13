@@ -68,7 +68,7 @@ function MissionDetails() {
 
       const datax: IMission = location.state.Data
       var rewardps: number
-      const tlm = Number(datax.reward.slice(0, -4))
+      const tlm = Number(datax.reward.slice(0, -4).replace(/\,/g,''))
       rewardps = Number((tlm / datax.power).toFixed(4))
       if(isFinite(rewardps)){
         setRewardShip(rewardps.toString())
