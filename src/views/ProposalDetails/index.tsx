@@ -137,6 +137,7 @@ function ProposalDetails() {
           if(t){
             alert("Succesfully voted for the proposal")
             console.log(t)
+            setOpenModal(false)
           }
       } else {
         console.log("Not Logged in please refresh")
