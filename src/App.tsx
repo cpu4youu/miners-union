@@ -77,6 +77,7 @@ function App() {
 
   useEffect(() => {
     console.log(planet + " hier")
+    localStorage.setItem('planet', JSON.stringify(planet))
   },[planet])
 
 

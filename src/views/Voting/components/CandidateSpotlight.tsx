@@ -30,7 +30,8 @@ function CandidateSpotlight() {
     <Box style={{ marginTop: desktop ? "0" : "20px" }}>
       <Box>
       <Tabs
-          value={value}
+          // setPlanet({true && 'Eyeke'})
+          value={value} //{false && <Tab label="Tab 1" value="tab1"/>}
           onChange={handleChange}
           aria-label="basic tabs example"
         >
