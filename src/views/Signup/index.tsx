@@ -59,7 +59,9 @@ function Signup() {
       if(x.rows.length !== 0 ){
         if(x.rows[0].wallet === wallet.name){
           navigate("/voting")
-        } 
+        } else {
+          navigate("/joinrequests")
+        }
       } 
     } catch(e){
       alert(e)

@@ -25,6 +25,7 @@ import BackButtonIcon from "../../assets/icons/backbutton.png";
 import { WalletContext } from "../../App";
 import { checkLogin, fetchTable, transaction } from "../../plugins/chain";
 import { smartcontract, planets } from "../../config";
+import { isWhiteSpaceLike } from "typescript";
 
 const modalStyle = {
   position: "absolute" as "absolute",
@@ -331,7 +332,8 @@ function ProposalDetails() {
             }}
           />
           <Box>
-            <Typography fontSize={desktop ? "20px" : "18px"} mt={3}>
+            <Typography fontSize={desktop ? "20px" : "18px"} mt={3}
+            style={{whiteSpace:"pre-wrap"}}>
              {proposal?.description}
             </Typography>
           </Box>
