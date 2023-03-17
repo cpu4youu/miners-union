@@ -150,7 +150,7 @@ function Missions() {
     getData();
   }, [getData]);
 
-  function secondsToDhms(seconds: number) {
+  function secondsToDhms(seconds: number): string{
     var d = Math.floor(seconds / (3600 * 24));
     var h = Math.floor((seconds % (3600 * 24)) / 3600);
     var m = Math.floor((seconds % 3600) / 60);
@@ -172,10 +172,13 @@ function Missions() {
         var test = new Date().toISOString().replace('Z', '')
         var now = new Date(test).getTime() / 1000 
         var remain = Math.floor(time - now)
-
         if(remain > 0){
-          const s = secondsToDhms(remain )
+          const s = secondsToDhms(remain)
           remaining = s.substring(0, s.length-2)
+          if(s === " "){
+            remaining = "< 1 hour"
+          }
+          
           missions.push(
             createData(
             key,

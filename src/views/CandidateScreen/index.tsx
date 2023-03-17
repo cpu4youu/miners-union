@@ -206,7 +206,6 @@ function CandidateScreen() {
         } else {
           setCandidateName(wallet.name)
         }
-        
         handleDescriptionChange(desc);
         handleProfileImageChange(img);
         handleSloganChange(slogan);
