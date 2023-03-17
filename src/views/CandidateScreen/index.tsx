@@ -181,7 +181,6 @@ function CandidateScreen() {
   useEffect(() => {
     const wallet = getInitialStateWallet()
     setWallet(wallet.name)
-    setCandidateName(wallet.name)
     async function x() {
       const r = await fetchTable({
         json: true,
@@ -201,12 +200,19 @@ function CandidateScreen() {
         var name = r.rows[0].candidate;
         var datum = new Date(r.rows[0].display_until).getTime()
         setTime(Math.floor(datum / 1000))
-        handleCandidateNameChange(name);
+        console.log(name)
+        if(name){
+          setCandidateName(name)
+        } else {
+          setCandidateName(wallet.name)
+        }
+        
         handleDescriptionChange(desc);
         handleProfileImageChange(img);
         handleSloganChange(slogan);
         setCreated(true)
       } else {
+        setCandidateName(wallet.name)
         setCreated(false)
       }
     const x = await fetchTable({
