@@ -35,7 +35,7 @@ const useStyles = makeStyles({
 });
 
 function VotingDetail() {
-  const {wallet, votePower} = useContext(WalletContext)
+  const {wallet, votePower, planet} = useContext(WalletContext)
   const [name, setName] = useState("-")
   const [img, setImg] = useState("-")
   const [description, setDescription] = useState("-")
@@ -55,6 +55,10 @@ function VotingDetail() {
   };
 
   const handleVote = async () => {
+    let p = planet
+    if (p === "neri") {
+      p = "nerix"
+    }
     const x = await transaction({
       actions: [{
         account: smartcontract,
@@ -66,7 +70,7 @@ function VotingDetail() {
         data: {
           wallet: wallet.name,
           new_candidates: [wallet_name],
-          planet: "eyeke",
+          planet: p,
           votes: voteAmount,
         },
       }]
