@@ -12,6 +12,7 @@ import {
   useMediaQuery,
   useTheme,
   Divider,
+  Link,
 } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -27,7 +28,7 @@ const modalStyle = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: "300px",
+  width: "350px",
   bgcolor: "background.paper",
   background: "#1C1C1C",
   borderRadius: "20px",
@@ -51,14 +52,21 @@ const useStyles = makeStyles({
 function CreateProposal() {
   const classes = useStyles();
   const theme = useTheme();
-  const {wallet} = useContext(WalletContext)
-  const [proposalcost, setProposalCost] = useState("1.0000 TLM")
-  const [proposal, setProposal] = useState("");
+  const { wallet } = useContext(WalletContext);
+  const [proposalcost, setProposalCost] = useState("1.0000 TLM");
+  const [title, setTitle] = useState("");
+  const [daorules, setDaoRules] = useState(false);
   const [receiveWallet, setReceiveWallet] = useState("");
-  const [memo, setMemo] = useState("");
+  const [daysFundraising, setDaysFundraising] = useState("");
   const [tlmAmount, setTlmAmount] = useState("");
+  const [overview, setOverview] = useState("");
+  const [objectives, setObjectives] = useState("");
   const [description, setDescription] = useState("");
+  const [businessModel, setBusinessModel] = useState("");
+  const [duration, setDuration] = useState("");
+  const [teamInfo, setTeamInfo] = useState("");
   const [openModal, setOpenModal] = useState(false);
+  const [openDaoModal, setOpenDaoModal] = useState(true);
 
   let navigate = useNavigate();
   const handleClickMenu = (link: string) => {
@@ -68,8 +76,8 @@ function CreateProposal() {
   const desktop = useMediaQuery(theme.breakpoints.up(1300));
   const mobile = useMediaQuery(theme.breakpoints.down(603));
 
-  const handleProposalChange = (e: any) => {
-    setProposal(e.target.value);
+  const handleTitleChange = (e: any) => {
+    setTitle(e.target.value);
   };
 
   const handleReceiveWalletChange = (e: any) => {
@@ -90,12 +98,40 @@ function CreateProposal() {
     }
   };
 
-  const handleMemoChange = (e: any) => {
-    setMemo(e.target.value);
+  const handleDaoRulesChangeYes = () => {
+    setDaoRules(true);
+    handleCloseDaoModal();
   };
 
+  const handleDaoRulesChangeNo = () => {
+    setDaoRules(false);
+    handleCloseDaoModal();
+  };
+
+  const handleDaysFundraisingChange = (event: any) => {
+    const { value } = event.target;
+    if (/^[1-9]\d*$/.test(value)) {
+      setDaysFundraising(value);
+    }
+  };
+
+  const handleOverviewChange = (e: any) => {
+    setOverview(e.target.value);
+  };
+  const handleObjectivesChange = (e: any) => {
+    setObjectives(e.target.value);
+  };
   const handleDescriptionChange = (e: any) => {
     setDescription(e.target.value);
+  };
+  const handleBusinessModelChange = (e: any) => {
+    setBusinessModel(e.target.value);
+  };
+  const handleDurationChange = (e: any) => {
+    setDuration(e.target.value);
+  };
+  const handleTeamInfoChange = (e: any) => {
+    setTeamInfo(e.target.value);
   };
 
   const handleModalOpen = () => {
@@ -106,66 +142,83 @@ function CreateProposal() {
     setOpenModal(false);
   };
 
+  const handleCloseDaoModal = () => {
+    setOpenDaoModal(false);
+  };
+
   const handleSubmit = async () => {
-      try{
-        await checkLogin()
-        if(wallet.name){
-          const t = await transaction({
-            actions: [{
+    try {
+      await checkLogin();
+      if (wallet.name) {
+        const t = await transaction({
+          actions: [
+            {
               account: "alien.worlds",
-              name: 'transfer',
-              authorization: [{
-                actor: wallet.name,
-                permission: 'active',
-              }],
+              name: "transfer",
+              authorization: [
+                {
+                  actor: wallet.name,
+                  permission: "active",
+                },
+              ],
               data: {
                 from: wallet.name,
                 memo: "deposit",
                 quantity: proposalcost,
-                to: smartcontract
+                to: smartcontract,
               },
-            },{
+            },
+            {
               account: smartcontract,
-              name: 'addproposal',
-              authorization: [{
-                actor: wallet.name,
-                permission: 'active',
-              }],
+              name: "addcrowdf",
+              authorization: [
+                {
+                  actor: wallet.name,
+                  permission: "active",
+                },
+              ],
               data: {
+                wallet: wallet.name,
+                daorules: daorules,
+                title: title,
+                overview: overview,
+                objective: objectives,
                 description: description,
-                memo: memo,
-                title: proposal,
-                tlm: parseFloat(tlmAmount).toFixed(4) + " TLM",
+                business_model: businessModel,
+                duration: duration,
+                teaminfo: teamInfo,
+                requested_funding: parseFloat(tlmAmount).toFixed(4) + " TLM",
                 to: receiveWallet,
-                wallet: wallet.name
+                days_fundraising: daysFundraising,
               },
-            }]
-        })
-        console.log(t)
-        if(t){
-          alert("Succesfully created the proposal")
+            },
+          ],
+        });
+        console.log(t);
+        if (t) {
+          alert("Succesfully created the proposal");
         }
       }
-      }catch(e){
-        alert(e)
-      }
-  }
+    } catch (e) {
+      alert(e);
+    }
+  };
 
-  useEffect(() =>{
-    async function x(){
+  useEffect(() => {
+    async function x() {
       const r = await fetchTable({
-        json: true, 
+        json: true,
         code: smartcontract,
         scope: smartcontract,
         table: "propconfig",
         limit: 100,
-      })
-      if(r.rows.length > 0){
-        setProposalCost(r.rows[0].proposal_cost)
+      });
+      if (r.rows.length > 0) {
+        setProposalCost(r.rows[0].proposal_cost);
       }
     }
-    x()
-  }, [])
+    x();
+  }, []);
 
   return (
     <>
@@ -227,8 +280,8 @@ function CreateProposal() {
                 >
                   <OutlinedInput
                     id="outlined-adornment-weight"
-                    value={proposal}
-                    onChange={handleProposalChange}
+                    value={title}
+                    onChange={handleTitleChange}
                     aria-describedby="outlined-weight-helper-text"
                     sx={{
                       borderRadius: "20px",
@@ -255,7 +308,7 @@ function CreateProposal() {
                     marginLeft: "16px",
                   }}
                 >
-                  TLM Amount
+                  TLM Request
                 </FormHelperText>
                 <FormControl
                   sx={{ flexGrow: "1", width: "100%" }}
@@ -327,7 +380,7 @@ function CreateProposal() {
                     marginLeft: "16px",
                   }}
                 >
-                  Memo
+                  The duration after which the funding period will end
                 </FormHelperText>
                 <FormControl
                   sx={{ flexGrow: "1", width: "100%" }}
@@ -335,8 +388,8 @@ function CreateProposal() {
                 >
                   <OutlinedInput
                     id="outlined-adornment-weight"
-                    value={memo}
-                    onChange={handleMemoChange}
+                    value={daysFundraising}
+                    onChange={handleDaysFundraisingChange}
                     aria-describedby="outlined-weight-helper-text"
                     sx={{
                       borderRadius: "20px",
@@ -380,8 +433,8 @@ function CreateProposal() {
                 variant="body1"
                 sx={{ width: desktop ? "220px" : "100%", mt: 3 }}
               >
-                Creating a Proposal costs {proposalcost}. Please make sure everything
-                is correct.
+                Creating a Proposal costs {proposalcost}. Please make sure
+                everything is correct.
               </Typography>
             </Box>
           </Box>
@@ -392,6 +445,7 @@ function CreateProposal() {
               width: desktop ? "100%" : mobile ? "100%" : "560px",
             }}
           />
+          <Box></Box>
           <Box
             mr={desktop ? "20px" : "10px"}
             mb="12px"
@@ -405,7 +459,84 @@ function CreateProposal() {
                 marginLeft: "16px",
               }}
             >
-              Description
+              The Overview, a TLDR
+            </FormHelperText>
+            <FormControl
+              sx={{ flexGrow: "1", width: "100%", mb: desktop ? "0" : "32px" }}
+              variant="outlined"
+            >
+              <OutlinedInput
+                id="outlined-adornment-weight"
+                value={overview}
+                multiline
+                minRows={desktop ? 6 : 3}
+                onChange={handleOverviewChange}
+                aria-describedby="outlined-weight-helper-text"
+                sx={{
+                  borderRadius: "20px",
+                  color: "white",
+                  pr: 1,
+                  background: "rgba(121, 121, 121, 0.3)",
+                  border: "1px solid #FFFFFF",
+                  "& .MuiOutlinedInput-input": { padding: "8px 16px" },
+                  "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+                }}
+              />
+            </FormControl>
+          </Box>
+          <Box
+            mr={desktop ? "20px" : "10px"}
+            mb="12px"
+            mt={3}
+            sx={{ width: desktop ? "100%" : mobile ? "100%" : "560px" }}
+          >
+            <FormHelperText
+              sx={{
+                color: "#EBB309",
+                fontFamily: "Oxanium Light",
+                marginLeft: "16px",
+              }}
+            >
+              The Objectives. Which problem is getting solved with your
+              proposal?
+            </FormHelperText>
+            <FormControl
+              sx={{ flexGrow: "1", width: "100%", mb: desktop ? "0" : "32px" }}
+              variant="outlined"
+            >
+              <OutlinedInput
+                id="outlined-adornment-weight"
+                value={objectives}
+                multiline
+                minRows={desktop ? 6 : 3}
+                onChange={handleObjectivesChange}
+                aria-describedby="outlined-weight-helper-text"
+                sx={{
+                  borderRadius: "20px",
+                  color: "white",
+                  pr: 1,
+                  background: "rgba(121, 121, 121, 0.3)",
+                  border: "1px solid #FFFFFF",
+                  "& .MuiOutlinedInput-input": { padding: "8px 16px" },
+                  "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+                }}
+              />
+            </FormControl>
+          </Box>
+          <Box
+            mr={desktop ? "20px" : "10px"}
+            mb="12px"
+            mt={3}
+            sx={{ width: desktop ? "100%" : mobile ? "100%" : "560px" }}
+          >
+            <FormHelperText
+              sx={{
+                color: "#EBB309",
+                fontFamily: "Oxanium Light",
+                marginLeft: "16px",
+              }}
+            >
+              Description - A detailed breakdown of your campaign.
             </FormHelperText>
             <FormControl
               sx={{ flexGrow: "1", width: "100%", mb: desktop ? "0" : "32px" }}
@@ -415,8 +546,124 @@ function CreateProposal() {
                 id="outlined-adornment-weight"
                 value={description}
                 multiline
-                minRows={desktop ? 20 : 10}
+                minRows={desktop ? 6 : 3}
                 onChange={handleDescriptionChange}
+                aria-describedby="outlined-weight-helper-text"
+                sx={{
+                  borderRadius: "20px",
+                  color: "white",
+                  pr: 1,
+                  background: "rgba(121, 121, 121, 0.3)",
+                  border: "1px solid #FFFFFF",
+                  "& .MuiOutlinedInput-input": { padding: "8px 16px" },
+                  "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+                }}
+              />
+            </FormControl>
+          </Box>
+          <Box
+            mr={desktop ? "20px" : "10px"}
+            mb="12px"
+            mt={3}
+            sx={{ width: desktop ? "100%" : mobile ? "100%" : "560px" }}
+          >
+            <FormHelperText
+              sx={{
+                color: "#EBB309",
+                fontFamily: "Oxanium Light",
+                marginLeft: "16px",
+              }}
+            >
+              Business Model - How will further funding for the project work?
+            </FormHelperText>
+            <FormControl
+              sx={{ flexGrow: "1", width: "100%", mb: desktop ? "0" : "32px" }}
+              variant="outlined"
+            >
+              <OutlinedInput
+                id="outlined-adornment-weight"
+                value={businessModel}
+                multiline
+                minRows={desktop ? 6 : 3}
+                onChange={handleBusinessModelChange}
+                aria-describedby="outlined-weight-helper-text"
+                sx={{
+                  borderRadius: "20px",
+                  color: "white",
+                  pr: 1,
+                  background: "rgba(121, 121, 121, 0.3)",
+                  border: "1px solid #FFFFFF",
+                  "& .MuiOutlinedInput-input": { padding: "8px 16px" },
+                  "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+                }}
+              />
+            </FormControl>
+          </Box>
+          <Box
+            mr={desktop ? "20px" : "10px"}
+            mb="12px"
+            mt={3}
+            sx={{ width: desktop ? "100%" : mobile ? "100%" : "560px" }}
+          >
+            <FormHelperText
+              sx={{
+                color: "#EBB309",
+                fontFamily: "Oxanium Light",
+                marginLeft: "16px",
+              }}
+            >
+              Duration - When do you plan to finish the milestones specified in
+              your campaign
+            </FormHelperText>
+            <FormControl
+              sx={{ flexGrow: "1", width: "100%", mb: desktop ? "0" : "32px" }}
+              variant="outlined"
+            >
+              <OutlinedInput
+                id="outlined-adornment-weight"
+                value={duration}
+                multiline
+                minRows={desktop ? 6 : 3}
+                onChange={handleDurationChange}
+                aria-describedby="outlined-weight-helper-text"
+                sx={{
+                  borderRadius: "20px",
+                  color: "white",
+                  pr: 1,
+                  background: "rgba(121, 121, 121, 0.3)",
+                  border: "1px solid #FFFFFF",
+                  "& .MuiOutlinedInput-input": { padding: "8px 16px" },
+                  "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+                }}
+              />
+            </FormControl>
+          </Box>
+          <Box
+            mr={desktop ? "20px" : "10px"}
+            mb="12px"
+            mt={3}
+            sx={{ width: desktop ? "100%" : mobile ? "100%" : "560px" }}
+          >
+            <FormHelperText
+              sx={{
+                color: "#EBB309",
+                fontFamily: "Oxanium Light",
+                marginLeft: "16px",
+              }}
+            >
+              Teaminfo - Information about your team members and contact
+              information
+            </FormHelperText>
+            <FormControl
+              sx={{ flexGrow: "1", width: "100%", mb: desktop ? "0" : "32px" }}
+              variant="outlined"
+            >
+              <OutlinedInput
+                id="outlined-adornment-weight"
+                value={teamInfo}
+                multiline
+                minRows={desktop ? 6 : 3}
+                onChange={handleTeamInfoChange}
                 aria-describedby="outlined-weight-helper-text"
                 sx={{
                   borderRadius: "20px",
@@ -432,6 +679,84 @@ function CreateProposal() {
           </Box>
         </Box>
       </Box>
+      <Modal
+        open={openDaoModal}
+        onClose={handleCloseDaoModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box color="white" sx={modalStyle}>
+          <Typography
+            variant="body1"
+            fontSize="16px"
+            mt="24px"
+            textAlign="center"
+            fontFamily="Oxanium Light"
+          >
+            Does your campaign adhere to the{" "}
+            <Link
+              href="https://alienworlds.io/planetary-dao-council-policy/"
+              target="_blank"
+              rel="noopener"
+              color="#009DF5"
+            >
+              DAO rules
+            </Link>
+            ?
+          </Typography>
+          <Box display="flex" flexDirection="row">
+            <Button
+              onClick={handleDaoRulesChangeYes}
+              sx={{
+                display: "flex",
+                marginTop: 1,
+                background: "#0C8918",
+                borderRadius: "24px",
+                border: "2px solid #0C8918",
+                textAlign: "center",
+                height: "44px",
+                textTransform: "none",
+                color: "white",
+                m: "12px auto",
+                mr: "10px",
+                width: desktop ? "220px" : "100%",
+                lineHeight: "0",
+                fontSize: "20px",
+                fontFamily: "Oxanium Medium",
+                alignItems: "center",
+                boxShadow: "inset 0px 0px 36px 1px rgba(54, 0, 206, 0.61)",
+                "&: hover": { opacity: "0.9", background: "#0C8918" },
+              }}
+            >
+              Yes
+            </Button>
+            <Button
+              onClick={handleDaoRulesChangeNo}
+              sx={{
+                display: "flex",
+                marginTop: 1,
+                background: "red",
+                borderRadius: "24px",
+                border: "2px solid red",
+                textAlign: "center",
+                height: "44px",
+                textTransform: "none",
+                color: "white",
+                m: "12px auto",
+                width: desktop ? "220px" : "100%",
+                lineHeight: "0",
+                fontSize: "20px",
+                fontFamily: "Oxanium Medium",
+                alignItems: "center",
+                boxShadow: "inset 0px 0px 36px 1px rgba(54, 0, 206, 0.61)",
+                "&: hover": { opacity: "0.9", background: "red" },
+              }}
+            >
+              No
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
       <Modal
         open={openModal}
         onClose={handleModalClose}

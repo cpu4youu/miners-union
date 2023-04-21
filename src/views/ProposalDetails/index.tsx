@@ -3,20 +3,16 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
-  Modal,
-  IconButton,
-  FormControl,
-  OutlinedInput,
-  InputAdornment,
   FormHelperText,
   Typography,
   useMediaQuery,
   useTheme,
   Divider,
+  LinearProgress,
+  linearProgressClasses,
+  styled,
 } from "@mui/material";
-
-import SendIcon from "@mui/icons-material/Send";
-import CloseIcon from "@mui/icons-material/Close";
+import ForwardIcon from "@mui/icons-material/Forward";
 
 import { makeStyles } from "@mui/styles";
 import PlanetSelect from "./components/PlanetSelect";
@@ -25,23 +21,35 @@ import BackButtonIcon from "../../assets/icons/backbutton.png";
 import { WalletContext } from "../../App";
 import { checkLogin, fetchTable, transaction } from "../../plugins/chain";
 import { smartcontract, planets } from "../../config";
-import { isWhiteSpaceLike } from "typescript";
 
-const modalStyle = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "300px",
-  bgcolor: "background.paper",
-  background: "#1C1C1C",
-  borderRadius: "20px",
-  border: "1px solid #4D4D4D",
-  outline: "transparent solid 2px",
-  outlineOffset: "2px",
-  boxShadow:
-    "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px,rgba(0, 0, 0, 0.2) 0px 5px 10px,rgba(0, 0, 0, 0.4) 0px 15px 40px",
-  p: 2,
+// const modalStyle = {
+//   position: "absolute" as "absolute",
+//   top: "50%",
+//   left: "50%",
+//   transform: "translate(-50%, -50%)",
+//   width: "300px",
+//   bgcolor: "background.paper",
+//   background: "#1C1C1C",
+//   borderRadius: "20px",
+//   border: "1px solid #4D4D4D",
+//   outline: "transparent solid 2px",
+//   outlineOffset: "2px",
+//   boxShadow:
+//     "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px,rgba(0, 0, 0, 0.2) 0px 5px 10px,rgba(0, 0, 0, 0.4) 0px 15px 40px",
+//   p: 2,
+// };
+
+const boxStyle = {
+  p: "16px 0 16px 20px",
+  fontSize: "20px",
+  color: "white",
+  fontFamily: "0xanium Light",
+  borderTopLeftRadius: "12px",
+  borderBottomLeftRadius: "12px",
+  borderTopRightRadius: "12px",
+  borderBottomRightRadius: "12px",
+  background: "rgba(255, 255, 255, 0.04)",
+  marginBottom: "20px",
 };
 
 const useStyles = makeStyles({
@@ -53,131 +61,232 @@ const useStyles = makeStyles({
   },
 });
 
-interface IProposal{
-  archive_date: string,
-  creation_date: string,
-  description: string,
-  from: string,
-  memo: string,
-  proposal_name: string,
-  title: string,
-  tlm: string,
-  to: string,
-  votes: number,
+interface IProposal {
+  business_model: string;
+  claimed_funding: string;
+  creation_date: string;
+  crowdfunding_id: number;
+  daorules: number;
+  description: string;
+  downvotes: number;
+  duration: string;
+  funding_date: string;
+  objective: string;
+  overview: string;
+  received_funding: string;
+  requested_funding: string;
+  submitted_by: string;
+  teaminfo: string;
+  title: string;
+  to: string;
+  upvotes: number;
 }
-
+const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
+  height: 10,
+  borderRadius: 5,
+  [`&.${linearProgressClasses.colorPrimary}`]: {
+    backgroundColor:
+      theme.palette.grey[theme.palette.mode === "light" ? 200 : 800],
+  },
+  [`& .${linearProgressClasses.bar}`]: {
+    borderRadius: 5,
+    backgroundColor: theme.palette.mode === "light" ? "#0C8918" : "#308fe8",
+  },
+}));
 
 const listPlanet = planets;
 
+const StyledButton = styled(Button)({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: "1rem",
+  border: "none",
+  background: "transparent",
+  cursor: "pointer",
+});
+const ButtonsContainer = styled(Box)({
+  display: "flex",
+  alignItems: "center",
+});
+
+const ForwardIconTop = styled(ForwardIcon)(
+  ({ isvote }: { isvote: number }) => ({
+    transform: "rotate(-90deg)",
+    fontSize: "4rem",
+    color: isvote ? "green" : "white",
+  })
+);
+
+const ForwardIconDown = styled(ForwardIcon)(
+  ({ isvote }: { isvote: number }) => ({
+    transform: "rotate(90deg)",
+    fontSize: "4rem",
+    color: isvote ? "red" : "white",
+  })
+);
+
 function ProposalDetails() {
   const [selectedPlanet, setSelectedPlanet] = useState("None");
-  const [proposal, setProposal] = useState<IProposal>()
-  const [time, setTime] = useState<string>("")
-  const {votePower, wallet} = useContext(WalletContext)
+  const [proposal, setProposal] = useState<IProposal>();
+  // const [time, setTime] = useState<string>("");
+  const { votePower, wallet } = useContext(WalletContext);
   const location = useLocation();
   const classes = useStyles();
   const theme = useTheme();
-  const [openModal, setOpenModal] = useState(false);
-  const [Amount, setAmount] = useState<number>(0);
+  const [voteStatus, setVoteStatus] = useState({ up: 0, down: 0 });
+  const [daysLeft, setDaysLeft] = useState(0);
+  const [hoursLeft, setHoursLeft] = useState(0);
+  const [percentage, setPercentage] = useState(0);
+  // const [Amount, setAmount] = useState<number>(0);
   let navigate = useNavigate();
-  var key: string
-  if(location.state){
-    key = location.state.key
+  var key: string | null = null;
+  if (location.state) {
+    key = location.state.key;
   }
   const handleClickMenu = (link: string) => {
     navigate(link);
   };
-  
-  const handleAmountChange = (e: any) => {
-    const floatRegExp = new RegExp("([0-9]+([.][0-9]*)?|[.][0-9]+)$");
-    const dotRegExp = new RegExp("^([0-9]+[.][0]*)$");
-    if (e.target.value === "" || floatRegExp.test(e.target.value)) {
-      let filteredValue = e.target.value;
-      if (dotRegExp.test(e.target.value)) {
-        setAmount(filteredValue);
+
+  // const handleAmountChange = (e: any) => {
+  //   const floatRegExp = new RegExp("([0-9]+([.][0-9]*)?|[.][0-9]+)$");
+  //   const dotRegExp = new RegExp("^([0-9]+[.][0]*)$");
+  //   if (e.target.value === "" || floatRegExp.test(e.target.value)) {
+  //     let filteredValue = e.target.value;
+  //     if (dotRegExp.test(e.target.value)) {
+  //       setAmount(filteredValue);
+  //     } else {
+  //       filteredValue = Math.floor(filteredValue * 1000) / 1000;
+  //       setAmount(filteredValue);
+  //     }
+  //   }
+  // };
+
+  function calculatePercentage(
+    receivedFunding?: string,
+    totalFunding?: string
+  ) {
+    if (!receivedFunding || !totalFunding) {
+      return undefined;
+    }
+
+    const received = parseFloat(receivedFunding.replace(" TLM", ""));
+    const total = parseFloat(totalFunding.replace(" TLM", ""));
+
+    const percentage = Math.round((received / total) * 10000) / 100;
+
+    setPercentage(percentage);
+  }
+  function calculateDaysAndHours(dateTimeStr: string) {
+    const targetDateTime = new Date(dateTimeStr);
+    const now = new Date();
+
+    const timeDiff: number = targetDateTime.getTime() - now.getTime();
+    const daysDiff: number = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    const hoursDiff: number = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
+    setDaysLeft(daysDiff);
+    setHoursLeft(hoursDiff);
+  }
+
+  // const handleMaxValue = () => {
+  //   setAmount(votePower);
+  // };
+
+  // const handleModalOpen = () => {
+  //   setOpenModal(true);
+  // };
+
+  // const handleModalClose = () => {
+  //   setOpenModal(false);
+  // };
+
+  const handleVote = async (type: boolean) => {
+    try {
+      await checkLogin();
+      if (wallet.name) {
+        const t = await transaction({
+          actions: [
+            {
+              account: smartcontract,
+              name: "votecrowdf",
+              authorization: [
+                {
+                  actor: wallet.name,
+                  permission: "active",
+                },
+              ],
+              data: {
+                wallet: wallet.name,
+                crowdfunding_proposal_id: key,
+                vote_type: type,
+                remove_vote: false,
+              },
+            },
+          ],
+        });
+        if (t) {
+          alert("Succesfully voted for the proposal");
+          setVoteStatus({ up: type ? 1 : 0, down: type ? 0 : 1 });
+        }
       } else {
-  
-        filteredValue = Math.floor(filteredValue * 1000) / 1000;
-        setAmount(filteredValue);
+        console.log("Not Logged in please refresh");
       }
+    } catch (e) {
+      console.log(e);
     }
   };
 
-  const handleMaxValue = () => {
-    setAmount(votePower);
-  };
-
-  const handleModalOpen = () => {
-    setOpenModal(true);
-  };
-
-  const handleModalClose = () => {
-    setOpenModal(false);
-  };
-
-  const handleVote = async () => {
-    try{
-      await checkLogin()
-      if(wallet.name){
-          const t = await transaction({
-            actions: [{
-              account: smartcontract,
-              name: 'voteproposal',
-              authorization: [{
-                actor: wallet.name,
-                permission: 'active',
-              }],
-              data: {
-                wallet: wallet.name,
-                proposal_name: key,
-                votes: Amount
-              },
-            }]
-          })
-          if(t){
-            alert("Succesfully voted for the proposal")
-            console.log(t)
-            setOpenModal(false)
-          }
-      } else {
-        console.log("Not Logged in please refresh")
-      }
-      
-    } catch(e){
-      console.log(e)
+  function findObjectById(list: any[], id: any) {
+    const result = list.find((obj) => obj.crowdfunding_proposal_id === id);
+    if (result) {
+      result.vote_type
+        ? setVoteStatus({ up: 1, down: 0 })
+        : setVoteStatus({ up: 0, down: 1 });
     }
   }
 
-  useEffect(()=> {
-    async function x(){
+  useEffect(() => {
+    async function fetchProposal() {
       const r = await fetchTable({
         json: true,
-        code: smartcontract, 
+        code: smartcontract,
         scope: smartcontract,
-        table: "proposals",
-        limit: 1,     
+        table: "crowdfunding",
+        limit: 1,
         lower_bound: key,
-        upper_bound: key
-      })
-      if(r.rows[0]){
-        setProposal(r.rows[0])
-        const options = {
-          day: '2-digit',
-          month: '2-digit',
-          year: '2-digit',
-          hour: 'numeric',
-          minute: 'numeric',
-          hour12: true
-        };
-        const date = new Date(r.rows[0].creation_date)
-        //@ts-ignore
-        const formatter = new Intl.DateTimeFormat('en-GB', options);
-        const formattedDate = formatter.format(date);
-        setTime(formattedDate)
+        upper_bound: key,
+      });
+      if (r.rows[0]) {
+        setProposal(r.rows[0]);
       }
     }
-    x()
-  }, [])
+
+    async function fetchCrowdvotes() {
+      const r = await fetchTable({
+        json: true,
+        code: smartcontract,
+        scope: wallet.name,
+        table: "crowdvotes",
+        limit: 100,
+        lower_bound: 0,
+        upper_bound: 999999999,
+      });
+      findObjectById(r.rows, key);
+    }
+
+    fetchProposal();
+    fetchCrowdvotes();
+  }, [key, wallet.name]);
+
+  useEffect(() => {
+    calculatePercentage(
+      proposal?.received_funding,
+      proposal?.requested_funding
+    );
+    if (proposal?.funding_date) {
+      calculateDaysAndHours(proposal?.funding_date);
+    }
+  }, [proposal]);
 
   const desktop = useMediaQuery(theme.breakpoints.up(1300));
   const mobile = useMediaQuery(theme.breakpoints.down(603));
@@ -214,15 +323,24 @@ function ProposalDetails() {
               width: "100%",
             }}
           >
-            <Box>
+            <Box style={{ width: "50%" }}>
               <Typography
+                fontFamily="Oxanium Medium"
                 fontSize={desktop ? "40px" : "28px"}
+                fontWeight={desktop ? "700" : "500"}
                 lineHeight="1.1"
-                fontWeight={600}
+                pb={mobile ? "12px" : "0"}
+                color="white"
               >
                 {proposal?.title}
               </Typography>
-              <Typography variant="h6">by {proposal?.from}</Typography>
+              <Typography variant="h6">by {proposal?.submitted_by}!</Typography>
+              <Box mt={2}>
+                <BorderLinearProgress
+                  variant="determinate"
+                  value={percentage}
+                />
+              </Box>
             </Box>
             <Box
               sx={{
@@ -232,7 +350,12 @@ function ProposalDetails() {
                 justifyContent: "space-between",
               }}
             >
-              <Box sx={{ width: desktop ? "100%" : mobile ? "100%" : "45%" , visibility: "hidden",}}>
+              <Box
+                sx={{
+                  width: desktop ? "100%" : mobile ? "100%" : "45%",
+                  visibility: "hidden",
+                }}
+              >
                 <FormHelperText
                   sx={{
                     color: "#EBB309",
@@ -281,65 +404,109 @@ function ProposalDetails() {
               justifyContent: "space-between",
               alignItems: "center",
               flexWrap: "wrap",
-              mt: 2,
               width: "100%",
             }}
           >
-            <Typography color="#FFB800" fontSize={desktop ? "36px" : "20px"}>
-              {proposal?.tlm}
-            </Typography>
-            <Button
+            <Box>
+              <Typography
+                fontFamily="Oxanium Medium"
+                fontSize={desktop ? "40px" : "28px"}
+                fontWeight={desktop ? "700" : "500"}
+                lineHeight="1.1"
+                pb={mobile ? "12px" : "0"}
+                color="green"
+              >
+                {proposal?.received_funding}
+              </Typography>
+              <Typography variant="h6" color="#049913">
+                funded of {proposal?.requested_funding}
+              </Typography>
+              <Typography variant="h5">
+                {daysLeft} days and {hoursLeft} hours to go
+              </Typography>
+            </Box>
+            <Box
               sx={{
                 display: "flex",
-                marginTop: 1,
-                background: "#009DF5",
-                borderRadius: "24px",
-                border: "2px solid #009DF5",
-                width: desktop ? "220px" : mobile ? "100%" : "45%",
-                textAlign: "center",
-                height: "44px",
-                textTransform: "none",
-                color: "white",
-                lineHeight: "0",
-                fontSize: "20px",
-                fontFamily: "Oxanium Medium",
-                alignItems: "center",
-                boxShadow: "inset 0px 0px 36px 1px rgba(54, 0, 206, 0.61)",
-                "&: hover": { opacity: "0.9", background: "#009DF5" },
+                width: desktop ? "220px" : "100%",
+                flexDirection: desktop ? "column" : mobile ? "column" : "row",
+                justifyContent: "space-between",
               }}
-              onClick={() => handleModalOpen()}
             >
-              Vote
-            </Button>
+              <Box>
+                <Typography
+                  fontFamily="Oxanium Medium"
+                  fontSize={desktop ? "40px" : "28px"}
+                  fontWeight={desktop ? "700" : "500"}
+                  lineHeight="1.1"
+                  pb={mobile ? "12px" : "0"}
+                  color="white"
+                >
+                  {proposal?.upvotes !== undefined &&
+                  proposal?.downvotes !== undefined
+                    ? proposal?.upvotes - proposal?.downvotes
+                    : 0}
+                </Typography>
+                <Typography variant="h6">Community Score</Typography>
+                <ButtonsContainer>
+                  <StyledButton onClick={async () => await handleVote(true)}>
+                    <ForwardIconTop isvote={voteStatus.up} />
+                  </StyledButton>
+                  <StyledButton onClick={async () => await handleVote(false)}>
+                    <ForwardIconDown isvote={voteStatus.down} />
+                  </StyledButton>
+                </ButtonsContainer>
+              </Box>
+            </Box>
           </Box>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              flexWrap: "wrap",
-              mt: 2,
-            }}
-          >
-            <Typography variant="h6">
-              Submission Date: {time}
-            </Typography>
-            <Typography variant="h6">Receiving Wallet: {proposal?.to}</Typography>
-          </Box>
+
           <Divider
             sx={{
-              marginTop: "24px",
               border: "1px solid rgba(154, 154, 154, 0.61)",
             }}
           />
-          <Box>
-            <Typography fontSize={desktop ? "20px" : "18px"} mt={3}
-            style={{whiteSpace:"pre-wrap"}}>
-             {proposal?.description}
+          <Box mt={2}></Box>
+          <Box pr="12px" display="flex" flexDirection="column" sx={boxStyle}>
+            <Typography variant="h6" color="#019DF4">
+              The Overview, a TLDR
             </Typography>
+            <Typography>{proposal?.overview}</Typography>
+          </Box>
+          <Box pr="12px" display="flex" flexDirection="column" sx={boxStyle}>
+            <Typography variant="h6" color="#019DF4">
+              The Objectives. Which problem is getting solved with your
+              proposal?
+            </Typography>
+            <Typography>{proposal?.objective}</Typography>
+          </Box>
+          <Box pr="12px" display="flex" flexDirection="column" sx={boxStyle}>
+            <Typography variant="h6" color="#019DF4">
+              Description - A detailed breakdown of your campaign.
+            </Typography>
+            <Typography>{proposal?.description}</Typography>
+          </Box>
+          <Box pr="12px" display="flex" flexDirection="column" sx={boxStyle}>
+            <Typography variant="h6" color="#019DF4">
+              Business Model - How will further funding for the project work?
+            </Typography>
+            <Typography>{proposal?.business_model}</Typography>
+          </Box>
+          <Box pr="12px" display="flex" flexDirection="column" sx={boxStyle}>
+            <Typography variant="h6" color="#019DF4">
+              Duration - When do you plan to finish the milestones specified in
+              your campaign
+            </Typography>
+            <Typography>{proposal?.duration}</Typography>
+          </Box>
+          <Box pr="12px" display="flex" flexDirection="column" sx={boxStyle}>
+            <Typography variant="h6" color="#019DF4">
+              Teaminfo - Information about your team members and contact
+              information
+            </Typography>
+            <Typography>{proposal?.teaminfo}</Typography>
           </Box>
         </Box>
-        <Modal
+        {/* <Modal
           open={openModal}
           onClose={handleModalClose}
           aria-labelledby="modal-modal-title"
@@ -371,7 +538,10 @@ function ProposalDetails() {
               Higher ranked proposals show the will of the community and are
               more likely to be accepted by custodians.
             </Typography>
-            <FormControl sx={{ display: "flex", alignItems: "center", flexGrow: "1" }} variant="outlined">
+            <FormControl
+              sx={{ display: "flex", alignItems: "center", flexGrow: "1" }}
+              variant="outlined"
+            >
               <OutlinedInput
                 id="outlined-adornment-weight"
                 value={Amount}
@@ -392,11 +562,12 @@ function ProposalDetails() {
                     >
                       Max
                     </Button>
-                  </InputAdornment>}
+                  </InputAdornment>
+                }
                 sx={{
                   borderRadius: "20px",
                   color: "white",
-                  width: desktop ? "220px" : "100%",                  
+                  width: desktop ? "220px" : "100%",
                   pr: 1,
                   background: "rgba(121, 121, 121, 0.3)",
                   border: "1px solid #FFFFFF",
@@ -430,7 +601,7 @@ function ProposalDetails() {
               Vote
             </Button>
           </Box>
-        </Modal>
+        </Modal> */}
       </Box>
     </>
   );
