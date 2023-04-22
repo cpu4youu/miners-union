@@ -421,6 +421,11 @@ function ProposalDetails() {
               <Typography variant="h6" color="#049913">
                 funded of {proposal?.requested_funding}
               </Typography>
+
+              <Typography variant="h6" color="#FFB901">
+                Fund this campaign by transferring TLM to hq.mu with the memo
+                "crowdfunding,{key}"
+              </Typography>
               <Typography variant="h5">
                 {daysLeft} days and {hoursLeft} hours to go
               </Typography>
@@ -442,10 +447,7 @@ function ProposalDetails() {
                   pb={mobile ? "12px" : "0"}
                   color="white"
                 >
-                  {proposal?.upvotes !== undefined &&
-                  proposal?.downvotes !== undefined
-                    ? proposal?.upvotes - proposal?.downvotes
-                    : 0}
+                  {voteStatus.up - voteStatus.down}
                 </Typography>
                 <Typography variant="h6">Community Score</Typography>
                 <ButtonsContainer>
