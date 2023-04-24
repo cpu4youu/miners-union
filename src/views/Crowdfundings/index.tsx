@@ -184,7 +184,7 @@ function Crowdfundings() {
               pb={mobile ? "12px" : "0"}
               color="white"
             >
-              View Proposals
+              Campaigns
             </Typography>
             <Link
               py="2px"
