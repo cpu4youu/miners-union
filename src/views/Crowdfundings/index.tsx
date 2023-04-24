@@ -190,7 +190,7 @@ function Crowdfundings() {
               py="2px"
               display="flex"
               alignItems="flex-end"
-              width={desktop ? "212px" : "152px"}
+              width={desktop ? "227px" : "12px"}
               sx={{
                 textDecoration: "none",
                 borderBottom: "1px solid rgba(255, 255, 255, 0.61)",
@@ -206,7 +206,7 @@ function Crowdfundings() {
                 color="white"
                 sx={{ opacity: "0.7" }}
               >
-                Create Proposal
+                Create Campaign
               </Typography>
             </Link>
           </Box>

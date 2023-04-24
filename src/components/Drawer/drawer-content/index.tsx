@@ -49,7 +49,7 @@ const LinkButtonDataInspector = [
     link: "/crowdfundings",
     whiteIcon: DrawerProposalsIcon,
     darkIcon: DrawerProposalsBlackIcon,
-    text: "Crowdfundings",
+    text: "Campaigns",
   },
   {
     link: "/contributions",
@@ -87,7 +87,7 @@ const LinkButtonDataNormal = [
     link: "/crowdfundings",
     whiteIcon: DrawerProposalsIcon,
     darkIcon: DrawerProposalsBlackIcon,
-    text: "Crowdfundings",
+    text: "Campaigns",
   },
   {
     link: "/contributions",

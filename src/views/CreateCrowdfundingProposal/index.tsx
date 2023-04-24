@@ -427,7 +427,7 @@ function CreateCrowdfundingProposal() {
                 }}
                 onClick={() => handleModalOpen()}
               >
-                Create Proposal
+                Create Campaign
               </Button>
               <Typography
                 variant="body1"
@@ -818,7 +818,7 @@ function CreateCrowdfundingProposal() {
               "&: hover": { opacity: "0.9", background: "#009DF5" },
             }}
           >
-            Create Proposal
+            Create Campaign
           </Button>
         </Box>
       </Modal>
