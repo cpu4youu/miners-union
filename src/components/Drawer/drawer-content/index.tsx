@@ -46,10 +46,10 @@ const LinkButtonDataInspector = [
     text: "Information",
   },
   {
-    link: "/proposals",
+    link: "/crowdfundings",
     whiteIcon: DrawerProposalsIcon,
     darkIcon: DrawerProposalsBlackIcon,
-    text: "Proposals",
+    text: "Campaigns",
   },
   {
     link: "/contributions",
@@ -84,10 +84,10 @@ const LinkButtonDataNormal = [
     text: "Information",
   },
   {
-    link: "/proposals",
+    link: "/crowdfundings",
     whiteIcon: DrawerProposalsIcon,
     darkIcon: DrawerProposalsBlackIcon,
-    text: "Proposals",
+    text: "Campaigns",
   },
   {
     link: "/contributions",

@@ -29,116 +29,133 @@ const useStyles = makeStyles({
   },
 });
 
-interface IProposal{
-  archive_date: string,
-  creation_date: string,
-  description: string,
-  from: string,
-  memo: string,
-  proposal_name: string,
-  title: string,
-  tlm: string,
-  to: string,
-  votes: number,
+interface IProposal {
+  business_model: string;
+  claimed_funding: string;
+  creation_date: string;
+  crowdfunding_id: number;
+  daorules: number;
+  description: string;
+  downvotes: number;
+  upvotes: number;
+  duration: string;
+  funding_date: string;
+  objective: string;
+  overview: string;
+  received_funding: string;
+  requested_funding: string;
+  submitted_by: string;
+  teaminfo: string;
+  title: string;
+  to: string;
 }
 
-interface IRow{
-  key: number,
-  proposalTitle: string,
-  proposalAmount: string,
-  proposalAddress: string,
-  votes: number,
-  submissionDate: string,
-  proposal_name: string
+interface IRow {
+  key: number;
+  proposalTitle: string;
+  score: number;
+  funding_percent: string;
+  time: string;
 }
 
 function createData(
   key: number,
   proposalTitle: string,
-  proposalAmount: string,
-  proposalAddress: string,
-  votes: number,
-  submissionDate: string,
-  proposal_name: string,
+  score: number,
+  funding_percent: string,
+  time: string
 ) {
   return {
     key,
     proposalTitle,
-    proposalAmount,
-    proposalAddress,
-    votes,
-    submissionDate,
-    proposal_name
+    score,
+    funding_percent,
+    time,
   };
 }
 
-function Proposals() {
+function Crowdfundings() {
   const classes = useStyles();
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
   const mobile = useMediaQuery(theme.breakpoints.down(705));
+  const [showOnlyTen, setShowOnlyTen] = useState(10);
   let navigate = useNavigate();
-  const [rows, setRows] = useState<IRow[]>([])
-  const handleClickMenu = (link: string, proposal_name: string) => {
-    if(link === "/proposaldetails"){
+  const [rows, setRows] = useState<IRow[]>([]);
+
+  const handleClickMenu = (link: string, proposal: string | number) => {
+    if (link === "/crowdfundingdetails") {
       navigate(link, {
         state: {
-          key : proposal_name,
+          key: proposal,
         },
         replace: true,
       });
-    } else {  
+    } else {
       navigate(link);
     }
   };
+  function handleShowMore() {
+    setShowOnlyTen(showOnlyTen + 10);
+  }
+  function calculateDaysAndHours(dateTimeStr: string) {
+    const targetDateTime = new Date(dateTimeStr);
+    const now = new Date();
 
-  useEffect(()=> {
+    const timeDiff: number = targetDateTime.getTime() - now.getTime();
+    const daysDiff: number = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    const hoursDiff: number = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
+    return `${daysDiff} days ${hoursDiff} hours`;
+  }
+
+  function calculatePercentage(receivedFunding: string, totalFunding: string) {
+    const received = parseFloat(receivedFunding.replace(" TLM", ""));
+    const total = parseFloat(totalFunding.replace(" TLM", ""));
+
+    const percentage = Math.round((received / total) * 10000) / 100;
+
+    return percentage.toString() + "%";
+  }
+
+  useEffect(() => {
     async function x() {
-      let more = false
-      let next = ""
-      const proposals: Array<IProposal> = []
-      const data: Array<IRow> = []
+      let more = false;
+      let next = "";
+      const proposals: Array<IProposal> = [];
+      const data: Array<IRow> = [];
       do {
         const x = await fetchTable({
           json: true,
-          code: smartcontract, 
+          code: smartcontract,
           scope: smartcontract,
-          table: "proposals",
-          limit: 100,     
-          lower_bound: next
+          table: "crowdfunding",
+          limit: 100,
+          lower_bound: next,
         });
         next = x.next_key;
         more = x.more;
-        x.rows.map((value: any)=> {
-          proposals.push(value)
-        })
-      } while(more) 
-      console.log(proposals)
-      proposals.map((value: IProposal, key: number)=> {
-        const now = Number(new Date().getTime() / 1000).toFixed(0)
-        const end = Number(new Date(value.archive_date).getTime()/ 1000).toFixed(0)
-        if(now > end){
-          proposals.splice(key, 1)
-        } else {
-          const date = new Date(value.creation_date)
-          const options = {
-            day: '2-digit',
-            month: '2-digit',
-            year: '2-digit',
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true
-          };
-          //@ts-ignore
-          const formatter = new Intl.DateTimeFormat('en-GB', options);
-          const formattedDate = formatter.format(date);
-          data.push(createData(key, value.title, value.tlm, value.from, value.votes, formattedDate, value.proposal_name))
-        }
-      })
-      setRows(data)
+        x.rows.map((value: any) => {
+          proposals.push(value);
+        });
+      } while (more);
+      proposals.map((value: IProposal) => {
+        data.push(
+          createData(
+            value.crowdfunding_id,
+            value.title,
+            value.upvotes - value.downvotes,
+            calculatePercentage(
+              value.received_funding,
+              value.requested_funding
+            ),
+            calculateDaysAndHours(value.funding_date)
+          )
+        );
+      });
+      setRows(data.sort((a, b) => b.key - a.key));
     }
-    x()
-  },[])
+    x();
+  }, []);
 
   return (
     <>
@@ -167,19 +184,19 @@ function Proposals() {
               pb={mobile ? "12px" : "0"}
               color="white"
             >
-              View Proposals
+              Campaigns
             </Typography>
             <Link
               py="2px"
               display="flex"
               alignItems="flex-end"
-              width={desktop ? "212px" : "152px"}
+              width={desktop ? "227px" : "12px"}
               sx={{
                 textDecoration: "none",
                 borderBottom: "1px solid rgba(255, 255, 255, 0.61)",
                 cursor: "pointer",
               }}
-              onClick={() => handleClickMenu("/createproposal", "")}
+              onClick={() => handleClickMenu("/createcrowdfundingproposal", "")}
             >
               <Typography
                 fontFamily="Oxanium Medium"
@@ -189,7 +206,7 @@ function Proposals() {
                 color="white"
                 sx={{ opacity: "0.7" }}
               >
-                Create Proposal
+                Create Campaign
               </Typography>
             </Link>
           </Box>
@@ -229,7 +246,7 @@ function Proposals() {
                       background: "transparent",
                     }}
                   >
-                    Votes
+                    Scores
                   </TableCell>
                   <TableCell
                     align="left"
@@ -241,16 +258,26 @@ function Proposals() {
                       background: "transparent",
                     }}
                   >
-                    Submission Date
+                    Funding
                   </TableCell>
+
                   <TableCell
-                    sx={{ borderBottom: "none", background: "transparent" }}
-                  ></TableCell>
+                    align="left"
+                    sx={{
+                      fontSize: "24px",
+                      color: "white",
+                      fontFamily: "Oxanium Light",
+                      borderBottom: "none",
+                      background: "transparent",
+                    }}
+                  >
+                    Time remaining
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => (
-                  <TableRow key={row.proposalTitle}>
+                {rows.slice(0, showOnlyTen).map((row) => (
+                  <TableRow key={row.key}>
                     <TableCell
                       align="left"
                       sx={{
@@ -268,15 +295,15 @@ function Proposals() {
                     >
                       <Box
                         pr="12px"
+                        height="84px"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
                         sx={{
                           borderRight: "1px solid rgba(255, 255, 255, 0.31)",
                         }}
                       >
                         <Typography pb="6px">{row.proposalTitle}</Typography>
-                        <Typography pb="6px" color="#FFB800">
-                          {row.proposalAmount}
-                        </Typography>
-                        <Typography>{row.proposalAddress}</Typography>
                       </Box>
                     </TableCell>
                     <TableCell
@@ -296,11 +323,12 @@ function Proposals() {
                         height="84px"
                         display="flex"
                         alignItems="center"
+                        justifyContent="center"
                         sx={{
                           borderRight: "1px solid rgba(255, 255, 255, 0.31)",
                         }}
                       >
-                        {row.votes}
+                        {row.score}
                       </Box>
                     </TableCell>
                     <TableCell
@@ -308,7 +336,7 @@ function Proposals() {
                       sx={{
                         p: "16px 0 16px 20px",
                         fontSize: "20px",
-                        color: "white",
+                        color: "Green",
                         fontFamily: "0xanium Light",
                         borderTop: "3px solid rgba(255, 255, 255, 0.1)",
                         borderBottom: "3px solid rgba(255, 255, 255, 0.1)",
@@ -320,17 +348,18 @@ function Proposals() {
                         height="84px"
                         display="flex"
                         alignItems="center"
+                        justifyContent="center"
                         sx={{
                           borderRight: "1px solid rgba(255, 255, 255, 0.31)",
                         }}
                       >
-                        {row.submissionDate}
+                        {row.funding_percent}
                       </Box>
                     </TableCell>
                     <TableCell
                       align="left"
                       sx={{
-                        p: "16px 0 16px 20px",
+                        p: "16px 40px 16px 20px",
                         fontSize: "20px",
                         color: "white",
                         fontFamily: "0xanium Light",
@@ -340,8 +369,19 @@ function Proposals() {
                         borderBottom: "3px solid rgba(255, 255, 255, 0.1)",
                         borderRight: "3px solid rgba(255, 255, 255, 0.1)",
                         background: "rgba(255, 255, 255, 0.04)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
                       }}
                     >
+                      <Box
+                        pr="12px"
+                        height="84px"
+                        display="flex"
+                        alignItems="center"
+                      >
+                        {row.time}
+                      </Box>
                       <Button
                         sx={{
                           px: "32px",
@@ -356,7 +396,9 @@ function Proposals() {
                           background:
                             "linear-gradient(176.22deg, #FF01FF -60.52%, rgba(33, 33, 33, 0.8) -24.61%, rgba(33, 33, 33, 0.5) 59.39%, #FFFFFF 123.24%)",
                         }}
-                        onClick={() => handleClickMenu("/proposaldetails", row.proposal_name)}
+                        onClick={() =>
+                          handleClickMenu("/crowdfundingdetails", row.key)
+                        }
                       >
                         Details
                       </Button>
@@ -366,10 +408,28 @@ function Proposals() {
               </TableBody>
             </Table>
           </TableContainer>
+          <Button
+            sx={{
+              px: "32px",
+              py: "4px",
+              color: "white",
+              fontSize: "16px",
+              fontWeight: "700",
+              fontFamily: "Oxanium Light",
+              border: "1px solid #FFFFFF",
+              borderRadius: "20px",
+              textTransform: "none",
+              background:
+                "linear-gradient(176.22deg, #FF01FF -60.52%, rgba(33, 33, 33, 0.8) -24.61%, rgba(33, 33, 33, 0.5) 59.39%, #FFFFFF 123.24%)",
+            }}
+            onClick={() => handleShowMore()}
+          >
+            Show More
+          </Button>
         </Box>
       </Box>
     </>
   );
 }
 
-export default Proposals;
+export default Crowdfundings;

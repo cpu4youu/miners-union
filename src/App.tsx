@@ -12,9 +12,9 @@ import {
   MissionDetails,
   Information,
   Contributions,
-  Proposals,
-  ProposalDetails,
-  CreateProposal,
+  Crowdfundings,
+  CrowdfundingDetails,
+  CreateCrowdfundingProposal,
   JoinRequests,
   CandidateScreen,
 } from "./views";
@@ -167,26 +167,26 @@ function App() {
           }
         />
         <Route
-          path="/proposals"
+          path="/crowdfundings"
           element={
             <ViewBase>
-              <Proposals />
+              <Crowdfundings />
             </ViewBase>
           }
         />
         <Route
-          path="/proposaldetails"
+          path="/crowdfundingdetails"
           element={
             <ViewBase>
-              <ProposalDetails />
+              <CrowdfundingDetails />
             </ViewBase>
           }
         />
         <Route
-          path="/createproposal"
+          path="/createcrowdfundingproposal"
           element={
             <ViewBase>
-              <CreateProposal />
+              <CreateCrowdfundingProposal />
             </ViewBase>
           }
         />
