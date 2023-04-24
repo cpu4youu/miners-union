@@ -49,7 +49,7 @@ const useStyles = makeStyles({
   },
 });
 
-function CreateProposal() {
+function CreateCrowdfundingProposal() {
   const classes = useStyles();
   const theme = useTheme();
   const { wallet } = useContext(WalletContext);
@@ -194,9 +194,9 @@ function CreateProposal() {
             },
           ],
         });
-        console.log(t);
         if (t) {
           alert("Succesfully created the proposal");
+          handleClickMenu("/crowdfundings");
         }
       }
     } catch (e) {
@@ -210,7 +210,7 @@ function CreateProposal() {
         json: true,
         code: smartcontract,
         scope: smartcontract,
-        table: "propconfig",
+        table: "crowdfconfig",
         limit: 100,
       });
       if (r.rows.length > 0) {
@@ -222,7 +222,7 @@ function CreateProposal() {
 
   return (
     <>
-      <Button onClick={() => handleClickMenu("/proposals")}>
+      <Button onClick={() => handleClickMenu("/crowdfundings")}>
         <img
           src={BackButtonIcon}
           alt=""
@@ -272,7 +272,7 @@ function CreateProposal() {
                     marginLeft: "16px",
                   }}
                 >
-                  Proposal Name
+                  Campaign Name
                 </FormHelperText>
                 <FormControl
                   sx={{ flexGrow: "1", width: "100%" }}
@@ -380,7 +380,7 @@ function CreateProposal() {
                     marginLeft: "16px",
                   }}
                 >
-                  The duration after which the funding period will end
+                  Number of days to run the crowdfunding campaign
                 </FormHelperText>
                 <FormControl
                   sx={{ flexGrow: "1", width: "100%" }}
@@ -498,7 +498,7 @@ function CreateProposal() {
               }}
             >
               The Objectives. Which problem is getting solved with your
-              proposal?
+              crowdfunding proposal?
             </FormHelperText>
             <FormControl
               sx={{ flexGrow: "1", width: "100%", mb: desktop ? "0" : "32px" }}
@@ -826,4 +826,4 @@ function CreateProposal() {
   );
 }
 
-export default CreateProposal;
+export default CreateCrowdfundingProposal;

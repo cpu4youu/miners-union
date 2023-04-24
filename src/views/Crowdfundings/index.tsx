@@ -74,15 +74,17 @@ function createData(
   };
 }
 
-function Proposals() {
+function Crowdfundings() {
   const classes = useStyles();
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
   const mobile = useMediaQuery(theme.breakpoints.down(705));
+  const [showOnlyTen, setShowOnlyTen] = useState(10);
   let navigate = useNavigate();
   const [rows, setRows] = useState<IRow[]>([]);
+
   const handleClickMenu = (link: string, proposal: string | number) => {
-    if (link === "/proposaldetails") {
+    if (link === "/crowdfundingdetails") {
       navigate(link, {
         state: {
           key: proposal,
@@ -93,7 +95,9 @@ function Proposals() {
       navigate(link);
     }
   };
-
+  function handleShowMore() {
+    setShowOnlyTen(showOnlyTen + 10);
+  }
   function calculateDaysAndHours(dateTimeStr: string) {
     const targetDateTime = new Date(dateTimeStr);
     const now = new Date();
@@ -134,32 +138,25 @@ function Proposals() {
           proposals.push(value);
         });
       } while (more);
-      proposals.map((value: IProposal, key: number) => {
-        const now = Number(new Date().getTime() / 1000).toFixed(0);
-        const end = Number(
-          new Date(value.funding_date).getTime() / 1000
-        ).toFixed(0);
-        if (now > end) {
-          proposals.splice(key, 1);
-        } else {
-          data.push(
-            createData(
-              value.crowdfunding_id,
-              value.title,
-              value.upvotes - value.downvotes,
-              calculatePercentage(
-                value.received_funding,
-                value.requested_funding
-              ),
-              calculateDaysAndHours(value.funding_date)
-            )
-          );
-        }
+      proposals.map((value: IProposal) => {
+        data.push(
+          createData(
+            value.crowdfunding_id,
+            value.title,
+            value.upvotes - value.downvotes,
+            calculatePercentage(
+              value.received_funding,
+              value.requested_funding
+            ),
+            calculateDaysAndHours(value.funding_date)
+          )
+        );
       });
-      setRows(data);
+      setRows(data.sort((a, b) => b.key - a.key));
     }
     x();
   }, []);
+
   return (
     <>
       <Box
@@ -199,7 +196,7 @@ function Proposals() {
                 borderBottom: "1px solid rgba(255, 255, 255, 0.61)",
                 cursor: "pointer",
               }}
-              onClick={() => handleClickMenu("/createproposal", "")}
+              onClick={() => handleClickMenu("/createcrowdfundingproposal", "")}
             >
               <Typography
                 fontFamily="Oxanium Medium"
@@ -279,7 +276,7 @@ function Proposals() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => (
+                {rows.slice(0, showOnlyTen).map((row) => (
                   <TableRow key={row.key}>
                     <TableCell
                       align="left"
@@ -400,7 +397,7 @@ function Proposals() {
                             "linear-gradient(176.22deg, #FF01FF -60.52%, rgba(33, 33, 33, 0.8) -24.61%, rgba(33, 33, 33, 0.5) 59.39%, #FFFFFF 123.24%)",
                         }}
                         onClick={() =>
-                          handleClickMenu("/proposaldetails", row.key)
+                          handleClickMenu("/crowdfundingdetails", row.key)
                         }
                       >
                         Details
@@ -411,10 +408,28 @@ function Proposals() {
               </TableBody>
             </Table>
           </TableContainer>
+          <Button
+            sx={{
+              px: "32px",
+              py: "4px",
+              color: "white",
+              fontSize: "16px",
+              fontWeight: "700",
+              fontFamily: "Oxanium Light",
+              border: "1px solid #FFFFFF",
+              borderRadius: "20px",
+              textTransform: "none",
+              background:
+                "linear-gradient(176.22deg, #FF01FF -60.52%, rgba(33, 33, 33, 0.8) -24.61%, rgba(33, 33, 33, 0.5) 59.39%, #FFFFFF 123.24%)",
+            }}
+            onClick={() => handleShowMore()}
+          >
+            Show More
+          </Button>
         </Box>
       </Box>
     </>
   );
 }
 
-export default Proposals;
+export default Crowdfundings;

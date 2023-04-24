@@ -126,7 +126,7 @@ const ForwardIconDown = styled(ForwardIcon)(
   })
 );
 
-function ProposalDetails() {
+function CrowdfundingDetails() {
   const [selectedPlanet, setSelectedPlanet] = useState("None");
   const [proposal, setProposal] = useState<IProposal>();
   // const [time, setTime] = useState<string>("");
@@ -177,7 +177,9 @@ function ProposalDetails() {
 
     setPercentage(percentage);
   }
+
   function calculateDaysAndHours(dateTimeStr: string) {
+    dateTimeStr = dateTimeStr + "Z";
     const targetDateTime = new Date(dateTimeStr);
     const now = new Date();
 
@@ -276,7 +278,7 @@ function ProposalDetails() {
 
     fetchProposal();
     fetchCrowdvotes();
-  }, [key, wallet.name]);
+  }, [key, wallet.name, voteStatus]);
 
   useEffect(() => {
     calculatePercentage(
@@ -292,7 +294,7 @@ function ProposalDetails() {
   const mobile = useMediaQuery(theme.breakpoints.down(603));
   return (
     <>
-      <Button onClick={() => handleClickMenu("/proposals")}>
+      <Button onClick={() => handleClickMenu("/crowdfundings")}>
         <img
           src={BackButtonIcon}
           alt=""
@@ -447,9 +449,17 @@ function ProposalDetails() {
                   pb={mobile ? "12px" : "0"}
                   color="white"
                 >
-                  {voteStatus.up - voteStatus.down}
+                  {proposal?.upvotes != null && proposal?.downvotes != null
+                    ? proposal.upvotes - proposal.downvotes
+                    : 0}
                 </Typography>
                 <Typography variant="h6">Community Score</Typography>
+                <Typography variant="h6" color="#049913">
+                  Total Users vote:{" "}
+                  {proposal?.upvotes != null && proposal?.downvotes != null
+                    ? proposal.upvotes + proposal.downvotes
+                    : 0}
+                </Typography>
                 <ButtonsContainer>
                   <StyledButton onClick={async () => await handleVote(true)}>
                     <ForwardIconTop isvote={voteStatus.up} />
@@ -609,4 +619,4 @@ function ProposalDetails() {
   );
 }
 
-export default ProposalDetails;
+export default CrowdfundingDetails;
