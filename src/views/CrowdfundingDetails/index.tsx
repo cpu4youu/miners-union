@@ -11,8 +11,15 @@ import {
   LinearProgress,
   linearProgressClasses,
   styled,
+  Modal,
+  IconButton,
+  InputAdornment,
+  OutlinedInput,
+  TextField,
+  FormControl,
 } from "@mui/material";
 import ForwardIcon from "@mui/icons-material/Forward";
+import CloseIcon from "@mui/icons-material/Close";
 
 import { makeStyles } from "@mui/styles";
 import PlanetSelect from "./components/PlanetSelect";
@@ -22,22 +29,22 @@ import { WalletContext } from "../../App";
 import { checkLogin, fetchTable, transaction } from "../../plugins/chain";
 import { smartcontract, planets } from "../../config";
 
-// const modalStyle = {
-//   position: "absolute" as "absolute",
-//   top: "50%",
-//   left: "50%",
-//   transform: "translate(-50%, -50%)",
-//   width: "300px",
-//   bgcolor: "background.paper",
-//   background: "#1C1C1C",
-//   borderRadius: "20px",
-//   border: "1px solid #4D4D4D",
-//   outline: "transparent solid 2px",
-//   outlineOffset: "2px",
-//   boxShadow:
-//     "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px,rgba(0, 0, 0, 0.2) 0px 5px 10px,rgba(0, 0, 0, 0.4) 0px 15px 40px",
-//   p: 2,
-// };
+const modalStyle = {
+  position: "absolute" as "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: "350px",
+  bgcolor: "background.paper",
+  background: "#1C1C1C",
+  borderRadius: "20px",
+  border: "1px solid #4D4D4D",
+  outline: "transparent solid 2px",
+  outlineOffset: "2px",
+  boxShadow:
+    "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px,rgba(0, 0, 0, 0.2) 0px 5px 10px,rgba(0, 0, 0, 0.4) 0px 15px 40px",
+  p: 2,
+};
 
 const boxStyle = {
   p: "16px 0 16px 20px",
@@ -137,8 +144,9 @@ function CrowdfundingDetails() {
   const [voteStatus, setVoteStatus] = useState({ up: 0, down: 0 });
   const [daysLeft, setDaysLeft] = useState(0);
   const [hoursLeft, setHoursLeft] = useState(0);
+  const [openModal, setOpenModal] = useState(false);
   const [percentage, setPercentage] = useState(0);
-  // const [Amount, setAmount] = useState<number>(0);
+  const [tlmAmount, setTlmAmount] = useState<number>(10);
   let navigate = useNavigate();
   var key: string | null = null;
   if (location.state) {
@@ -148,19 +156,60 @@ function CrowdfundingDetails() {
     navigate(link);
   };
 
-  // const handleAmountChange = (e: any) => {
-  //   const floatRegExp = new RegExp("([0-9]+([.][0-9]*)?|[.][0-9]+)$");
-  //   const dotRegExp = new RegExp("^([0-9]+[.][0]*)$");
-  //   if (e.target.value === "" || floatRegExp.test(e.target.value)) {
-  //     let filteredValue = e.target.value;
-  //     if (dotRegExp.test(e.target.value)) {
-  //       setAmount(filteredValue);
-  //     } else {
-  //       filteredValue = Math.floor(filteredValue * 1000) / 1000;
-  //       setAmount(filteredValue);
-  //     }
-  //   }
-  // };
+  const handleVoteAmountChange = (e: any) => {
+    const floatRegExp = new RegExp("([0-9]+([.][0-9]*)?|[.][0-9]+)$");
+    const dotRegExp = new RegExp("^([0-9]+[.][0]*)$");
+    if (e.target.value === "" || floatRegExp.test(e.target.value)) {
+      let filteredValue = e.target.value;
+      if (dotRegExp.test(e.target.value)) {
+        setTlmAmount(filteredValue);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        filteredValue = Math.floor(filteredValue * 1000) / 1000;
+        setTlmAmount(filteredValue);
+      }
+    }
+  };
+
+  const handleSubmit = async () => {
+    console.log({
+      from: wallet.name,
+      to: "hq.mu",
+      quantity: tlmAmount + " TLM",
+      memo: "crowdfunding," + key,
+    });
+    try {
+      await checkLogin();
+      if (wallet.name) {
+        const t = await transaction({
+          actions: [
+            {
+              account: "alien.worlds",
+              name: "transfer",
+              authorization: [
+                {
+                  actor: wallet.name,
+                  permission: "active",
+                },
+              ],
+              data: {
+                from: wallet.name,
+                to: "hq.mu",
+                quantity: tlmAmount.toFixed(4) + " TLM",
+                memo: "crowdfunding," + key,
+              },
+            },
+          ],
+        });
+        if (t) {
+          alert("Succesfully created the proposal");
+          setTlmAmount(10);
+        }
+      }
+    } catch (e) {
+      alert(e);
+    }
+  };
 
   function calculatePercentage(
     receivedFunding?: string,
@@ -173,9 +222,12 @@ function CrowdfundingDetails() {
     const received = parseFloat(receivedFunding.replace(" TLM", ""));
     const total = parseFloat(totalFunding.replace(" TLM", ""));
 
-    const percentage = Math.round((received / total) * 10000) / 100;
-
-    setPercentage(percentage);
+    const currentPercentage = Math.round((received / total) * 10000) / 100;
+    if (currentPercentage > 100) {
+      setPercentage(100);
+    } else {
+      setPercentage(currentPercentage);
+    }
   }
 
   function calculateDaysAndHours(dateTimeStr: string) {
@@ -190,18 +242,13 @@ function CrowdfundingDetails() {
     setHoursLeft(hoursDiff);
   }
 
-  // const handleMaxValue = () => {
-  //   setAmount(votePower);
-  // };
+  const handleModalOpen = () => {
+    setOpenModal(true);
+  };
 
-  // const handleModalOpen = () => {
-  //   setOpenModal(true);
-  // };
-
-  // const handleModalClose = () => {
-  //   setOpenModal(false);
-  // };
-
+  const handleModalClose = () => {
+    setOpenModal(false);
+  };
   const handleVote = async (type: boolean) => {
     try {
       await checkLogin();
@@ -278,7 +325,7 @@ function CrowdfundingDetails() {
 
     fetchProposal();
     fetchCrowdvotes();
-  }, [key, wallet.name, voteStatus]);
+  }, [key, wallet.name, voteStatus, tlmAmount]);
 
   useEffect(() => {
     calculatePercentage(
@@ -288,7 +335,7 @@ function CrowdfundingDetails() {
     if (proposal?.funding_date) {
       calculateDaysAndHours(proposal?.funding_date);
     }
-  }, [proposal]);
+  }, [proposal, voteStatus]);
 
   const desktop = useMediaQuery(theme.breakpoints.up(1300));
   const mobile = useMediaQuery(theme.breakpoints.down(603));
@@ -423,7 +470,29 @@ function CrowdfundingDetails() {
               <Typography variant="h6" color="#049913">
                 funded of {proposal?.requested_funding}
               </Typography>
-
+              <Button
+                onClick={() => handleModalOpen()}
+                sx={{
+                  marginTop: 1,
+                  background: "#009DF5",
+                  borderRadius: "24px",
+                  border: "2px solid #009DF5",
+                  textAlign: "center",
+                  height: "44px",
+                  textTransform: "none",
+                  color: "white",
+                  m: "12px auto",
+                  width: desktop ? "220px" : "100%",
+                  lineHeight: "0",
+                  fontSize: "20px",
+                  fontFamily: "Oxanium Medium",
+                  alignItems: "center",
+                  boxShadow: "inset 0px 0px 36px 1px rgba(54, 0, 206, 0.61)",
+                  "&: hover": { opacity: "0.9", background: "#009DF5" },
+                }}
+              >
+                Fund Campaning
+              </Button>
               <Typography variant="h6" color="#FFB901">
                 Fund this campaign by transferring TLM to hq.mu with the memo
                 "crowdfunding,{key}"
@@ -517,6 +586,90 @@ function CrowdfundingDetails() {
             </Typography>
             <Typography>{proposal?.teaminfo}</Typography>
           </Box>
+          <Modal
+            open={openModal}
+            onClose={handleModalClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box color="white" sx={modalStyle}>
+              <Box display="flex" justifyContent="flex-end">
+                <IconButton sx={{ padding: "0" }} onClick={handleModalClose}>
+                  <CloseIcon sx={{ color: "white" }} />
+                </IconButton>
+              </Box>
+              <Typography
+                variant="body1"
+                fontSize="16px"
+                textAlign="center"
+                fontFamily="Oxanium Light"
+                mt="24px"
+                mb="36px"
+              >
+                How much TLM do you want to fund this campaign with?
+              </Typography>
+              <Typography
+                variant="body1"
+                fontSize="16px"
+                textAlign="center"
+                fontFamily="Oxanium Light"
+                mt="24px"
+                mb="36px"
+              >
+                Minimum 10 TLM
+              </Typography>
+              <Box display="flex" justifyContent="center">
+                <FormControl sx={{ flexGrow: "1" }} variant="outlined">
+                  <OutlinedInput
+                    id="outlined-adornment-weight"
+                    value={tlmAmount}
+                    onChange={handleVoteAmountChange}
+                    aria-describedby="outlined-weight-helper-text"
+                    endAdornment={
+                      <InputAdornment position="end"></InputAdornment>
+                    }
+                    sx={{
+                      borderRadius: "20px",
+                      color: "white",
+                      width: "100%",
+                      pr: 1,
+                      background: "rgba(121, 121, 121, 0.3)",
+                      border: "1px solid #FFFFFF",
+                      "& .MuiOutlinedInput-input": { padding: "8px 16px" },
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        border: "none",
+                      },
+                    }}
+                  />
+                </FormControl>
+              </Box>
+
+              <Button
+                onClick={handleSubmit}
+                sx={{
+                  display: "flex",
+                  marginTop: 1,
+                  background: "#009DF5",
+                  borderRadius: "24px",
+                  border: "2px solid #009DF5",
+                  textAlign: "center",
+                  height: "44px",
+                  textTransform: "none",
+                  color: "white",
+                  m: "12px auto",
+                  width: desktop ? "220px" : "100%",
+                  lineHeight: "0",
+                  fontSize: "20px",
+                  fontFamily: "Oxanium Medium",
+                  alignItems: "center",
+                  boxShadow: "inset 0px 0px 36px 1px rgba(54, 0, 206, 0.61)",
+                  "&: hover": { opacity: "0.9", background: "#009DF5" },
+                }}
+              >
+                Fund!
+              </Button>
+            </Box>
+          </Modal>
         </Box>
         {/* <Modal
           open={openModal}

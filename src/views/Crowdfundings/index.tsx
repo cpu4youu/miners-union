@@ -99,6 +99,7 @@ function Crowdfundings() {
     setShowOnlyTen(showOnlyTen + 10);
   }
   function calculateDaysAndHours(dateTimeStr: string) {
+    dateTimeStr = dateTimeStr + "Z";
     const targetDateTime = new Date(dateTimeStr);
     const now = new Date();
 

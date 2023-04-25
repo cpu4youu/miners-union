@@ -704,6 +704,16 @@ function CreateCrowdfundingProposal() {
             </Link>
             ?
           </Typography>
+          <Typography
+            variant="body1"
+            fontSize="16px"
+            mt="24px"
+            textAlign="center"
+            fontFamily="Oxanium Light"
+            color="yellow"
+          >
+            1% goes toward the facilitation fee if a campaign is successfully funded
+          </Typography>
           <Box display="flex" flexDirection="row">
             <Button
               onClick={handleDaoRulesChangeYes}
