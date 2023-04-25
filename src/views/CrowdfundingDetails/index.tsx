@@ -202,7 +202,7 @@ function CrowdfundingDetails() {
           ],
         });
         if (t) {
-          alert("Succesfully created the proposal");
+          alert("Succesfully Fund the Proposal");
           setTlmAmount(10);
         }
       }
@@ -491,7 +491,7 @@ function CrowdfundingDetails() {
                   "&: hover": { opacity: "0.9", background: "#009DF5" },
                 }}
               >
-                Fund Campaning
+                Fund Campaign
               </Button>
               <Typography variant="h6" color="#FFB901">
                 Fund this campaign by transferring TLM to hq.mu with the memo
