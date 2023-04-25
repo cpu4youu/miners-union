@@ -204,6 +204,7 @@ function CrowdfundingDetails() {
         if (t) {
           alert("Successfully Funded the Campaign");
           setTlmAmount(10);
+          handleModalClose();
         }
       }
     } catch (e) {
@@ -325,7 +326,7 @@ function CrowdfundingDetails() {
 
     fetchProposal();
     fetchCrowdvotes();
-  }, [key, wallet.name, voteStatus, tlmAmount]);
+  }, [key, wallet.name, voteStatus, handleModalClose]);
 
   useEffect(() => {
     calculatePercentage(
