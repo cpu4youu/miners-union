@@ -202,7 +202,7 @@ function CrowdfundingDetails() {
           ],
         });
         if (t) {
-          alert("Succesfully Fund the Proposal");
+          alert("Successfully Funded the Campaign");
           setTlmAmount(10);
         }
       }
