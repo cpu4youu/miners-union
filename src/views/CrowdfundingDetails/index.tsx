@@ -326,7 +326,7 @@ function CrowdfundingDetails() {
 
     fetchProposal();
     fetchCrowdvotes();
-  }, [key, wallet.name, voteStatus, handleModalClose]);
+  }, [voteStatus, handleModalClose]);
 
   useEffect(() => {
     calculatePercentage(
@@ -471,35 +471,39 @@ function CrowdfundingDetails() {
               <Typography variant="h6" color="#049913">
                 funded of {proposal?.requested_funding}
               </Typography>
-              <Button
-                onClick={() => handleModalOpen()}
-                sx={{
-                  marginTop: 1,
-                  background: "#009DF5",
-                  borderRadius: "24px",
-                  border: "2px solid #009DF5",
-                  textAlign: "center",
-                  height: "44px",
-                  textTransform: "none",
-                  color: "white",
-                  m: "12px auto",
-                  width: desktop ? "220px" : "100%",
-                  lineHeight: "0",
-                  fontSize: "20px",
-                  fontFamily: "Oxanium Medium",
-                  alignItems: "center",
-                  boxShadow: "inset 0px 0px 36px 1px rgba(54, 0, 206, 0.61)",
-                  "&: hover": { opacity: "0.9", background: "#009DF5" },
-                }}
-              >
-                Fund Campaign
-              </Button>
+              {daysLeft >= 0 && (
+                <Button
+                  onClick={() => handleModalOpen()}
+                  sx={{
+                    marginTop: 1,
+                    background: "#009DF5",
+                    borderRadius: "24px",
+                    border: "2px solid #009DF5",
+                    textAlign: "center",
+                    height: "44px",
+                    textTransform: "none",
+                    color: "white",
+                    m: "12px auto",
+                    width: desktop ? "220px" : "100%",
+                    lineHeight: "0",
+                    fontSize: "20px",
+                    fontFamily: "Oxanium Medium",
+                    alignItems: "center",
+                    boxShadow: "inset 0px 0px 36px 1px rgba(54, 0, 206, 0.61)",
+                    "&: hover": { opacity: "0.9", background: "#009DF5" },
+                  }}
+                >
+                  Fund Campaign
+                </Button>
+              )}
               <Typography variant="h6" color="#FFB901">
                 Fund this campaign by transferring TLM to hq.mu with the memo
                 "crowdfunding,{key}"
               </Typography>
               <Typography variant="h5">
-                {daysLeft} days and {hoursLeft} hours to go
+                {daysLeft < 0
+                  ? "Completed"
+                  : `${daysLeft} days and ${hoursLeft} hours to go`}
               </Typography>
             </Box>
             <Box
