@@ -381,7 +381,8 @@ function Crowdfundings() {
                         display="flex"
                         alignItems="center"
                       >
-                        {row.time}
+                        {row.time.includes("-") ? "Completed" : row.time}
+
                       </Box>
                       <Button
                         sx={{
