@@ -179,56 +179,58 @@ function CandidateScreen() {
   }
 
   useEffect(() => {
-    const wallet = getInitialStateWallet()
-    setWallet(wallet.name)
-    async function x() {
-      const r = await fetchTable({
+    const interval = setInterval(() => {
+      const wallet = getInitialStateWallet()
+      setWallet(wallet.name)
+      async function x() {
+        const r = await fetchTable({
+          json: true,
+          code: smartcontract,
+          scope: smartcontract,
+          table: "candprofiles",
+          limit: 1,
+    
+          lower_bound: wallet.name,
+          upper_bound: wallet.name,
+        })
+
+        if(r.rows[0]){
+          var img = r.rows[0].profile_image;
+          var desc = r.rows[0].description;
+          var slogan = r.rows[0].slogan;
+          var name = r.rows[0].candidate;
+          var datum = new Date(r.rows[0].display_until).getTime()
+          setTime(Math.floor(datum / 1000))
+          console.log(name)
+          if(name){
+            setCandidateName(name)
+          } else {
+            setCandidateName(wallet.name)
+          }
+          handleDescriptionChange(desc);
+          handleProfileImageChange(img);
+          handleSloganChange(slogan);
+          setCreated(true)
+        } else {
+          setCandidateName(wallet.name)
+          setCreated(false)
+        }
+      const x = await fetchTable({
         json: true,
         code: smartcontract,
         scope: smartcontract,
-        table: "candprofiles",
+        table: "config",
         limit: 1,
-  
-        lower_bound: wallet.name,
-        upper_bound: wallet.name,
       })
-
-      if(r.rows[0]){
-        var img = r.rows[0].profile_image;
-        var desc = r.rows[0].description;
-        var slogan = r.rows[0].slogan;
-        var name = r.rows[0].candidate;
-        var datum = new Date(r.rows[0].display_until).getTime()
-        setTime(Math.floor(datum / 1000))
-        console.log(name)
-        if(name){
-          setCandidateName(name)
-        } else {
-          setCandidateName(wallet.name)
-        }
-        handleDescriptionChange(desc);
-        handleProfileImageChange(img);
-        handleSloganChange(slogan);
-        setCreated(true)
-      } else {
-        setCandidateName(wallet.name)
-        setCreated(false)
+      const dec = x.rows[0].decay_per_pay
+      const cos = x.rows[0].candidate_ad_cost_minute
+      const day = x.rows[0].candidate_ad_days
+      setDecay(dec)
+      setCost(cos)
+      setDays(day)
       }
-    const x = await fetchTable({
-      json: true,
-      code: smartcontract,
-      scope: smartcontract,
-      table: "config",
-      limit: 1,
-    })
-    const dec = x.rows[0].decay_per_pay
-    const cos = x.rows[0].candidate_ad_cost_minute
-    const day = x.rows[0].candidate_ad_days
-    setDecay(dec)
-    setCost(cos)
-    setDays(day)
-    }
-    x()
+      x()
+    }, 5000)
   }, [])
 
   useEffect(() =>{
