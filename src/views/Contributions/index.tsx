@@ -16,11 +16,9 @@ import classnames from "classnames";
 
 import velesprofile from "../../assets/imgs/velesprofile.png";
 
-
-import { fetchTable} from "../../plugins/chain";
+import { fetchTable } from "../../plugins/chain";
 import { useEffect, useState } from "react";
 import { smartcontract } from "../../config";
-
 
 const useStyles = makeStyles({
   contentWrapper: {
@@ -31,26 +29,22 @@ const useStyles = makeStyles({
   },
 });
 
-interface IUser{
-  key: number,
-  name:string,
-  votes: string,
-  cpu: string,
-  drops: string,
-  other: string
+interface IUser {
+  key: number;
+  name: string;
+  votes: string;
+  cpu: string;
+  drops: string;
+  other: string;
 }
 
-interface IRanking{
-  rank: number,
-  name: string,
-  contribution: string,
+interface IRanking {
+  rank: number;
+  name: string;
+  contribution: string;
 }
 
-function createData(
-  rank: number,
-  name: string,
-  contribution: string,
-) {
+function createData(rank: number, name: string, contribution: string) {
   return { rank, name, contribution };
 }
 
@@ -60,59 +54,79 @@ function Contributions() {
   const desktop = useMediaQuery(theme.breakpoints.up(1048));
   const mobile = useMediaQuery(theme.breakpoints.down(705));
 
-  const [rows, setRows] = useState<IRanking[]>([])
-  const [total, setTotal] = useState("0 TLM")
-
+  const [rows, setRows] = useState<IRanking[]>([]);
+  const [total, setTotal] = useState("0 TLM");
 
   useEffect(() => {
-    async function x (){
-      let more = false
-      let next = ""
-      var voters: Array<IUser> = []
-      do {
-        const x = await fetchTable({
-          json: true, 
-          code: smartcontract,
-          scope: smartcontract,
-          table: "contribution",
-          limit: 100,     
-          lower_bound: next
-      })
-      next = x.next_key
-      more = x.more 
-      x.rows.map((value: any, key: any) => {
-        voters.push({
-          key: key,
-          name: value.wallet,
-          votes: value.votes,
-          cpu: value.cpu,
-          drops: value.drops,
-          other: value.other
-        })
-        return 0
-      })
-      } while(more) 
-      voters.sort(function(a, b){
-        var keyA = Number(a.votes.slice(0, -4)) + Number(a.cpu.slice(0, -4)) + Number(a.drops.slice(0, -4)) + Number(a.other.slice(0, -4))
-        var keyB = Number(b.votes.slice(0, -4)) + Number(b.cpu.slice(0, -4)) + Number(b.drops.slice(0, -4)) + Number(b.other.slice(0, -4))
-        if(keyA < keyB) return 1;
-        if(keyA > keyB) return -1;
-        return 0
-      })
-      const rankes = voters.slice(0, 99);
-      var t = 0;
-      const y: Array<IRanking> = []
-      rankes.map((value, key) => {
-        var total = Number(value.votes.slice(0, -4)) + Number(value.cpu.slice(0, -4)) + Number(value.drops.slice(0, -4)) + Number(value.other.slice(0, -4))
-        y.push(createData(key , value.name, format(Number(total.toFixed(0))) + " TLM"))
-        t += total
-        return 0
-      })
-      setTotal(format(t) + " TLM")
-      setRows(y)
-    }
-    x()
-  }, [])
+    const interval = setInterval(() => {
+      async function x() {
+        let more = false;
+        let next = "";
+        var voters: Array<IUser> = [];
+        do {
+          const x = await fetchTable({
+            json: true,
+            code: smartcontract,
+            scope: smartcontract,
+            table: "contribution",
+            limit: 100,
+            lower_bound: next,
+          });
+          next = x.next_key;
+          more = x.more;
+          x.rows.map((value: any, key: any) => {
+            voters.push({
+              key: key,
+              name: value.wallet,
+              votes: value.votes,
+              cpu: value.cpu,
+              drops: value.drops,
+              other: value.other,
+            });
+            return 0;
+          });
+        } while (more);
+        voters.sort(function (a, b) {
+          var keyA =
+            Number(a.votes.slice(0, -4)) +
+            Number(a.cpu.slice(0, -4)) +
+            Number(a.drops.slice(0, -4)) +
+            Number(a.other.slice(0, -4));
+          var keyB =
+            Number(b.votes.slice(0, -4)) +
+            Number(b.cpu.slice(0, -4)) +
+            Number(b.drops.slice(0, -4)) +
+            Number(b.other.slice(0, -4));
+          if (keyA < keyB) return 1;
+          if (keyA > keyB) return -1;
+          return 0;
+        });
+        const rankes = voters.slice(0, 99);
+        var t = 0;
+        const y: Array<IRanking> = [];
+        rankes.map((value, key) => {
+          var total =
+            Number(value.votes.slice(0, -4)) +
+            Number(value.cpu.slice(0, -4)) +
+            Number(value.drops.slice(0, -4)) +
+            Number(value.other.slice(0, -4));
+          y.push(
+            createData(
+              key,
+              value.name,
+              format(Number(total.toFixed(0))) + " TLM"
+            )
+          );
+          t += total;
+          return 0;
+        });
+        setTotal(format(t) + " TLM");
+        setRows(y);
+      }
+      x();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
@@ -123,19 +137,16 @@ function Contributions() {
             mobile ? classes.mobileWrapper : ""
           )}
         >
-          <Box
-          display="flex"
-          justifyContent="flex-center"
-          >
-          <Typography
-                fontSize={desktop ? "24px" : "20px"}
-                lineHeight="30px"
-                fontWeight="700"
-                color="white"
-                style={{ fontFamily: "Oxanium Medium" }}
-              >
-                Total Contribution: {total}
-              </Typography>
+          <Box display="flex" justifyContent="flex-center">
+            <Typography
+              fontSize={desktop ? "24px" : "20px"}
+              lineHeight="30px"
+              fontWeight="700"
+              color="white"
+              style={{ fontFamily: "Oxanium Medium" }}
+            >
+              Total Contribution: {total}
+            </Typography>
           </Box>
           <TableContainer
             component={Paper}
@@ -275,7 +286,7 @@ function Contributions() {
 export default Contributions;
 
 function format(num: number) {
-  return num.toString().replace(/^[+-]?\d+/, function(int) {
-    return int.replace(/(\d)(?=(\d{3})+$)/g, '$1,');
+  return num.toString().replace(/^[+-]?\d+/, function (int) {
+    return int.replace(/(\d)(?=(\d{3})+$)/g, "$1,");
   });
 }
